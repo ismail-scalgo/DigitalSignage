@@ -76,7 +76,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       await Future.delayed(Duration(seconds: start_difference), () {
         add(StartEvent(contentsMap: contentsMap));
       });
-
       await Future.delayed(Duration(seconds: end_Difference), () {
         add(EndEvent());
       });
@@ -89,35 +88,20 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
   void connect() async {
     final socket = WebSocket(Uri.parse('ws://192.168.0.84:8765'));
-
-// Listen to messages from the server.
     socket.messages.listen((message) {
       log("fetch  $message");
       if (message == "datachange") {
-        // contentsMap =
         add(FetchApi());
       }
     });
-
     socket.send('ping');
   }
 }
 
 int timeDifference(String time, String curretTime) {
-  // ISO 8601 format date-time string
-  // String dateTimeString = "2022-06-03T19:38:34.203Z";
-
-  // Parse the string into a DateTime object
   DateTime givenDateTime = DateTime.parse(time);
-
-  // Get the current date-time (UTC)
   DateTime now = DateTime.parse(curretTime);
-
-  // Calculate the difference
   Duration difference = givenDateTime.difference(now);
-
-  // Output the difference in various formats
-
-  print("Difference in seconds: ${difference.inSeconds}");
+  // print("Difference in seconds: ${difference.inSeconds}");
   return difference.inSeconds;
 }

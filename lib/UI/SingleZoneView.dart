@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/UI/ImageScreen.dart';
 import 'package:digitalsignange/MODELS/ContentModel.dart';
 import 'package:digitalsignange/MODELS/MediaDetailModel.dart';
@@ -24,6 +25,12 @@ class _SingleZoneViewState extends State<SingleZoneView> {
 
   @override
   void initState() {
+    // widget.details.contentsList.forEach((element) {
+
+    //   if(element.duration == "0.0") {
+    //     widget.details.contentsList.remove(element);
+    //   }
+    // });
     // TODO: implement initState
     super.initState();
   }
@@ -52,7 +59,7 @@ class _SingleZoneViewState extends State<SingleZoneView> {
 
   Widget getWidget(Contents contents) {
     if (contents.format == "jpeg") {
-      String fullUrl = contents.url;
+      String fullUrl = BASEURL + contents.url;
       return Container(
         width: (MediaQuery.of(context).size.width * widget.details.width) / 100,
         height:
@@ -60,10 +67,10 @@ class _SingleZoneViewState extends State<SingleZoneView> {
         child: ImageScreen(url: fullUrl),
       );
     } else if (contents.format == "mp4") {
-      String fullUrl = contents.url;
+      String fullUrl = BASEURL + contents.url;
       return VideoPlayer(url: fullUrl);
     } else if (contents.format == "pdf") {
-      String fullUrl = contents.url;
+      String fullUrl = BASEURL + contents.url;
       return CustomPdf(fullUrl);
     }
     return Center();
@@ -73,11 +80,12 @@ class _SingleZoneViewState extends State<SingleZoneView> {
     if (widget.details.contentsList.length - 1 < currentIndex) {
       currentIndex = 0;
     }
+
     Future.delayed(
         Duration(
             seconds:
-                int.parse(widget.details.contentsList[currentIndex].duration)),
-        () {
+                double.parse(widget.details.contentsList[currentIndex].duration)
+                    .toInt()), () {
       controller.nextPage();
       currentIndex++;
       changeController();

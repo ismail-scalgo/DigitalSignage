@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
             gradient: LinearGradient(
               tileMode: TileMode.mirror,
               colors: [
-                Color.fromARGB(255, 255, 163, 163),
+                Color.fromARGB(255, 223, 124, 124),
                 Color.fromARGB(255, 28, 91, 128)
               ],
               begin: Alignment.topLeft,
@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   gradient: LinearGradient(
                     tileMode: TileMode.mirror,
                     colors: [
-                      Color.fromARGB(255, 255, 197, 197),
+                      Color.fromARGB(255, 212, 135, 135),
                       Color.fromARGB(255, 0, 69, 109)
                     ],
                     begin: Alignment.topCenter,
@@ -108,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color.fromARGB(255, 209, 209, 209)),
                         controller: screenCodeController,
                         decoration: InputDecoration(
-                          labelText: 'Screen Name',
+                          labelText: 'Agent ID',
                           errorText: screenCodeError,
                           labelStyle: TextStyle(
                               color: Color.fromARGB(255, 209, 209, 209)),
@@ -152,8 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             gradient: LinearGradient(
                               tileMode: TileMode.mirror,
                               colors: [
-                                Color.fromARGB(255, 255, 197, 197),
-                                Color.fromARGB(255, 7, 118, 182)
+                                Color.fromARGB(255, 230, 163, 163),
+                                Color.fromARGB(255, 6, 104, 160)
                               ],
                               begin: Alignment.bottomLeft,
                               end: Alignment.topRight,

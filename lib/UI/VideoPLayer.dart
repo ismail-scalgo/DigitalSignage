@@ -22,8 +22,8 @@ class VideoPlayerState extends State<VideoPlayer> {
   @override
   void initState() {
     super.initState();
-    // loadWeb();
-    loadDevice();
+    loadWeb();
+    // loadDevice();
   }
 
   @override
@@ -78,9 +78,6 @@ class VideoPlayerState extends State<VideoPlayer> {
   }
 
   void loadDevice() async {
-    //  var file = await DefaultCacheManager().downloadFile(widget.url);
-    //  int size = await file.file.length();
-    //  print(file.file.dirname);
     var file = await DefaultCacheManager().getSingleFile(widget.url);
     player.open(
       Media(

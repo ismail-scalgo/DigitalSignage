@@ -4,13 +4,13 @@ class RequestModel {
   String? browser;
   String? browserVersion;
   String? location;
-  double? latitude;
-  double? longitude;
+  String? latitude;
+  String? longitude;
   String? orientation;
   String? platform;
   String? osVersion;
-  double? height;
-  double? width;
+  String? height;
+  String? width;
   String? type;
   RequestModel({
     required this.agentId,
@@ -45,7 +45,25 @@ class RequestModel {
   //   );
   // }
 
-  Map<String, dynamic> toJson() {
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'agentId': agentId,
+  //     'name': name,
+  //     'browser': browser,
+  //     'browserVersion': browserVersion,
+  //     'location': location,
+  //     'latitude': latitude,
+  //     'longitude': longitude,
+  //     'orientation': orientation,
+  //     'platform': platform,
+  //     'osVersion': osVersion,
+  //     'height': height,
+  //     'width': width,
+  //     'type': type,
+  //   };
+  // }
+
+  Map<String, dynamic> toMap() {
     return {
       'agent_id': agentId,
       'name': name,

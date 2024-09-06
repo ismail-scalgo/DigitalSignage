@@ -52,20 +52,27 @@ class _LyoutScreenState extends State<LaunchingScreen> {
           height: height,
           child: Center(
             child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
-              listener: (context, state) {},
+              listener: (context, state) {
+                
+              },
               builder: (context, state) {
+                print("state is $state");
                 if (state is DisplayLayout) {
                   return StaggeredGrid.count(
                       crossAxisCount: 100,
                       children: displayGrids(state.mediaMap));
                 }
                 if (state is DefaultScreen) {
-                  return Center(
-                    child: Text("DIGITAL SIGNAGE"),
+                  return Container(
+                    color: Colors.black,
+                    child: Text("Digital Signange"),
                   );
+                  // return Center(
+                  //   child: Text("DIGITAL SIGNAGE"),
+                  // );
                 }
                 return Center(
-                  child: Text("next"),
+                  child: Text("Center...."),
                 );
               },
             ),

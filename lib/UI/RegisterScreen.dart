@@ -457,6 +457,8 @@ import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:toastification/toastification.dart';
+
 class RegisterScreen extends StatefulWidget {
   RegisterScreen({super.key});
 
@@ -499,7 +501,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             gradient: LinearGradient(
               tileMode: TileMode.mirror,
               colors: [
-                Color.fromARGB(255, 255, 163, 163),
+                Color.fromARGB(255, 223, 124, 124),
                 Color.fromARGB(255, 28, 91, 128)
               ],
               begin: Alignment.topLeft,
@@ -519,7 +521,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   gradient: LinearGradient(
                     tileMode: TileMode.mirror,
                     colors: [
-                      Color.fromARGB(255, 255, 197, 197),
+                      Color.fromARGB(255, 212, 135, 135),
                       Color.fromARGB(255, 0, 69, 109)
                     ],
                     begin: Alignment.topCenter,
@@ -610,8 +612,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             gradient: LinearGradient(
                               tileMode: TileMode.mirror,
                               colors: [
-                                Color.fromARGB(255, 255, 197, 197),
-                                Color.fromARGB(255, 7, 118, 182)
+                                Color.fromARGB(255, 230, 163, 163),
+                                Color.fromARGB(255, 6, 104, 160)
                               ],
                               begin: Alignment.bottomLeft,
                               end: Alignment.topRight,
@@ -635,8 +637,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // location: address,
                               // latitude: location.latitude,
                               // longitude: location.longitude,
-                              width: width,
-                              height: height);
+                              width: width.toInt().toString(),
+                              height: height.toInt().toString());
                           validateInput(request);
                         },
                       ),
@@ -704,6 +706,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 builder: (context) => LoginScreen()),
                           );
                         }
+                        if (state is SuccessState) {
+                          showToast(context, "Register Success");
+                        }
+                        if (state is FailureState) {
+                          showToast(context, state.message);
+                        }
+                        if (state is PermissionDenied) {
+                          showToast(context, state.message);
+                        }
                       },
                       builder: (context, state) {
                         // if (state is LaunchScreen) {
@@ -721,6 +732,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       )),
     );
   }
+
+//   Future<bool> alertDialog( BuildContext context) {
+//     return showDialog(context: context, builder: builder);
+//   // return showDialog(
+//   //     context: context,
+//   //     builder: (BuildContext context) {
+//   //       return AlertDialog(
+//   //         title: Text('Done'),
+//   //         content: Text('Add Success'),
+//   //         actions: <Widget>[
+//   //           FlatButton(
+//   //             child: Text('Ok'),
+//   //             onPressed: () {
+//   //               Navigator.pop(context);
+//   //             },
+//   //           ),
+//   //         ],
+//   //       );
+//   //     });
+// }
 
   // Future<String> fetchResponse(double lat, double long) async {
   //   var response = await http.get(Uri.parse(
@@ -792,21 +823,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         (agentIdController.text.trim().isNotEmpty)) {
       registerBloc.add(RegisterUser(request: request));
     }
-
-    // if (Platform.isAndroid) {
-    //   platform = 'Android';
-    // } else if (Platform.isIOS) {
-    //   platform = 'iOS';
-    // } else if (Platform.isWindows) {
-    //   platform = 'Windows';
-    // } else if (Platform.isLinux) {
-    //   platform = 'Linux';
-    // } else if (Platform.isMacOS) {
-    //   platform = 'macOS';
-    // } else {
-    //   platform = 'Unknown';
-    // }
-    // print("platform = $platform");
   }
 
   Future<String> initPlatformState() async {
@@ -839,9 +855,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return platform;
       }
     } on PlatformException {
-      deviceData = <String, dynamic>{
-        'Error:': 'Failed to get platform version.'
-      };
+      deviceData['platform'] = "Unknown";
+      // deviceData = <String, dynamic>{
+      //   'Error:': 'Failed to get platform version.'
+      // };
     }
     if (!mounted) return "";
     setState(() {
@@ -869,6 +886,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'hardwareConcurrency': data.hardwareConcurrency,
       'maxTouchPoints': data.maxTouchPoints,
     };
+  }
+
+  void showToast(BuildContext context, String message) {
+    toastification.show(
+      context: context,
+      backgroundColor: Color.fromARGB(255, 212, 135, 135),
+      foregroundColor: Colors.white,
+      type: ToastificationType.success,
+      style: ToastificationStyle.simple,
+      title: Text(message),
+      alignment: Alignment.bottomCenter,
+      autoCloseDuration: const Duration(seconds: 2),
+    );
   }
 
   void launchSignageClicked() {
