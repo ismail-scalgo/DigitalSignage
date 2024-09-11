@@ -735,40 +735,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // print("platform = ${deviceData['platform']}");
         // platform = deviceData['platform'];
         // request.platform = platform;
-        CURRENT_PLATFORM = deviceData['platform'];
+        PLATFORM = deviceData['platform'];
         return deviceData['platform'];
       } else {
         if (Platform.isAndroid) {
           platform = 'Android';
-          CURRENT_PLATFORM = 'Android';
+          PLATFORM = 'Android';
         } else if (Platform.isIOS) {
           platform = 'iOS';
-          CURRENT_PLATFORM = 'iOS';
+          PLATFORM = 'iOS';
         } else if (Platform.isWindows) {
           platform = 'Windows';
-          CURRENT_PLATFORM = 'Windows';
+          PLATFORM = 'Windows';
         } else if (Platform.isLinux) {
           platform = 'Linux';
-          CURRENT_PLATFORM = 'Linux';
+          PLATFORM = 'Linux';
         } else if (Platform.isMacOS) {
           platform = 'macOS';
-          CURRENT_PLATFORM = 'macOS';
+          PLATFORM = 'macOS';
         } else {
           platform = 'Unknown';
-          CURRENT_PLATFORM = 'Unknown';
+          PLATFORM = 'Unknown';
         }
         // print("platform = $platform");
         // request.platform = platform;
-        return CURRENT_PLATFORM;
+        return PLATFORM;
       }
     } on PlatformException {
       // deviceData['platform'] = "Unknown";
-      CURRENT_PLATFORM = 'Unknown';
+      PLATFORM = 'Unknown';
       // deviceData = <String, dynamic>{
       //   'Error:': 'Failed to get platform version.'
       // };
     }
-    if (!mounted) CURRENT_PLATFORM = 'Unknown';
+    if (!mounted) PLATFORM = 'Unknown';
     // setState(() {
     //   deviceData = deviceData;
     //   // print("platform = ${deviceData}");

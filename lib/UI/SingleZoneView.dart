@@ -97,6 +97,7 @@ class _SingleZoneViewState extends State<SingleZoneView> {
     } else if (compositiondata.fileFormat == "mp4") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
       return CustomVideoPlayer(url: fullUrl);
+      // return VideoPlayer(url: fullUrl);
     } else if (compositiondata.fileFormat == "pdf") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
       return CustomPdf(fullUrl);
