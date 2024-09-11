@@ -30,18 +30,28 @@ class LayoutRepository {
             "widthPercent": 100,
             "heightPercent": 100,
             "contents": [
-                            {
-                "file_upload":
-                    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-                "file_format": "mp4",
-                "file_duration": "15"
-              },
-              {
-                "file_upload":
-                    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
-                "file_format": "mp4",
-                "file_duration": "15"
-              },
+                {
+                        "file_upload": "/media/uploads/Adv_video_xj7FDL5.mp4",
+                        "file_format": "mp4",
+                        "file_duration": "12.0"
+                    },
+                    {
+                        "file_upload": "/media/uploads/sample_1280853.jpeg",
+                        "file_format": "jpeg",
+                        "file_duration": "12"
+                    }
+              //               {
+              //   "file_upload":
+              //       "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+              //   "file_format": "mp4",
+              //   "file_duration": "15"
+              // },
+              // {
+              //   "file_upload":
+              //       "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+              //   "file_format": "mp4",
+              //   "file_duration": "15"
+              // },
               // {
               //   "file_upload":
               //       "https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf",
