@@ -1,7 +1,11 @@
 part of 'registerbloc_bloc.dart';
 
 @immutable
-sealed class RegisterblocState {}
+class RegisterblocState {
+  String? agentIdErr;
+  String? nameErr;
+  RegisterblocState({this.agentIdErr, this.nameErr});
+}
 
 final class RegisterblocInitial extends RegisterblocState {}
 
@@ -18,6 +22,20 @@ class FailureState extends RegisterblocState {
   FailureState({required this.message});
 }
 
+class loginFailureState extends RegisterblocState {
+  String message;
+
+  loginFailureState({required this.message});
+}
+
 class PermissionDenied extends RegisterblocState {
   String message = "Permission Denied";
+  // PlatformType currentPlatformType;
+  // PermissionDenied({ required this.currentPlatformType});
 }
+
+// class TextfieldError extends RegisterblocState {
+//   String? agentIdErr;
+//   String? nameErr;
+//   TextfieldError({this.agentIdErr, this.nameErr});
+// }

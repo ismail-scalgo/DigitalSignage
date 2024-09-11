@@ -10,7 +10,10 @@ class RegisterUser extends RegisterblocEvent {
   RegisterUser({required this.request});
 }
 
-class LoginUser extends RegisterblocEvent {}
+class LoginUser extends RegisterblocEvent {
+  String screenCode;
+  LoginUser({required this.screenCode});
+}
 
 class ShowSignIn extends RegisterblocEvent {}
 

@@ -15,7 +15,7 @@ class LayoutRepository {
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       jsonData["data"]['start_time'] = "2024-09-03T10:18:00";
-      jsonData["data"]['end_time'] = "2024-09-10T12:19:00";
+      jsonData["data"]['end_time'] = "2024-09-15T12:19:00";
       responseData = Data.fromJson(jsonData["data"]);
       // Data filtered_responseData=
 
@@ -24,7 +24,6 @@ class LayoutRepository {
         //   if(content.duration == "0.0") {
         //     element.contents.remove(content);
         //   }
-
         // },);
         element.contents.removeWhere((content) => content.duration == "0.0");
       });

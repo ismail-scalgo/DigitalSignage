@@ -5,6 +5,7 @@
 import FlutterMacOS
 import Foundation
 
+import connectivity_plus
 import device_info_plus
 import geolocator_apple
 import media_kit_libs_macos_video
@@ -18,6 +19,7 @@ import video_player_avfoundation
 import wakelock_plus
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  ConnectivityPlusPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlusPlugin"))
   DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))
   GeolocatorPlugin.register(with: registry.registrar(forPlugin: "GeolocatorPlugin"))
   MediaKitLibsMacosVideoPlugin.register(with: registry.registrar(forPlugin: "MediaKitLibsMacosVideoPlugin"))

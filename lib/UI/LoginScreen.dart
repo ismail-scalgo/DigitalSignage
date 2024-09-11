@@ -1,10 +1,15 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
+import 'dart:async';
+
+import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
 import 'package:digitalsignange/UI/RegisterScreen.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:toastification/toastification.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,11 +22,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final screenCodeController = TextEditingController();
   late RegisterblocBloc loginBloc;
   String? screenCodeError;
+  late StreamSubscription sub;
+  final ConnectivityResult connectivityResult = ConnectivityResult.none;
 
   @override
   void initState() {
     super.initState();
     loginBloc = BlocProvider.of<RegisterblocBloc>(context);
+    checkConnectivity();
   }
 
   @override
@@ -166,7 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           )),
                         ),
                         onTap: () {
-                          validateInput();
+                          checkConnectivity();
+                          validateInput(screenCodeController.text);
                         },
                       ),
                     ),
@@ -217,6 +226,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 builder: (context) => RegisterScreen()),
                           );
                         }
+                        if (state is loginFailureState) {
+                          print("failure state emittingggg");
+                          showToast(context, state.message);
+                        }
                       },
                       builder: (context, state) {
                         // if (state is LaunchScreen) {
@@ -235,18 +248,42 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void validateInput() {
+  void validateInput(String screenCode) async {
+    if(await isOffline()) {
+      showToast(context, "No Internet Connection");
+      return;
+    }
     setState(() {
       if (screenCodeController.text.trim().isEmpty) {
         screenCodeError = "Screen Code is required";
       } else {
         screenCodeError = null;
-        loginBloc.add(LoginUser());
+        loginBloc.add(LoginUser(screenCode: screenCode));
       }
     });
   }
 
-  void registerClicked() {
+  void showToast(BuildContext context, String message) {
+    toastification.show(
+      context: context,
+      backgroundColor: Color.fromARGB(255, 212, 135, 135),
+      foregroundColor: Colors.white,
+      type: ToastificationType.success,
+      style: ToastificationStyle.simple,
+      title: Text(message),
+      alignment: Alignment.bottomCenter,
+      autoCloseDuration: const Duration(seconds: 2),
+    );
+  }
+
+  void registerClicked() async {
+    if(await isOffline()) {
+      showToast(context, "No Internet Connection");
+      return;
+    }
     loginBloc.add(ShowRegister());
+  }
+  
+  void checkConnectivity() async {
   }
 }

@@ -52,9 +52,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
           height: height,
           child: Center(
             child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
-              listener: (context, state) {
-                
-              },
+              listener: (context, state) {},
               builder: (context, state) {
                 print("state is $state");
                 if (state is DisplayLayout) {
@@ -64,8 +62,18 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                 }
                 if (state is DefaultScreen) {
                   return Container(
+                    width: width,
+                    height: height,
                     color: Colors.black,
-                    child: Text("Digital Signange"),
+                    child: Center(
+                      child: Text(
+                        "Digital Signange",
+                        style: TextStyle(
+                            color: const Color.fromARGB(255, 179, 177, 177),
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15),
+                      ),
+                    ),
                   );
                   // return Center(
                   //   child: Text("DIGITAL SIGNAGE"),

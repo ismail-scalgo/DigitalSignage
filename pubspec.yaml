@@ -53,6 +53,10 @@ dependencies:
   device_info_plus: ^9.1.2
   geocoding: ^3.0.0
   web_socket_client: ^0.1.0
+  platform_detector: ^0.2.0
+  connectivity_plus: ^6.0.5
+ 
+
 
 dev_dependencies:
   flutter_test:

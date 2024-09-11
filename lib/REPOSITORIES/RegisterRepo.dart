@@ -9,7 +9,7 @@ import 'dart:convert';
 
 class RegisterRepository {
   Future<String?> registerScreen(RequestModel request) async {
-    ResponeReg responseData = ResponeReg();
+    // ResponeReg responseData = ResponeReg();
     String status;
     final apiUrl = 'https://web-dev-sgdsignage.scalgo.net/api/signage-screen/';
 
@@ -42,6 +42,8 @@ class RegisterRepository {
     //   "type" : request.name,
     //   };
     var response = await http.post(Uri.parse(apiUrl), body: request.toMap());
+    print("response data = ${response.statusCode}");
+    // print("body = ${response.body}");
     if (response.statusCode == 201) {
       // print("response data = ${response.body}");
       // final jsonData = json.decode(response.body);
@@ -51,11 +53,14 @@ class RegisterRepository {
       return status;
     } else {
       print("error");
-      // throw Exception(response.body);
       final jsonData = json.decode(response.body);
+      print("error body = $jsonData");
       status = jsonData['message'];
+      print(jsonData['message']);
       throw Exception(status);
-      // print(response.body);
     }
   }
 }
+
+// "error body = {os_version: [Ensure this field has no more than 100 characters.]}"
+// "error body = {message: Agent ID doesn't exist}"

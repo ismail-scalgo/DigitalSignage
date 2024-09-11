@@ -47,6 +47,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           count++;
         }
         lastUpdatedData = contentsMap;
+        responseData.currentTime = "2024-09-03T10:17:00";
         int start_difference =
             timeDifference(responseData.startTime, responseData.currentTime);
         if (start_difference > 0) {
@@ -102,6 +103,5 @@ int timeDifference(String time, String curretTime) {
   DateTime givenDateTime = DateTime.parse(time);
   DateTime now = DateTime.parse(curretTime);
   Duration difference = givenDateTime.difference(now);
-  // print("Difference in seconds: ${difference.inSeconds}");
   return difference.inSeconds;
 }
