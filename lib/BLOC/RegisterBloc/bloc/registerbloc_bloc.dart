@@ -56,7 +56,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         // AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
         // print('Running on ${androidInfo.model}');
         // WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
-// print('Running on ${webBrowserInfo.userAgent}');
+        // print('Running on ${webBrowserInfo.userAgent}');
         event.request.browser = "Chrome";
         event.request.browserVersion = "128.0.0.0";
         event.request.orientation = "landscape";

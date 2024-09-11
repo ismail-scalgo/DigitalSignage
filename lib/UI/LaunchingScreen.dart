@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:digitalsignange/Costants.dart';
+import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/UI/ImageScreen.dart';
 import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 import 'package:digitalsignange/REPOSITORIES/LayoutRepo.dart';
@@ -27,7 +28,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   double factor = 1.59;
 
   bool isLoad = true;
-  late Data? responseData;
+
   late LayoutblocBloc apiBloc;
 
   @override
@@ -46,69 +47,126 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     factor = width / height;
     return Scaffold(
       // backgroundColor: Colors.blue,
-      body: SafeArea(
-        child: SizedBox(
-          width: width,
-          height: height,
-          child: Center(
-            child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
-              listener: (context, state) {
-                
-              },
-              builder: (context, state) {
-                print("state is $state");
-                if (state is DisplayLayout) {
-                  return StaggeredGrid.count(
+      body: SizedBox(
+        width: width,
+        height: height,
+        child: Center(
+          child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
+            listener: (context, state) {},
+            builder: (context, state) {
+              print("state is $state");
+              if (state is DisplayLayout) {
+                if (state.layoutdata.oreintation_angle == 0 ||
+                    state.layoutdata.oreintation_angle == 180) {
+                  gwidth = width;
+                  gheight = height;
+                } else {
+                  gwidth = height;
+                  gheight = width;
+                }
+
+                factor = gwidth / gheight;
+
+                int quarterTurns = 0;
+
+                if (state.layoutdata.oreintation_angle >= 0 &&
+                    state.layoutdata.oreintation_angle < 90) {
+                  gwidth = width;
+                  gheight = height;
+
+                  quarterTurns = 0;
+                }
+
+                if (state.layoutdata.oreintation_angle >= 90 &&
+                    state.layoutdata.oreintation_angle < 180) {
+                  gwidth = height;
+                  gheight = width;
+                  quarterTurns = 1;
+                }
+
+                if (state.layoutdata.oreintation_angle >= 180 &&
+                    state.layoutdata.oreintation_angle < 270) {
+                  gwidth = width;
+                  gheight = height;
+                  quarterTurns = 2;
+                }
+
+                if (state.layoutdata.oreintation_angle >= 270 &&
+                    state.layoutdata.oreintation_angle < 360) {
+                  gwidth = height;
+                  gheight = width;
+                  quarterTurns = 3;
+                }
+                factor = gwidth / gheight;
+
+                return RotatedBox(
+                  quarterTurns: quarterTurns,
+                  child: StaggeredGrid.count(
                       crossAxisCount: 100,
-                      children: displayGrids(state.mediaMap));
-                }
-                if (state is DefaultScreen) {
-                  return Container(
-                    color: Colors.black,
-                    child: Text("Digital Signange"),
-                  );
-                  // return Center(
-                  //   child: Text("DIGITAL SIGNAGE"),
-                  // );
-                }
-                return Center(
-                  child: Text("Center...."),
+                      children: buildGrids(state.layoutdata)),
                 );
-              },
-            ),
+              }
+              if (state is DefaultScreen) {
+                return Container(
+                  color: Colors.black,
+                  child: Text("Digital Signange"),
+                );
+                // return Center(
+                //   child: Text("DIGITAL SIGNAGE"),
+                // );
+              }
+              return Center(
+                child: Text("Center...."),
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  List<StaggeredGridTile> displayGrids(Map<int, MediaDetails> layoutMap) {
-    List<MediaDetails> layoutDetails = [];
-    List<StaggeredGridTile> staggeredList = [];
-    staggeredList.clear();
-    layoutDetails.clear();
-    layoutDetails = layoutMap.values.toList();
+  // List<StaggeredGridTile> displayGrids(Map<int, MediaDetails> layoutMap) {
+  //   List<MediaDetails> layoutDetails = [];
+  //   List<StaggeredGridTile> staggeredList = [];
+  //   staggeredList.clear();
+  //   layoutDetails.clear();
+  //   layoutDetails = layoutMap.values.toList();
 
-    for (int index = 0; index < layoutDetails.length; index++) {
-      Widget currentWidget = BlocConsumer<LayoutblocBloc, LayoutblocState>(
-        listener: (context, state) {},
-        buildWhen: (previous, current) {
-          DisplayLayout previousState = previous as DisplayLayout;
-          DisplayLayout currentState = current as DisplayLayout;
-          return previousState.mediaMap[index + 1]!.currentMediaPosition !=
-              currentState.mediaMap[index + 1]!.currentMediaPosition;
-        },
-        builder: (context, state) {
-          return SingleZoneView(
-              details: (state as DisplayLayout).mediaMap[index + 1]!);
-        },
+  //   for (int index = 0; index < layoutDetails.length; index++) {
+  //     Widget currentWidget = BlocConsumer<LayoutblocBloc, LayoutblocState>(
+  //       listener: (context, state) {},
+  //       buildWhen: (previous, current) {
+  //         DisplayLayout previousState = previous as DisplayLayout;
+  //         DisplayLayout currentState = current as DisplayLayout;
+  //         return previousState.mediaMap[index + 1]!.currentMediaPosition !=
+  //             currentState.mediaMap[index + 1]!.currentMediaPosition;
+  //       },
+  //       builder: (context, state) {
+  //         return SingleZoneView(
+  //             details: (state as DisplayLayout).mediaMap[index + 1]!);
+  //       },
+  //     );
+  //     var count = StaggeredGridTile.count(
+  //         crossAxisCellCount: layoutDetails[index].width,
+  //         mainAxisCellCount: layoutDetails[index].height / factor,
+  //         child: currentWidget);
+  //     staggeredList.add(count);
+  //   }
+  //   return staggeredList;
+  // }
+
+  List<StaggeredGridTile> buildGrids(LayoutData layoutdata) {
+    List<StaggeredGridTile> staggeredList = [];
+    layoutdata.zoneData.forEach((zonedata) {
+      StaggeredGridTile tile = StaggeredGridTile.count(
+        crossAxisCellCount: zonedata.widthPercent,
+        mainAxisCellCount: zonedata.heightPercent / factor,
+        child: SingleZoneView(zonedata: zonedata),
       );
-      var count = StaggeredGridTile.count(
-          crossAxisCellCount: layoutDetails[index].width,
-          mainAxisCellCount: layoutDetails[index].height / factor,
-          child: currentWidget);
-      staggeredList.add(count);
-    }
+
+      staggeredList.add(tile);
+    });
+
     return staggeredList;
   }
 

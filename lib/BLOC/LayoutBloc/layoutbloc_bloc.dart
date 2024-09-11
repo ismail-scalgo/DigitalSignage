@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
-import 'package:digitalsignange/Costants.dart';
-import 'package:digitalsignange/REPOSITORIES/LayoutRepo.dart';
-import 'package:digitalsignange/MODELS/ContentModel.dart';
-import 'package:digitalsignange/MODELS/MediaDetailModel.dart';
-import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
-import 'package:digitalsignange/MODELS/ZoneModel.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
+import 'package:digitalsignange/MODELS/XCompositionModel.dart';
+import 'package:digitalsignange/REPOSITORIES/XcompositionRepository.dart';
+
 import 'package:meta/meta.dart';
-import 'package:queue/queue.dart';
+
 import 'package:web_socket_client/web_socket_client.dart';
 
 part 'layoutbloc_event.dart';
@@ -22,59 +19,40 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   LayoutblocBloc() : super(LayoutblocInitial()) {
     on<LayoutblocEvent>((event, emit) async {
       if (event is FetchApi) {
-        Map<int, MediaDetails> lastUpdatedData = {};
-        log("fetch api called");
-        if (isFirstLoad) {
-          isFirstLoad = false;
-          connect();
-        }
-        final Data? responseData;
-        Map<int, MediaDetails> contentsMap = {};
-        final LayoutRepository apiRepo = LayoutRepository();
-        responseData = await apiRepo.fetchResponse();
-        int count = 1;
-        for (var zones in responseData!.zoneData) {
-          List<Contents> contentsList = zones.contents;
-          MediaDetails obj = MediaDetails(
-            id: count,
-            height: zones.height,
-            width: zones.width,
-            contentsList: zones.contents,
-            currentDurationCount: 0,
-            currentMediaPosition: 0,
-          );
-          contentsMap[count] = obj;
-          count++;
-        }
-        lastUpdatedData = contentsMap;
-        int start_difference =
-            timeDifference(responseData.startTime, responseData.currentTime);
+        LayoutData? layoutdata = await LayoutRepository().fetchData();
+
+        int start_difference = timeDifference(
+            layoutdata!.startDateTime, layoutdata.currentDatetime);
+
         if (start_difference > 0) {
+          // if start time greater than current time
+          //emit default screen and schedule start screen
           emit(DefaultScreen());
+          scheduleEvent(layoutdata.startDateTime, layoutdata.endDateTime,
+              layoutdata.currentDatetime, layoutdata);
         } else {
-          emit(DisplayLayout(mediaMap: contentsMap));
+          emit(DisplayLayout(layoutdata: layoutdata));
         }
-        // int end_Difference = timeDifference(endTime);
-        scheduleEvent(responseData.startTime, responseData.endTime,
-            responseData.currentTime, contentsMap);
-        print("start time = ${responseData.startTime}");
-        print("end time = ${responseData.endTime}");
       }
+
       if (event is StartEvent) {
-        emit(DisplayLayout(mediaMap: event.contentsMap));
+        //This event is emitted only from  schedule event when intially the event is before start time
+        emit(DisplayLayout(layoutdata: event.layoutdata));
       }
       if (event is EndEvent) {
         emit(DefaultScreen());
       }
     });
   }
+
   void scheduleEvent(String startTime, String endTime, String curretTime,
-      Map<int, MediaDetails> contentsMap) async {
+      LayoutData layoutdata) async {
     int start_difference = timeDifference(startTime, curretTime);
     int end_Difference = timeDifference(endTime, curretTime);
+
     if (start_difference > 0) {
       await Future.delayed(Duration(seconds: start_difference), () {
-        add(StartEvent(contentsMap: contentsMap));
+        add(StartEvent(layoutdata: layoutdata));
       });
       await Future.delayed(Duration(seconds: end_Difference), () {
         add(EndEvent());
@@ -102,6 +80,6 @@ int timeDifference(String time, String curretTime) {
   DateTime givenDateTime = DateTime.parse(time);
   DateTime now = DateTime.parse(curretTime);
   Duration difference = givenDateTime.difference(now);
-  // print("Difference in seconds: ${difference.inSeconds}");
+
   return difference.inSeconds;
 }

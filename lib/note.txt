@@ -1,0 +1,4 @@
+1.in pdf view pdf controller was not disposed.it disposed to avoid error.
+    it is also checked in the timer also because it may scheduled before disposed
+
+      final int orientation=0; hard coded inthe model class
