@@ -55,9 +55,8 @@ dependencies:
   web_socket_client: ^0.1.0
   platform_detector: ^0.2.0
   connectivity_plus: ^6.0.5
- 
-
   lottie: ^3.1.2
+  shared_preferences: ^2.3.2
   
 
 dev_dependencies:

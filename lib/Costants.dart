@@ -2,7 +2,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 String BASEURL = "https://web-dev-sgdsignage.scalgo.net";
 List<String> mediaTypes = ["jpeg", "mp4"];
-// String CURRENT_PLATFORM = "Web";
+String PLATFORM = 'WEB';
+double gheight = 0;
+double gwidth = 0;
 
 
 Future<bool> isOffline() async {
@@ -13,11 +15,5 @@ Future<bool> isOffline() async {
       return false;
     }
 }
-//String BASEURL = "https://web-dev-sgdsignage.scalgo.net";
-// String BASEURL = "";
-// List<String> mediaTypes = ["jpeg", "mp4"];
 
-double gheight = 0;
-double gwidth = 0;
 
-String PLATFORM = 'WEB';
