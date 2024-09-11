@@ -19,6 +19,8 @@ class _CustomPdfState extends State<CustomPdf> {
   late AnimationController ccontroller;
   int page = 1;
 
+  bool isdisposed = false;
+
   @override
   void initState() {
     super.initState();
@@ -55,11 +57,22 @@ class _CustomPdfState extends State<CustomPdf> {
     }
   }
 
+  @override
+  void dispose() {
+    isdisposed = true;
+    pdfPinchController.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   void animation() async {
     await Future.delayed(Duration(seconds: 3));
-    pdfPinchController.animateToPage(page,
-        duration: Duration(milliseconds: 1000), curve: Curves.slowMiddle);
-    page++;
-    animation();
+    //may be it is scheduled before dispose that is why it is checked before animate to another page
+    if (!isdisposed) {
+      pdfPinchController.animateToPage(page,
+          duration: Duration(milliseconds: 1000), curve: Curves.slowMiddle);
+      page++;
+      animation();
+    }
   }
 }

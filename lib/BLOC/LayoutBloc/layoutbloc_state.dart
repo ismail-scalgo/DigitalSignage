@@ -6,8 +6,8 @@ sealed class LayoutblocState {}
 final class LayoutblocInitial extends LayoutblocState {}
 
 class DisplayLayout extends LayoutblocState {
-  Map<int, MediaDetails> mediaMap;
-  DisplayLayout({required this.mediaMap});
+  LayoutData layoutdata;
+  DisplayLayout({required this.layoutdata});
 }
 
 class DefaultScreen extends LayoutblocState {}

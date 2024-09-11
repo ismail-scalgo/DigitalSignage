@@ -6,8 +6,8 @@ sealed class LayoutblocEvent {}
 class FetchApi extends LayoutblocEvent {}
 
 class StartEvent extends LayoutblocEvent {
-  Map<int, MediaDetails> contentsMap;
-  StartEvent({required this.contentsMap});
+  LayoutData layoutdata;
+  StartEvent({required this.layoutdata});
 }
 
 class EndEvent extends LayoutblocEvent {}
