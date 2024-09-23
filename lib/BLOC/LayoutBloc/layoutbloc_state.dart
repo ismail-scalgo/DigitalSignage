@@ -11,3 +11,13 @@ class DisplayLayout extends LayoutblocState {
 }
 
 class DefaultScreen extends LayoutblocState {}
+
+class DisplayButton extends LayoutblocState {
+  bool isvisible;
+  DisplayButton({required this.isvisible});
+}
+
+class Minimizescreen extends LayoutblocState {
+  bool isvisible;
+  Minimizescreen({required this.isvisible});
+}

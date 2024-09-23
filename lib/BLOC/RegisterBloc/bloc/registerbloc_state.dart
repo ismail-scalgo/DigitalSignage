@@ -4,12 +4,16 @@ part of 'registerbloc_bloc.dart';
 class RegisterblocState {
   String? agentIdErr;
   String? nameErr;
-  RegisterblocState({this.agentIdErr, this.nameErr});
+  String? screenCodeErr;
+  RegisterblocState({this.agentIdErr, this.nameErr, this.screenCodeErr});
 }
 
 final class RegisterblocInitial extends RegisterblocState {}
 
-class LaunchScreen extends RegisterblocState {}
+class LaunchScreen extends RegisterblocState {
+  String code;
+  LaunchScreen({required this.code});
+}
 
 class SignInScreen extends RegisterblocState {}
 
@@ -24,7 +28,6 @@ class FailureState extends RegisterblocState {
 
 class loginFailureState extends RegisterblocState {
   String message;
-
   loginFailureState({required this.message});
 }
 

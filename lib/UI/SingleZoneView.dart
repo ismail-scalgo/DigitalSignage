@@ -70,13 +70,13 @@ class _SingleZoneViewState extends State<SingleZoneView> {
                   viewportFraction: 1)),
           isvisible
               ? Container(
-                child: Lottie.asset(
-                  'assets/loading.json',
-                  fit: BoxFit.fill,
-                  height: (gheight * widget.zonedata.heightPercent) / 100,
-                  width: (gwidth * widget.zonedata.widthPercent) / 100,
-                ),
-              )
+                  child: Lottie.asset(
+                    'assets/loading.json',
+                    fit: BoxFit.fill,
+                    height: (gheight * widget.zonedata.heightPercent) / 100,
+                    width: (gwidth * widget.zonedata.widthPercent) / 100,
+                  ),
+                )
               : Center()
         ],
       ),
@@ -107,7 +107,7 @@ class _SingleZoneViewState extends State<SingleZoneView> {
     );
   }
 
-  void changeController() async{
+  void changeController() async {
     if (widget.zonedata.compositionModels.length - 1 < currentIndex) {
       currentIndex = 0;
     }
@@ -117,23 +117,17 @@ class _SingleZoneViewState extends State<SingleZoneView> {
             seconds: double.parse(widget
                     .zonedata.compositionModels[currentIndex].fileDuration)
                 .toInt()), () async {
-       if(!isdisposed)
-       { 
-         controller.nextPage();
+      if (!isdisposed) {
+        controller.nextPage();
         isvisible = true;
         setState(() {});
-       }
-        
-      
+      }
 
       Future.delayed(Duration(milliseconds: 400), () {
-      
-   if(!isdisposed)
-   {
-           isvisible = false;
+        if (!isdisposed) {
+          isvisible = false;
           setState(() {});
-   }
-        
+        }
       });
       if (!isdisposed) {
         currentIndex++;

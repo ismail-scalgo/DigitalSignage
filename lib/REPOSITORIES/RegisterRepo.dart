@@ -45,6 +45,7 @@ class RegisterRepository {
     print("response data = ${response.statusCode}");
     // print("body = ${response.body}");
     if (response.statusCode == 201) {
+      print("respose body = ${response.body}");
       // print("response data = ${response.body}");
       // final jsonData = json.decode(response.body);
       // print("getting");

@@ -57,6 +57,10 @@ dependencies:
   connectivity_plus: ^6.0.5
   lottie: ^3.1.2
   shared_preferences: ^2.3.2
+  panara_dialogs: ^0.1.5
+  google_maps_flutter: ^2.9.0
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
   
 
 dev_dependencies:
@@ -85,7 +89,13 @@ flutter:
   assets:
     - assets/burger.jpeg
     - assets/loading.json
-    # - images/a_dot_ham.jpeg
+    - assets/Animation.json
+    - assets/loginAnim.json
+    - assets/Buildings.json
+    - assets/Profiles.json
+    - assets/Shoes.json
+    - assets/BlueCar.json
+    # - images/a_dot_ham.jpeg loginAnim
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

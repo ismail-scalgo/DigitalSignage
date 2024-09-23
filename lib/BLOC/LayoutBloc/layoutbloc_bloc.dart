@@ -19,7 +19,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   LayoutblocBloc() : super(LayoutblocInitial()) {
     on<LayoutblocEvent>((event, emit) async {
       if (event is FetchApi) {
-        LayoutData? layoutdata = await LayoutRepository().fetchData();
+        LayoutData? layoutdata =
+            await LayoutRepository().fetchData(event.screenCode);
 
         int start_difference = timeDifference(
             layoutdata!.startDateTime, layoutdata.currentDatetime);
@@ -36,12 +37,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
 
       if (event is StartEvent) {
-        //This event is emitted only from  schedule event when intially the event is before start time
         emit(DisplayLayout(layoutdata: event.layoutdata));
       }
       if (event is EndEvent) {
         emit(DefaultScreen());
       }
+      if (event is visibleButton) {
+        emit(DisplayButton(isvisible: event.isvisible));
+      }
+      // if (event is ShrinkView) {
+      //   emit(DisplayButton(isvisible: event.isvisible));
+      // }
     });
   }
 
@@ -64,22 +70,21 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     }
   }
 
-  void connect() async {
-    final socket = WebSocket(Uri.parse('ws://192.168.0.84:8765'));
-    socket.messages.listen((message) {
-      log("fetch  $message");
-      if (message == "datachange") {
-        add(FetchApi());
-      }
-    });
-    socket.send('ping');
-  }
+  // void connect() async {
+  //   final socket = WebSocket(Uri.parse('ws://192.168.0.84:8765'));
+  //   socket.messages.listen((message) {
+  //     log("fetch  $message");
+  //     if (message == "datachange") {
+  //       add(FetchApi());
+  //     }
+  //   });
+  //   socket.send('ping');
+  // }
 }
 
 int timeDifference(String time, String curretTime) {
   DateTime givenDateTime = DateTime.parse(time);
   DateTime now = DateTime.parse(curretTime);
   Duration difference = givenDateTime.difference(now);
-
   return difference.inSeconds;
 }

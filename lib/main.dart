@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:digitalsignange/UI/ControllerWidget.dart';
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
 import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 import 'package:digitalsignange/UI/LoginScreen.dart';
@@ -26,6 +27,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: LoginScreen());
+    return MaterialApp(home: ControllerWidget());
   }
 }

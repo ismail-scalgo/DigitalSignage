@@ -78,7 +78,6 @@
 //   }
 // }
 
-
 // import 'package:flutter/cupertino.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -173,7 +172,6 @@
 //   }
 // }
 
-
 import 'package:digitalsignange/Costants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -195,7 +193,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
   late VideoPlayerController controller;
 
-       late final player = Player();
+  late final player = Player();
   late final controllerweb = VideoController(
     player,
   );
@@ -203,8 +201,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
   @override
   void initState() {
     super.initState();
-    PLATFORM == "ANDROID" ?  loadDevice() : loadWeb();
-  
+    PLATFORM == "ANDROID" ? loadDevice() : loadWeb();
   }
 
   @override
@@ -230,27 +227,23 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
             : getplayer());
   }
 
+  Widget getplayer() {
+    return SizedBox(
+      child: Video(
+        fit: BoxFit.fill,
+        controller: controllerweb,
+        controls: (state) {
+          player.setVolume(0);
+          controllerweb.player.play();
 
-  Widget getplayer()
-  {
-
-    return  SizedBox(
-              child: Video(
-                fit: BoxFit.fill,
-                controller: controllerweb,
-                controls: (state) {
-                  player.setVolume(0);
-                  controllerweb.player.play();
-
-                  return Center();
-                },
-              ),
-            );
+          return Center();
+        },
+      ),
+    );
   }
 
   void loadWeb() async {
-
-     player.open(
+    player.open(
       Media(
         widget.url,
       ),
@@ -260,7 +253,6 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
     setState(() {
       isLoading = false;
     });
-
   }
 
   void loadDevice() async {
@@ -280,4 +272,3 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
     });
   }
 }
-

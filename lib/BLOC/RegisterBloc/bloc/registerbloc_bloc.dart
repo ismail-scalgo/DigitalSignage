@@ -25,22 +25,35 @@ part 'registerbloc_state.dart';
 
 class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
   late String platform;
+
   RegisterblocBloc() : super(RegisterblocInitial()) {
     on<RegisterblocEvent>((event, emit) async {
       if (event is LoginUser) {
-        print("login event callinggg...");
         var loginRes;
+        String? codeErr;
+        if (event.screenCode.trim().isEmpty) {
+          codeErr = "Screen Code is required";
+        }
+        if (codeErr != null) {
+          emit(RegisterblocState(screenCodeErr: codeErr));
+          return;
+        }
+        print("tryinggggggggggggg");
         try {
+          print("tryingggggggggggggggggggggggg");
           final LoginRepository apiRepo = LoginRepository();
           // loginRes = await apiRepo.fetchLogin(event.screenCode);
           String? stat = await apiRepo.fetchLogin(event.screenCode);
           print("login reponse = $loginRes");
-          emit(LaunchScreen());
+          emit(LaunchScreen(code: event.screenCode));
           setScreenCode(event.screenCode);
         } catch (e) {
+          print("new err = $e");
           String errorMessage =
               e.toString().replaceAll('Exception:', '').trim();
-          // print(e);
+          if (errorMessage != "Screen Code doesn't exist") {
+            errorMessage = "Network Error";
+          }
           emit(loginFailureState(message: errorMessage));
         }
       }
@@ -51,10 +64,9 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         emit(DisplayRegistration());
       }
       if (event is RegisterUser) {
-        print("Register event callinggg...");
+
         final Data? responseData;
         final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-
         String? agentIdErr;
         String? nameErr;
         if (event.request.agentId.trim().isEmpty) {
@@ -67,9 +79,13 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           emit(RegisterblocState(agentIdErr: agentIdErr, nameErr: nameErr));
           return;
         }
-
-        try {
+        if (HARDCODEPLATFORM != "ANDROIDTV") {
+          
+          try {
+            
+            print("start");
           var location = await determinePosition();
+          print("stop");
           var address =
               await fetchLocation(location.latitude, location.longitude);
           event.request.latitude = location.latitude.toString();
@@ -82,29 +98,20 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           emit(PermissionDenied());
           return;
         }
+        } else {
+          print("ANDROID TV");
+          event.request.latitude = "8.55";
+          event.request.longitude = "76.88";
+          event.request.location = "Karyavattom, trivandrum";
+        }
         Future setVersions() async {
-          print("entered");
           PlatformData? platformInfo = await initPlatformState();
           event.request.browser = platformInfo?.browser;
-          event.request.browserVersion = platformInfo?.browserVersion;
-          event.request.osVersion = platformInfo?.osVersion;
-          // event.request.type = PlatformDetector.platform.type.toString();
-          // String platformType = PlatformDetector.platform.type.toString();
-          // String result = platformType.split('.').last;
-          // print("type = $result");
-          // event.request.type = platformInfo?.type;
+          event.request.browserVersion = "platformInfo?.browserVersion";
+          event.request.osVersion = "platformInfo?.osVersion";
         }
 
-        print("start");
         await setVersions();
-        // await initPlatformState();
-        // // DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-        // // AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        // // print('Running on ${androidInfo.model}');
-        // // WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
-        // // print('Running on ${webBrowserInfo.userAgent}');
-        // event.request.browser = "Chrome";
-        // event.request.browserVersion = "128.0.0.0";
         event.request.orientation = "landscape";
         event.request.type = await detectDevice();
         print("info = ${event.request.browser}");
@@ -120,7 +127,6 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           print(e);
           String errorMessage =
               e.toString().replaceAll('Exception:', '').trim();
-          // print(e);
           emit(FailureState(message: errorMessage));
         }
       }
