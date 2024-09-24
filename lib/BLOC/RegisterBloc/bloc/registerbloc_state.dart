@@ -37,6 +37,8 @@ class PermissionDenied extends RegisterblocState {
   // PermissionDenied({ required this.currentPlatformType});
 }
 
+class LoadingState extends RegisterblocState {}
+
 // class TextfieldError extends RegisterblocState {
 //   String? agentIdErr;
 //   String? nameErr;

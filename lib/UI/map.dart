@@ -15,10 +15,12 @@ class _MapScreenState extends State<MapScreen> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: SafeArea(child: SizedBox(
+      body: SafeArea(
+          child: SizedBox(
         width: width,
         height: height,
-        child: GoogleMap(initialCameraPosition: CameraPosition(target: mark1, zoom: 13)),
+        child: GoogleMap(
+            initialCameraPosition: CameraPosition(target: mark1, zoom: 13)),
       )),
     );
   }

@@ -67,7 +67,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
           // apiBloc.add(ShrinkView(isvisible: true));
         },
         child: Container(
-           color: Colors.transparent,
+          color: Colors.transparent,
           width: width,
           height: height,
           child: Stack(
@@ -94,31 +94,31 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             gheight = width;
                           }
                           factor = gwidth / gheight;
-          
+
                           int quarterTurns = 0;
-          
+
                           if (state.layoutdata.oreintation_angle >= 0 &&
                               state.layoutdata.oreintation_angle < 90) {
                             gwidth = width;
                             gheight = height;
-          
+
                             quarterTurns = 0;
                           }
-          
+
                           if (state.layoutdata.oreintation_angle >= 90 &&
                               state.layoutdata.oreintation_angle < 180) {
                             gwidth = height;
                             gheight = width;
                             quarterTurns = 1;
                           }
-          
+
                           if (state.layoutdata.oreintation_angle >= 180 &&
                               state.layoutdata.oreintation_angle < 270) {
                             gwidth = width;
                             gheight = height;
                             quarterTurns = 2;
                           }
-          
+
                           if (state.layoutdata.oreintation_angle >= 270 &&
                               state.layoutdata.oreintation_angle < 360) {
                             gwidth = height;
@@ -126,7 +126,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             quarterTurns = 3;
                           }
                           factor = gwidth / gheight;
-          
+
                           return RotatedBox(
                             quarterTurns: quarterTurns,
                             child: StaggeredGrid.count(
@@ -138,13 +138,13 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                           return Center(
                               child: Container(
                                   height: height / 3,
-                                  width: width / 3.5,
+                                  width: width / 4.5,
                                   child: Lottie.asset('assets/Shoes.json')));
                         }
                         return Center(
                           child: Container(
                               height: height / 3,
-                              width: width / 3.5,
+                              width: width / 4.5,
                               child: Lottie.asset('assets/Shoes.json')),
                         );
                       },
@@ -159,12 +159,12 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                     return Visibility(
                       visible: state.isvisible,
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: 50),
+                        padding: const EdgeInsets.only(bottom: 40),
                         child: Align(
                           child: InkWell(
                             child: Container(
                               height: 35,
-                              width: width / 5.5,
+                              width: width / 7,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5),
                                   color:

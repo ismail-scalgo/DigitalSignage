@@ -44,6 +44,9 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           final LoginRepository apiRepo = LoginRepository();
           // loginRes = await apiRepo.fetchLogin(event.screenCode);
           String? stat = await apiRepo.fetchLogin(event.screenCode);
+          if (stat == "NoData") {
+            print("NoData");
+          }
           print("login reponse = $loginRes");
           emit(LaunchScreen(code: event.screenCode));
           setScreenCode(event.screenCode);
@@ -64,7 +67,6 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         emit(DisplayRegistration());
       }
       if (event is RegisterUser) {
-
         final Data? responseData;
         final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
         String? agentIdErr;
@@ -80,25 +82,25 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           return;
         }
         if (HARDCODEPLATFORM != "ANDROIDTV") {
-          
           try {
-            
+            emit(LoadingState());
             print("start");
-          var location = await determinePosition();
-          print("stop");
-          var address =
-              await fetchLocation(location.latitude, location.longitude);
-          event.request.latitude = location.latitude.toString();
-          event.request.longitude = location.longitude.toString();
-          event.request.location = address;
-        } catch (e) {
-          print(e);
-          final PlatformType currentPlatformName =
-              PlatformDetector.platform.type;
-          emit(PermissionDenied());
-          return;
-        }
+            var location = await determinePosition();
+            print("stop");
+            var address =
+                await fetchLocation(location.latitude, location.longitude);
+            event.request.latitude = location.latitude.toString();
+            event.request.longitude = location.longitude.toString();
+            event.request.location = address;
+          } catch (e) {
+            print(e);
+            final PlatformType currentPlatformName =
+                PlatformDetector.platform.type;
+            emit(PermissionDenied());
+            return;
+          }
         } else {
+          emit(LoadingState());
           print("ANDROID TV");
           event.request.latitude = "8.55";
           event.request.longitude = "76.88";

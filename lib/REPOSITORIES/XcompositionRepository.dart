@@ -1,3 +1,4 @@
+import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 
 import 'package:http/http.dart' as http;
@@ -5,15 +6,16 @@ import 'dart:convert';
 
 class LayoutRepository {
   Future<LayoutData?> fetchData(String code) async {
-    String data_url =
-        'https://web-dev-sgdsignage.scalgo.net/api/launch-signage-screen/?code=$code';
+    String data_url = '$BASEURL/api/launch-signage-screen/?code=$code';
+    // String data_url = 'https://web-dev-sgdsignage.scalgo.net/api/launch-signage-screen/?code=$code';
     var response = await http.get(Uri.parse(data_url));
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      jsonData["data"]['start_time'] = "2024-09-03T10:18:00";
-      jsonData["data"]['end_time'] = "2024-09-03T10:18:40";
-      jsonData["data"]['current_datetime'] = "2024-09-03T10:17:40";
-      jsonData["data"]['orientation_angle'] = 0;
+      jsonData["data"]['current_datetime'] = "2024-09-03T09:16:55";
+      jsonData["data"]['start_time']       = "2024-09-03T09:15:00";
+      jsonData["data"]['end_time']         = "2024-09-03T09:18:10";
+      // jsonData["data"]['current_datetime'] = "2024-09-03T10:17:40";
+      jsonData["data"]['orientation_angle'] = 90;
       print("new res = $jsonData");
 
       // jsonData = {

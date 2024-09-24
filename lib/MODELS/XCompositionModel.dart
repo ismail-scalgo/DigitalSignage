@@ -14,7 +14,7 @@ class CompositionModel {
     return CompositionModel(
       fileUrl: json['file_upload'] as String,
       fileFormat: json['file_format'] as String,
-      fileDuration: json['file_duration'] as String,
+      fileDuration: json['duration'] as String,
     );
   }
 }
@@ -65,6 +65,7 @@ class LayoutData {
   final int zoneCount;
   final List<ZoneData> zoneData;
   final int oreintation_angle;
+  final String last_updatedat;
 
   LayoutData(
       {required this.name,
@@ -73,7 +74,8 @@ class LayoutData {
       required this.endDateTime,
       required this.zoneCount,
       required this.zoneData,
-      required this.oreintation_angle});
+      required this.oreintation_angle,
+      required this.last_updatedat});
 
   // Convert JSON to LayoutData
   factory LayoutData.fromJson(Map<String, dynamic> json) {
@@ -90,6 +92,7 @@ class LayoutData {
       endDateTime: json['end_time'] as String,
       zoneCount: json['zone_count'] as int,
       zoneData: zoneDataList,
+      last_updatedat: json['updated_time'],
       oreintation_angle: json['orientation_angle'] as int,
     );
   }

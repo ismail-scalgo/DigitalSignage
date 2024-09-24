@@ -258,6 +258,7 @@ class _LoginScreenState extends State<Registerscreen3> {
                               );
                             }
                             if (state is SuccessState) {
+                              Navigator.pop(context);
                               showToast(context, "Successfully Registered");
                               Future.delayed(Duration(seconds: 1), () {
                                 Navigator.pop(
@@ -268,17 +269,18 @@ class _LoginScreenState extends State<Registerscreen3> {
                               });
                             }
                             if (state is FailureState) {
-                              print("failingg.");
+                              Navigator.pop(context);
                               showToast(context, state.message);
                             }
                             if (state is PermissionDenied) {
+                              Navigator.pop(context);
                               showToast(context, state.message);
+                            }
+                            if (state is LoadingState) {
+                              showMyDialog(context);
                             }
                           },
                           builder: (context, state) {
-                            // if (state is LaunchScreen) {
-                            //   return Center();
-                            // }
                             return Center();
                           },
                         ),
@@ -614,6 +616,20 @@ class _LoginScreenState extends State<Registerscreen3> {
       return;
     }
     registerBloc.add(ShowSignIn());
+  }
+
+  Future<void> showMyDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          icon: Center(
+            child: LinearProgressIndicator(),
+          ),
+        );
+      },
+    );
   }
 }
 //login: ptcui

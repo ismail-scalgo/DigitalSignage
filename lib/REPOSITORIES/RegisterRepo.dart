@@ -11,7 +11,7 @@ class RegisterRepository {
   Future<String?> registerScreen(RequestModel request) async {
     // ResponeReg responseData = ResponeReg();
     String status;
-    final apiUrl = 'https://web-dev-sgdsignage.scalgo.net/api/signage-screen/';
+    final apiUrl = '$BASEURL/api/signage-screen/';
 
     // print("request = ${request.name}");
     // print("request = ${request.agentId}");

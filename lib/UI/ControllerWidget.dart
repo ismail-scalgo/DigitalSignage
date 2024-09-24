@@ -25,6 +25,7 @@ class _ControllerWidgetState extends State<ControllerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print("screencode = $screenCode");
     return isLoad
         ? Center(child: Lottie.asset('assets/Shoes.json'))
         : (screenCode != null
