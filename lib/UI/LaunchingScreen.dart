@@ -136,7 +136,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                               child: Container(
                                   height: height / 3,
                                   width: width / 4.5,
-                                  child: Lottie.asset('assets/loading3.json')));
+                                  child: Lottie.asset('assets/Shoes.json')));
                         }
                         return AlertDialog(
                           icon: Center(
