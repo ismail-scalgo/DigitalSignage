@@ -40,6 +40,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         }
         print("tryinggggggggggggg");
         try {
+          // emit(LoginLoadingState());
           print("tryingggggggggggggggggggggggg");
           final LoginRepository apiRepo = LoginRepository();
           // loginRes = await apiRepo.fetchLogin(event.screenCode);
@@ -83,7 +84,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         }
         if (HARDCODEPLATFORM != "ANDROIDTV") {
           try {
-            emit(LoadingState());
+            emit(RegisterLoadingState());
             print("start");
             var location = await determinePosition();
             print("stop");
@@ -100,7 +101,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             return;
           }
         } else {
-          emit(LoadingState());
+          emit(RegisterLoadingState());
           print("ANDROID TV");
           event.request.latitude = "8.55";
           event.request.longitude = "76.88";

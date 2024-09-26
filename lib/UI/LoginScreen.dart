@@ -66,62 +66,15 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // ],
               Container(
                 height: height / 2,
                 width: width / 1,
-                // decoration: BoxDecoration(
-                //   gradient: LinearGradient(
-                //     tileMode: TileMode.mirror,
-                //     colors: [
-                //       Color.fromARGB(255, 212, 135, 135),
-                //       Color.fromARGB(255, 0, 69, 109)
-                //     ],
-                //     begin: Alignment.topCenter,
-                //     end: Alignment.bottomCenter,
-                //   ),
-                //   color: Color.fromARGB(255, 224, 224, 224),
-                //   borderRadius: BorderRadius.circular(15),
-                // ),
                 child: Lottie.asset('assets/loginAnim.json'),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Container(
-                  //   child: Lottie.asset('assets/loginAnim.json'),
-                  // ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 10, bottom: 20),
-                  //   child: Text(
-                  //     "Sign In",
-                  //     style: TextStyle(
-                  //       fontSize: 32,
-                  //       fontWeight: FontWeight.w100,
-                  //       color: Colors.white,
-                  //     ),
-                  //   ),
-                  // ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 10),
-                  //   child:
-                  //       Text("Enter the Screen Code to Launch the Signage Preview",
-                  //           style: TextStyle(
-                  //             fontSize: 17,
-                  //             fontWeight: FontWeight.bold,
-                  //           )),
-                  // ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 50, left: 50, right: 50),
-                  //   child: TextField(
-                  //     controller: screenCodeController,
-                  //     decoration: InputDecoration(
-                  //       labelText: "Screen Code",
-                  //       errorText: screenCodeError,
-                  //     ),
-                  //   ),
-                  // ),
                   BlocConsumer<RegisterblocBloc, RegisterblocState>(
                     listener: (context, state) {},
                     builder: (context, state) {
@@ -158,24 +111,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     },
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 40),
-                  //   child: ElevatedButton(
-                  //       onPressed: () {
-                  //         validateInput();
-                  //       },
-                  //       style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Colors.black,
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(8.0),
-                  //           ),
-                  //           padding:
-                  //               EdgeInsets.symmetric(horizontal: 70, vertical: 15)),
-                  //       child: Text(
-                  //         "Submit",
-                  //         style: TextStyle(color: Colors.white),
-                  //       )),
-                  // ),
                   Padding(
                     padding: const EdgeInsets.only(top: 70),
                     child: InkWell(
@@ -201,25 +136,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         )),
                       ),
                       onTap: () {
-                        // checkConnectivity();
                         validateInput(screenCodeController.text, context1);
                       },
                     ),
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 10),
-                  //   child: InkWell(
-                  //     hoverColor: const Color.fromARGB(255, 224, 224, 224),
-                  //     onTap: () {
-                  //       registerClicked();
-                  //     },
-                  //     child: Text("Register",
-                  //         style: TextStyle(
-                  //           fontSize: 13,
-                  //           fontWeight: FontWeight.bold,
-                  //         )),
-                  //   ),
-                  // ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: InkWell(
@@ -236,8 +156,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   BlocConsumer<RegisterblocBloc, RegisterblocState>(
-                    // buildWhen: (previous, current) {
-                    // },
                     listener: (context, state) {
                       if (state is LaunchScreen) {
                         Navigator.pushAndRemoveUntil(
@@ -246,26 +164,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 builder: (context) =>
                                     LaunchingScreen(screenCode: state.code)),
                             (route) => false);
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => LaunchingScreen(
-                        //             screenCode: state.code,
-                        //           )),
-                        // );
                       }
                       if (state is DisplayRegistration) {
                         Navigator.of(context).push(createRoute());
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => Registerscreen3()),
-                        // );
                       }
                       if (state is loginFailureState) {
                         print("failure state emittingggg");
                         showToast(context, state.message);
                       }
+                      // if (state is LoginLoadingState) {
+                      //   showLoad(context);
+                      // }
                     },
                     builder: (context, state) {
                       // if (state is LaunchScreen) {
@@ -354,6 +263,20 @@ class _LoginScreenState extends State<LoginScreen> {
     print("code = ${prefs.getString('screenCode')}");
     String? screenCode = prefs.getString('screenCode');
     showToast(context, screenCode!);
+  }
+
+  Future<void> showLoad(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          icon: Center(
+            child: LinearProgressIndicator(),
+          ),
+        );
+      },
+    );
   }
 }
 //login: ptcui

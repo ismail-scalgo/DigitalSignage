@@ -6,7 +6,7 @@ import 'package:toastification/toastification.dart';
 String BASEURL = "http://192.168.0.98:8000";
 List<String> mediaTypes = ["jpeg", "mp4"];
 String PLATFORM = 'WEB';
-String HARDCODEPLATFORM = 'ANDROIDTV';
+String HARDCODEPLATFORM = 'ANDROID';
 double gheight = 0;
 double gwidth = 0;
 String SOCKET_ADDRESS = 'ws://192.168.0.98:8765';

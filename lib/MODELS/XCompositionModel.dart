@@ -58,24 +58,28 @@ class ZoneData {
 }
 
 class LayoutData {
-  final String name;
-  final String currentDatetime;
-  final String startDateTime;
-  final String endDateTime;
-  final int zoneCount;
-  final List<ZoneData> zoneData;
-  final int oreintation_angle;
-  final String last_updatedat;
+  final int? id;
+  final String? name;
+  final String? message;
+  final String? currentDatetime;
+  final String? startDateTime;
+  final String? endDateTime;
+  final int? zoneCount;
+  final List<ZoneData>? zoneData;
+  final int? oreintationAngle;
+  final String? lastUpdatedAt;
 
   LayoutData(
-      {required this.name,
-      required this.currentDatetime,
-      required this.startDateTime,
-      required this.endDateTime,
-      required this.zoneCount,
-      required this.zoneData,
-      required this.oreintation_angle,
-      required this.last_updatedat});
+      {this.id,
+      this.name,
+      this.message,
+      this.currentDatetime,
+      this.startDateTime,
+      this.endDateTime,
+      this.zoneCount,
+      this.zoneData,
+      this.oreintationAngle,
+      this.lastUpdatedAt});
 
   // Convert JSON to LayoutData
   factory LayoutData.fromJson(Map<String, dynamic> json) {
@@ -86,14 +90,16 @@ class LayoutData {
         zoneDataJson.map((i) => ZoneData.fromJson(i)).toList();
 
     return LayoutData(
+      id: json['id'] as int,
       name: json['name'] as String,
+      message: json['message'] as String,
       currentDatetime: json['current_datetime'] as String,
-      startDateTime: json['start_time'] as String,
-      endDateTime: json['end_time'] as String,
+      startDateTime: json['start_datetime'] as String,
+      endDateTime: json['end_datetime'] as String,
       zoneCount: json['zone_count'] as int,
       zoneData: zoneDataList,
-      last_updatedat: json['updated_time'],
-      oreintation_angle: json['orientation_angle'] as int,
+      lastUpdatedAt: json['updated_datetime'],
+      oreintationAngle: json['orientation_angle'] as int,
     );
   }
 }

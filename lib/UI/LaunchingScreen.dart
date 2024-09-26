@@ -85,8 +85,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       builder: (context, state) {
                         print("state is $state");
                         if (state is DisplayLayout) {
-                          if (state.layoutdata.oreintation_angle == 0 ||
-                              state.layoutdata.oreintation_angle == 180) {
+                          if (state.layoutdata.oreintationAngle == 0 ||
+                              state.layoutdata.oreintationAngle == 180) {
                             gwidth = width;
                             gheight = height;
                           } else {
@@ -94,33 +94,30 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             gheight = width;
                           }
                           factor = gwidth / gheight;
-
                           int quarterTurns = 0;
-
-                          if (state.layoutdata.oreintation_angle >= 0 &&
-                              state.layoutdata.oreintation_angle < 90) {
+                          if (state.layoutdata.oreintationAngle! >= 0 &&
+                              state.layoutdata.oreintationAngle! < 90) {
                             gwidth = width;
                             gheight = height;
-
                             quarterTurns = 0;
                           }
 
-                          if (state.layoutdata.oreintation_angle >= 90 &&
-                              state.layoutdata.oreintation_angle < 180) {
+                          if (state.layoutdata.oreintationAngle! >= 90 &&
+                              state.layoutdata.oreintationAngle! < 180) {
                             gwidth = height;
                             gheight = width;
                             quarterTurns = 1;
                           }
 
-                          if (state.layoutdata.oreintation_angle >= 180 &&
-                              state.layoutdata.oreintation_angle < 270) {
+                          if (state.layoutdata.oreintationAngle! >= 180 &&
+                              state.layoutdata.oreintationAngle! < 270) {
                             gwidth = width;
                             gheight = height;
                             quarterTurns = 2;
                           }
 
-                          if (state.layoutdata.oreintation_angle >= 270 &&
-                              state.layoutdata.oreintation_angle < 360) {
+                          if (state.layoutdata.oreintationAngle! >= 270 &&
+                              state.layoutdata.oreintationAngle! < 360) {
                             gwidth = height;
                             gheight = width;
                             quarterTurns = 3;
@@ -139,13 +136,12 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                               child: Container(
                                   height: height / 3,
                                   width: width / 4.5,
-                                  child: Lottie.asset('assets/Shoes.json')));
+                                  child: Lottie.asset('assets/loading3.json')));
                         }
-                        return Center(
-                          child: Container(
-                              height: height / 3,
-                              width: width / 4.5,
-                              child: Lottie.asset('assets/Shoes.json')),
+                        return AlertDialog(
+                          icon: Center(
+                            child: LinearProgressIndicator(),
+                          ),
                         );
                       },
                     ),
@@ -259,7 +255,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
 
   List<StaggeredGridTile> buildGrids(LayoutData layoutdata) {
     List<StaggeredGridTile> staggeredList = [];
-    layoutdata.zoneData.forEach((zonedata) {
+    layoutdata.zoneData?.forEach((zonedata) {
       StaggeredGridTile tile = StaggeredGridTile.count(
         crossAxisCellCount: zonedata.widthPercent,
         mainAxisCellCount: zonedata.heightPercent / factor,
@@ -346,19 +342,35 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                   onPressed: () {
                     // Navigator.of(context).pop();
                     // CircularProgressIndicator();
-                    // Future.delayed(Duration(seconds: 2), () {
-                    clearData();
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                        (route) => false);
-                    // });
+                    showLoad(context);
+                    Future.delayed(Duration(seconds: 2), () {
+                      clearData();
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginScreen()),
+                          (route) => false);
+                    });
                     // Navigator.of(context).pop();
                   },
                 ),
               ],
             )
           ],
+        );
+      },
+    );
+  }
+
+  Future<void> showLoad(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          icon: Center(
+            child: CircularProgressIndicator(),
+          ),
         );
       },
     );

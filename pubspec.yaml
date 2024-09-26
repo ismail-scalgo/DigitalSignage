@@ -95,6 +95,9 @@ flutter:
     - assets/Profiles.json
     - assets/Shoes.json
     - assets/BlueCar.json
+    - assets/loading1.json
+    - assets/loading2.json
+    - assets/loading3.json
     # - images/a_dot_ham.jpeg loginAnim
 
   # An image asset can refer to one or more resolution-specific "variants", see

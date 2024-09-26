@@ -276,7 +276,7 @@ class _LoginScreenState extends State<Registerscreen3> {
                               Navigator.pop(context);
                               showToast(context, state.message);
                             }
-                            if (state is LoadingState) {
+                            if (state is RegisterLoadingState) {
                               showMyDialog(context);
                             }
                           },
