@@ -375,7 +375,6 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
 
     controller.initialize();
-
     controller.setVolume(0);
     controller.setLooping(true);
     controller.play();

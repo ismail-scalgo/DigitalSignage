@@ -1,14 +1,14 @@
+// ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names, avoid_print, prefer_interpolation_to_compose_strings, prefer_const_constructors
+
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:digitalsignange/Costants.dart';
 
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/REPOSITORIES/XcompositionRepository.dart';
-
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:meta/meta.dart';
-
 import 'package:web_socket_client/web_socket_client.dart';
 
 part 'layoutbloc_event.dart';
@@ -17,12 +17,13 @@ part 'layoutbloc_state.dart';
 class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   bool isLocked = false;
   bool isFirstLoad = true;
-  late String lastUpdateTime = "NO TIME" ;
+  late String lastUpdateTime = "NO TIME";
 
   LayoutblocBloc() : super(LayoutblocInitial()) {
     on<LayoutblocEvent>((event, emit) async {
       if (event is FetchApi) {
-        LayoutData? layoutdata = await LayoutRepository().fetchData(event.screenCode);
+        LayoutData? layoutdata =
+            await LayoutRepository().fetchData(event.screenCode);
         if (isFirstLoad) {
           connect(event.screenCode);
           isFirstLoad = false;
@@ -95,6 +96,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       await Future.delayed(Duration(seconds: end_Difference), () {
         add(EndEvent());
       });
+
       await Future.delayed(Duration(seconds: 5), () {});
       add(FetchApi(screenCode: screenCode));
     }
@@ -141,11 +143,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       },
     );
   }
-}
-
-int timeDifference(String time, String curretTime) {
-  DateTime givenDateTime = DateTime.parse(time);
-  DateTime now = DateTime.parse(curretTime);
-  Duration difference = givenDateTime.difference(now);
-  return difference.inSeconds;
+  
+  int timeDifference(String time, String curretTime) {
+    DateTime givenDateTime = DateTime.parse(time);
+    DateTime now = DateTime.parse(curretTime);
+    Duration difference = givenDateTime.difference(now);
+    return difference.inSeconds;
+  }
 }

@@ -11,9 +11,9 @@ class LayoutRepository {
     var response = await http.get(Uri.parse(data_url));
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      jsonData["data"]['current_datetime'] = "2024-09-24T10:37:20";
-      jsonData["data"]['start_datetime'] = "2024-09-24T10:37:40";
-      jsonData["data"]['end_datetime'] = "2024-09-24T10:37:50";
+      // jsonData["data"]['current_datetime'] = "2024-09-24T10:37:20";
+      // jsonData["data"]['start_datetime'] = "2024-09-24T10:37:40";
+      // jsonData["data"]['end_datetime'] = "2024-09-24T10:37:50";
       jsonData["data"]['orientation_angle'] = 0;
       print("new res = $jsonData");
 

@@ -261,10 +261,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
         mainAxisCellCount: zonedata.heightPercent / factor,
         child: SingleZoneView(zonedata: zonedata),
       );
-
       staggeredList.add(tile);
     });
-
     return staggeredList;
   }
 

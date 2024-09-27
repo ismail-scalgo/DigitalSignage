@@ -65,11 +65,11 @@ class _SingleZoneViewState extends State<SingleZoneView> {
               carouselController: controller,
               items: widgetList,
               options: CarouselOptions(
-                  height: (gheight * widget.zonedata.heightPercent) / 100,
-                  aspectRatio: gwidth / widget.zonedata.heightPercent,
-                  viewportFraction: 1,
-                  scrollDirection: Axis.vertical,
-                  )),
+                height: (gheight * widget.zonedata.heightPercent) / 100,
+                aspectRatio: gwidth / widget.zonedata.heightPercent,
+                viewportFraction: 1,
+                scrollDirection: Axis.vertical,
+              )),
           isvisible
               ? Container(
                   child: Lottie.asset(
