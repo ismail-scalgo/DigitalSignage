@@ -1,4 +1,7 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:digitalsignange/Costants.dart';
+import 'package:digitalsignange/MODELS/BroadCastModel.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 
 import 'package:http/http.dart' as http;
@@ -14,7 +17,7 @@ class LayoutRepository {
       // jsonData["data"]['current_datetime'] = "2024-09-24T10:37:20";
       // jsonData["data"]['start_datetime'] = "2024-09-24T10:37:40";
       // jsonData["data"]['end_datetime'] = "2024-09-24T10:37:50";
-      jsonData["data"]['orientation_angle'] = 0;
+      // jsonData["data"]['orientation_angle'] = 0;
       print("new res = $jsonData");
 
       // jsonData = {
@@ -148,6 +151,289 @@ class LayoutRepository {
         });
         return layoutdata;
       }
+    }
+  }
+
+  Future<BroadCastModel?> newFetchData(String code) async {
+    print("enteringggg");
+    String data_url = '$BASEURL/api/launch-signage-screen/?code=$code';
+    var response = await http.get(Uri.parse(data_url));
+    // BroadCastModel? broadCastData;
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      // jsonData = {
+      //   "data": {
+      //     "first_broadcast_data": {
+      //       "id": 75,
+      //       "name": "Layout 3",
+      //       "message": "Live Broadcast",
+      //       "current_datetime": "2024-09-30T06:40:23",
+      //       "updated_datetime": "2024-09-30T06:19:46",
+      //       "start_datetime": "2024-09-30T06:40:30",
+      //       "end_datetime": "2024-09-30T06:55:31",
+      //       "orientation_angle": 90,
+      //       "zone_count": 3,
+      //       "zone_data": [
+      //         {
+      //           "id": 1,
+      //           "name": "Zone 1",
+      //           "xPercent": 0,
+      //           "yPercent": 0,
+      //           "widthPercent": 80,
+      //           "heightPercent": 70,
+      //           "contents": [
+      //             {
+      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
+      //               "file_format": "mp4",
+      //               "duration": "30.0"
+      //             },
+      //             {
+      //               "file_upload": "/media/uploads/Adv_image.jpg",
+      //               "file_format": "jpg",
+      //               "duration": "40.0"
+      //             },
+      //             {
+      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
+      //               "file_format": "mp4",
+      //               "duration": "10.0"
+      //             }
+      //           ]
+      //         },
+      //         {
+      //           "id": 2,
+      //           "name": "Zone 2",
+      //           "xPercent": 80,
+      //           "yPercent": 0,
+      //           "widthPercent": 20,
+      //           "heightPercent": 70,
+      //           "contents": [
+      //             {
+      //               "file_upload": "/media/uploads/Adv_image.jpg",
+      //               "file_format": "jpg",
+      //               "duration": "50.0"
+      //             }
+      //           ]
+      //         },
+      //         {
+      //           "id": 3,
+      //           "name": "Zone 3",
+      //           "xPercent": 0,
+      //           "yPercent": 70,
+      //           "widthPercent": 100,
+      //           "heightPercent": 30,
+      //           "contents": [
+      //             {
+      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
+      //               "file_format": "mp4",
+      //               "duration": "60.0"
+      //             }
+      //           ]
+      //         }
+      //       ]
+      //     },
+      //     "second_broadcast_data": {
+      //       "id": 78,
+      //       "name": "Layout 3",
+      //       "message": "Live Broadcast",
+      //       "current_datetime": "2024-09-30T06:33:23",
+      //       "updated_datetime": "2024-09-30T06:33:21",
+      //       "start_datetime": "2024-09-30T07:13:03",
+      //       "end_datetime": "2024-09-30T07:30:53",
+      //       "orientation_angle": 90,
+      //       "zone_count": 3,
+      //       "zone_data": [
+      //         {
+      //           "id": 1,
+      //           "name": "Zone 1",
+      //           "xPercent": 0,
+      //           "yPercent": 0,
+      //           "widthPercent": 80,
+      //           "heightPercent": 70,
+      //           "contents": [
+      //             {
+      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
+      //               "file_format": "mp4",
+      //               "duration": "30.0"
+      //             },
+      //             {
+      //               "file_upload": "/media/uploads/Adv_image.jpg",
+      //               "file_format": "jpg",
+      //               "duration": "40.0"
+      //             },
+      //             {
+      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
+      //               "file_format": "mp4",
+      //               "duration": "10.0"
+      //             }
+      //           ]
+      //         },
+      //         {
+      //           "id": 2,
+      //           "name": "Zone 2",
+      //           "xPercent": 80,
+      //           "yPercent": 0,
+      //           "widthPercent": 20,
+      //           "heightPercent": 70,
+      //           "contents": [
+      //             {
+      //               "file_upload": "/media/uploads/Adv_image.jpg",
+      //               "file_format": "jpg",
+      //               "duration": "50.0"
+      //             }
+      //           ]
+      //         },
+      //         {
+      //           "id": 3,
+      //           "name": "Zone 3",
+      //           "xPercent": 0,
+      //           "yPercent": 70,
+      //           "widthPercent": 100,
+      //           "heightPercent": 30,
+      //           "contents": [
+      //             {
+      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
+      //               "file_format": "mp4",
+      //               "duration": "60.0"
+      //             }
+      //           ]
+      //         }
+      //       ]
+      //     }
+      //   }
+      // };
+      // jsonData = {
+      //   "current_broadcast": {
+      //     "name": "Layout 3",
+      //     "current_datetime": "2024-09-27T10:11:25.757486Z",
+      //     "zone_count": 3,
+      //     "zone_data": [
+      //       {
+      //         "id": 1,
+      //         "name": "Zone 1",
+      //         "widthPercent": 80,
+      //         "heightPercent": 70,
+      //         "xPercent": 0,
+      //         "yPercent": 0,
+      //         "contents": [
+      //           {
+      //             "file_upload": "/media/uploads/ForBiggerJoyrides_Ow5DAjW.mp4",
+      //             "file_format": "mp4",
+      //             "duration": "15.0"
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "id": 2,
+      //         "name": "Zone 2",
+      //         "widthPercent": 20,
+      //         "heightPercent": 70,
+      //         "xPercent": 80,
+      //         "yPercent": 0,
+      //         "contents": [
+      //           {
+      //             "file_upload": "/media/uploads/WeAreGoingOnBullrun.mp4",
+      //             "file_format": "mp4",
+      //             "duration": "47.0"
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "id": 3,
+      //         "name": "Zone 3",
+      //         "widthPercent": 100,
+      //         "heightPercent": 30,
+      //         "xPercent": 0,
+      //         "yPercent": 70,
+      //         "contents": [
+      //           {
+      //             "file_upload": "/media/uploads/Adv_video_xj7FDL5.mp4",
+      //             "file_format": "mp4",
+      //             "duration": "12.0"
+      //           }
+      //         ]
+      //       }
+      //     ]
+      //   },
+      //   "next_broadcast": {
+      //     "name": "Layout 3",
+      //     "current_datetime": "2024-09-27T10:11:25.757486Z",
+      //     "zone_count": 3,
+      //     "zone_data": [
+      //       {
+      //         "id": 1,
+      //         "name": "Zone 1",
+      //         "widthPercent": 80,
+      //         "heightPercent": 70,
+      //         "xPercent": 0,
+      //         "yPercent": 0,
+      //         "contents": [
+      //           {
+      //             "file_upload": "/media/uploads/ForBiggerJoyrides_Ow5DAjW.mp4",
+      //             "file_format": "mp4",
+      //             "duration": "15.0"
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "id": 2,
+      //         "name": "Zone 2",
+      //         "widthPercent": 20,
+      //         "heightPercent": 70,
+      //         "xPercent": 80,
+      //         "yPercent": 0,
+      //         "contents": [
+      //           {
+      //             "file_upload": "/media/uploads/WeAreGoingOnBullrun.mp4",
+      //             "file_format": "mp4",
+      //             "duration": "47.0"
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "id": 3,
+      //         "name": "Zone 3",
+      //         "widthPercent": 100,
+      //         "heightPercent": 30,
+      //         "xPercent": 0,
+      //         "yPercent": 70,
+      //         "contents": [
+      //           {
+      //             "file_upload": "/media/uploads/Adv_video_xj7FDL5.mp4",
+      //             "file_format": "mp4",
+      //             "duration": "12.0"
+      //           }
+      //         ]
+      //       }
+      //     ]
+      //   }
+      // };
+
+      // var firstData = jsonData["current_broadcast"];
+      // var secondData = jsonData["next_broadcast"];
+
+      // LayoutData currentBroadcastData = LayoutData.fromJson(jsonData["current_broadcast"]);
+      LayoutData currentBroadcastData =
+          LayoutData.fromJson(jsonData["data"]["first_broadcast_data"]);
+      LayoutData nextBroadcastData =
+          LayoutData.fromJson(jsonData["data"]["second_broadcast_data"]);
+
+      // nextBroadcastData.stringData = secondData;
+
+      // broadCastData?.currentBroadCast = currentBroadcastData;
+      // broadCastData?.NextBroadCast = nextBroadcastData;
+      BroadCastModel broadCastData = BroadCastModel(
+        currentBroadCast: currentBroadcastData,
+        NextBroadCast: nextBroadcastData,
+      );
+      print("string data = ${currentBroadcastData.stringData}");
+      // layoutdata.zoneData!.forEach((element) {
+      //   element.compositionModels
+      //       .removeWhere((content) => content.fileDuration == '0.0');
+      // });
+      return broadCastData;
+    } else {
+      print(" irresponse error");
     }
   }
 }

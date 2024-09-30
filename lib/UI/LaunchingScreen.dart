@@ -94,30 +94,33 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             gheight = width;
                           }
                           factor = gwidth / gheight;
+
                           int quarterTurns = 0;
-                          if (state.layoutdata.oreintationAngle! >= 0 &&
-                              state.layoutdata.oreintationAngle! < 90) {
+
+                          if (state.layoutdata.oreintationAngle >= 0 &&
+                              state.layoutdata.oreintationAngle < 90) {
                             gwidth = width;
                             gheight = height;
+
                             quarterTurns = 0;
                           }
 
-                          if (state.layoutdata.oreintationAngle! >= 90 &&
-                              state.layoutdata.oreintationAngle! < 180) {
+                          if (state.layoutdata.oreintationAngle >= 90 &&
+                              state.layoutdata.oreintationAngle < 180) {
                             gwidth = height;
                             gheight = width;
                             quarterTurns = 1;
                           }
 
-                          if (state.layoutdata.oreintationAngle! >= 180 &&
-                              state.layoutdata.oreintationAngle! < 270) {
+                          if (state.layoutdata.oreintationAngle >= 180 &&
+                              state.layoutdata.oreintationAngle < 270) {
                             gwidth = width;
                             gheight = height;
                             quarterTurns = 2;
                           }
 
-                          if (state.layoutdata.oreintationAngle! >= 270 &&
-                              state.layoutdata.oreintationAngle! < 360) {
+                          if (state.layoutdata.oreintationAngle >= 270 &&
+                              state.layoutdata.oreintationAngle < 360) {
                             gwidth = height;
                             gheight = width;
                             quarterTurns = 3;
@@ -135,13 +138,14 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                           return Center(
                               child: Container(
                                   height: height / 3,
-                                  width: width / 4.5,
+                                  width: width / 3.5,
                                   child: Lottie.asset('assets/Shoes.json')));
                         }
-                        return AlertDialog(
-                          icon: Center(
-                            child: LinearProgressIndicator(),
-                          ),
+                        return Center(
+                          child: Container(
+                              height: height / 3,
+                              width: width / 3.5,
+                              child: Lottie.asset('assets/Shoes.json')),
                         );
                       },
                     ),
@@ -155,12 +159,12 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                     return Visibility(
                       visible: state.isvisible,
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: 40),
+                        padding: const EdgeInsets.only(bottom: 50),
                         child: Align(
                           child: InkWell(
                             child: Container(
                               height: 35,
-                              width: width / 7,
+                              width: width / 5.5,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5),
                                   color:
@@ -261,8 +265,10 @@ class _LyoutScreenState extends State<LaunchingScreen> {
         mainAxisCellCount: zonedata.heightPercent / factor,
         child: SingleZoneView(zonedata: zonedata),
       );
+
       staggeredList.add(tile);
     });
+
     return staggeredList;
   }
 
@@ -340,35 +346,19 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                   onPressed: () {
                     // Navigator.of(context).pop();
                     // CircularProgressIndicator();
-                    showLoad(context);
-                    Future.delayed(Duration(seconds: 2), () {
-                      clearData();
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginScreen()),
-                          (route) => false);
-                    });
+                    // Future.delayed(Duration(seconds: 2), () {
+                    clearData();
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        (route) => false);
+                    // });
                     // Navigator.of(context).pop();
                   },
                 ),
               ],
             )
           ],
-        );
-      },
-    );
-  }
-
-  Future<void> showLoad(BuildContext context) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          icon: Center(
-            child: CircularProgressIndicator(),
-          ),
         );
       },
     );

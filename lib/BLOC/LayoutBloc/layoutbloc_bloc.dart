@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:digitalsignange/Costants.dart';
+import 'package:digitalsignange/MODELS/BroadCastModel.dart';
 
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/REPOSITORIES/XcompositionRepository.dart';
@@ -18,44 +19,57 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   bool isLocked = false;
   bool isFirstLoad = true;
   late String lastUpdateTime = "NO TIME";
+  String currentBroadcastInString = '';
+  String nextBroadcastInString = '';
 
   LayoutblocBloc() : super(LayoutblocInitial()) {
     on<LayoutblocEvent>((event, emit) async {
       if (event is FetchApi) {
-        LayoutData? layoutdata =
-            await LayoutRepository().fetchData(event.screenCode);
-        if (isFirstLoad) {
-          connect(event.screenCode);
-          isFirstLoad = false;
-        }
-        if (layoutdata == null) {
-          emit(DefaultScreen());
-          print("emitting default");
-          return;
-        }
-        print("update = ${layoutdata!.lastUpdatedAt}");
-        lastUpdateTime = layoutdata.lastUpdatedAt!;
+        BroadCastModel? broadCastData =
+            await LayoutRepository().newFetchData(event.screenCode);
+        // LayoutData? layoutdata = await LayoutRepository().fetchData(event.screenCode);
+        LayoutData? layoutdata = broadCastData?.currentBroadCast;
 
-        int start_difference = timeDifference(
-            layoutdata!.startDateTime!, layoutdata.currentDatetime!);
-        int end_difference = timeDifference(
-            layoutdata!.endDateTime!, layoutdata.currentDatetime!);
+        if (currentBroadcastInString !=
+                broadCastData?.currentBroadCast?.stringData ||
+            nextBroadcastInString != broadCastData!.NextBroadCast!.stringData) {
+          currentBroadcastInString =
+              broadCastData!.currentBroadCast!.stringData!;
+          nextBroadcastInString = broadCastData!.NextBroadCast!.stringData!;
+          if (isFirstLoad) {
+            connect(event.screenCode);
+            isFirstLoad = false;
+          }
+          if (layoutdata == null) {
+            emit(DefaultScreen());
+            print("emitting default");
+            return;
+          }
+          print("update = ${layoutdata!.lastUpdatedAt}");
+          lastUpdateTime = layoutdata.lastUpdatedAt!;
 
-        if (start_difference > 0) {
-          // if start time greater than current time
-          //emit default screen and schedule start screen
-          emit(DefaultScreen());
+          int start_difference = timeDifference(
+              layoutdata!.startDateTime!, layoutdata.currentDatetime!);
+          int end_difference = timeDifference(
+              layoutdata!.endDateTime!, layoutdata.currentDatetime!);
 
-          scheduleEvent(layoutdata.startDateTime!, layoutdata.endDateTime!,
-              layoutdata.currentDatetime!, layoutdata, event.screenCode);
-        } else if (end_difference < 0) {
-          emit(DefaultScreen());
-        } else {
-          // emit(DisplayLayout(layoutdata: layoutdata));
-          scheduleEvent(layoutdata.startDateTime!, layoutdata.endDateTime!,
-              layoutdata.currentDatetime!, layoutdata, event.screenCode);
-          emit(DisplayLayout(layoutdata: layoutdata));
+          if (start_difference > 0) {
+            // if start time greater than current time
+            //emit default screen and schedule start screen
+            emit(DefaultScreen());
+
+            scheduleEvent(layoutdata.startDateTime!, layoutdata.endDateTime!,
+                layoutdata.currentDatetime!, layoutdata, event.screenCode);
+          } else if (end_difference < 0) {
+            emit(DefaultScreen());
+          } else {
+            // emit(DisplayLayout(layoutdata: layoutdata));
+            scheduleEvent(layoutdata.startDateTime!, layoutdata.endDateTime!,
+                layoutdata.currentDatetime!, layoutdata, event.screenCode);
+            emit(DisplayLayout(layoutdata: layoutdata));
+          }
         }
+        // emit(DefaultScreen());
       }
 
       if (event is StartEvent) {
@@ -143,7 +157,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       },
     );
   }
-  
+
   int timeDifference(String time, String curretTime) {
     DateTime givenDateTime = DateTime.parse(time);
     DateTime now = DateTime.parse(curretTime);

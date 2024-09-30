@@ -68,7 +68,7 @@ class _SingleZoneViewState extends State<SingleZoneView> {
                 height: (gheight * widget.zonedata.heightPercent) / 100,
                 aspectRatio: gwidth / widget.zonedata.heightPercent,
                 viewportFraction: 1,
-                scrollDirection: Axis.vertical,
+                // scrollDirection: Axis.vertical,
               )),
           isvisible
               ? Container(

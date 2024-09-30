@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class CompositionModel {
   final String fileUrl;
   final String fileFormat;
@@ -66,8 +68,9 @@ class LayoutData {
   final String? endDateTime;
   final int? zoneCount;
   final List<ZoneData>? zoneData;
-  final int? oreintationAngle;
+  final int oreintationAngle;
   final String? lastUpdatedAt;
+  String? stringData;
 
   LayoutData(
       {this.id,
@@ -78,11 +81,14 @@ class LayoutData {
       this.endDateTime,
       this.zoneCount,
       this.zoneData,
-      this.oreintationAngle,
-      this.lastUpdatedAt});
+      required this.oreintationAngle,
+      this.lastUpdatedAt,
+      this.stringData});
 
   // Convert JSON to LayoutData
   factory LayoutData.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> jsonCopy = Map.from(json);
+    jsonCopy.remove("current_datetime");
     print("from  layout");
     print(json['orientation_angle']);
     var zoneDataJson = json['zone_data'] as List;
@@ -90,16 +96,16 @@ class LayoutData {
         zoneDataJson.map((i) => ZoneData.fromJson(i)).toList();
 
     return LayoutData(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      message: json['message'] as String,
-      currentDatetime: json['current_datetime'] as String,
-      startDateTime: json['start_datetime'] as String,
-      endDateTime: json['end_datetime'] as String,
-      zoneCount: json['zone_count'] as int,
-      zoneData: zoneDataList,
-      lastUpdatedAt: json['updated_datetime'],
-      oreintationAngle: json['orientation_angle'] as int,
-    );
+        id: json['id'] as int,
+        name: json['name'] as String,
+        message: json['message'] as String,
+        currentDatetime: json['current_datetime'] as String,
+        startDateTime: json['start_datetime'] as String,
+        endDateTime: json['end_datetime'] as String,
+        zoneCount: json['zone_count'] as int,
+        zoneData: zoneDataList,
+        lastUpdatedAt: json['updated_datetime'],
+        oreintationAngle: json['orientation_angle'] as int,
+        stringData: jsonEncode(jsonCopy));
   }
 }
