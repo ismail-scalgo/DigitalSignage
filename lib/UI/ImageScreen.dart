@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/file.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -31,6 +32,7 @@ class _ImageScreenState extends State<ImageScreen> {
     return isLoad
         ? Center(child: CircularProgressIndicator())
         : Container(child: Image.network(widget.url, fit: BoxFit.fill));
+    // : Container(child: Image(image: CachedNetworkImageProvider(widget.url)),);
   }
 
   void load() async {

@@ -28,7 +28,6 @@ class ZoneData {
   final int heightPercent;
   final int xPercent;
   final int yPercent;
-
   final List<CompositionModel> compositionModels;
 
   ZoneData({
@@ -63,7 +62,7 @@ class LayoutData {
   final int? id;
   final String? name;
   final String? message;
-  final String? currentDatetime;
+  String? currentDatetime;
   final String? startDateTime;
   final String? endDateTime;
   final int? zoneCount;

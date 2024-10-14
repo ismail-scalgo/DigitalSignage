@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
@@ -64,6 +65,7 @@ Future<PlatformData?> initPlatformState() async {
         final androidInfo = await deviceInfoPlugin.androidInfo;
         return PlatformData(
             "Unknown", "Unknown", androidInfo.fingerprint.toString());
+      // "Unknown", "Unknown", androidInfo.version.release.toString());
       case TargetPlatform.iOS:
         final iosInfo = await deviceInfoPlugin.iosInfo;
         return PlatformData(
@@ -112,7 +114,18 @@ Future<String?> detectDevice() async {
     }
   } else {
     final PlatformType currentPlatformType = PlatformDetector.platform.type;
-    deviceType = currentPlatformType.toString().split('.').last;
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfoPlugin.androidInfo;
+      print("typeeeeeeeeeeeeee= ${androidInfo.model.toLowerCase()}");
+      if (androidInfo.systemFeatures.contains('android.software.leanback') ||
+          androidInfo.model.toLowerCase().contains('tv')) {
+        deviceType = "TV";
+      } else {
+        deviceType = "Mobile";
+      }
+    } else {
+      deviceType = currentPlatformType.toString().split('.').last;
+    }
     return deviceType;
   }
 }

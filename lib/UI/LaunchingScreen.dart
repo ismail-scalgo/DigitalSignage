@@ -11,6 +11,7 @@ import 'package:digitalsignange/MODELS/MediaDetailModel.dart';
 import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
 import 'package:digitalsignange/MODELS/ZoneModel.dart';
 import 'package:digitalsignange/UI/LoginScreen.dart';
+import 'package:digitalsignange/UI/NoBroadcastScreen.dart';
 import 'package:digitalsignange/UI/SingleZoneView.dart';
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:lottie/lottie.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 
 class LaunchingScreen extends StatefulWidget {
   String screenCode;
@@ -83,6 +85,18 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       },
                       listener: (context, state) {},
                       builder: (context, state) {
+                        print("Builder called in UI");
+                        // if (state is NoBroadcastState) {
+                        //   return Center(
+                        //     child: Text(
+                        //       "NO BROADCAST ON THIS SCREEN",
+                        //       style: TextStyle(fontSize: 20),
+                        //     ),
+                        //   );
+                        // }
+                        if (state is NoBroadcastState) {
+                          return NoBroadCastScreen();
+                        }
                         print("state is $state");
                         if (state is DisplayLayout) {
                           if (state.layoutdata.oreintationAngle == 0 ||
@@ -134,18 +148,61 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                 children: buildGrids(state.layoutdata)),
                           );
                         }
+                        if (state is TrasitionState) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
                         if (state is DefaultScreen) {
                           return Center(
-                              child: Container(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
                                   height: height / 3,
                                   width: width / 3.5,
-                                  child: Lottie.asset('assets/Shoes.json')));
+                                  child: Lottie.asset('assets/Shoes.json')),
+                              Countdown(
+                                // controller: _controller,
+                                seconds: state.countdown,
+                                build: (_, double time) => Column(
+                                  children: [
+                                    Text(
+                                      "NEXT IN",
+                                      style: TextStyle(
+                                          letterSpacing: 18,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              Color.fromARGB(255, 255, 217, 0)),
+                                    ),
+                                    Text(
+                                      formatTime(time.toInt()),
+                                      style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.blue),
+                                    ),
+                                  ],
+                                ),
+                                interval: Duration(seconds: 1),
+                                onFinished: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('BROADCAST LIVE'),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ));
                         }
                         return Center(
-                          child: Container(
-                              height: height / 3,
-                              width: width / 3.5,
-                              child: Lottie.asset('assets/Shoes.json')),
+                          child: CircularProgressIndicator(),
+                          // child: Container(
+                          //     height: height / 3,
+                          //     width: width / 3.5,
+                          //     child: Lottie.asset('assets/Shoes.json')),
                         );
                       },
                     ),
@@ -164,11 +221,10 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                           child: InkWell(
                             child: Container(
                               height: 35,
-                              width: width / 5.5,
+                              width: width / 6.5,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5),
-                                  color:
-                                      const Color.fromARGB(255, 143, 174, 243)),
+                                  color: const Color.fromARGB(255, 65, 51, 51)),
                               child: Center(
                                   child: Text(
                                 "Logout",
@@ -344,6 +400,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                 TextButton(
                   child: Text('Yes'),
                   onPressed: () {
+                    print("button presseed");
+                    apiBloc.add(LogoutEvent());
                     // Navigator.of(context).pop();
                     // CircularProgressIndicator();
                     // Future.delayed(Duration(seconds: 2), () {
@@ -362,6 +420,20 @@ class _LyoutScreenState extends State<LaunchingScreen> {
         );
       },
     );
+  }
+
+  String formatTime(int totalSeconds) {
+    // Calculate the number of days, hours, minutes, and seconds
+    int days = totalSeconds ~/ (24 * 3600);
+    totalSeconds %= (24 * 3600);
+
+    int hours = totalSeconds ~/ 3600;
+    totalSeconds %= 3600;
+
+    int minutes = totalSeconds ~/ 60;
+    int seconds = totalSeconds % 60;
+
+    return '${days.toString().padLeft(2, '0')} : ${hours.toString().padLeft(2, '0')} : ${minutes.toString().padLeft(2, '0')} : ${seconds.toString().padLeft(2, '0')}';
   }
 
   void loadLayout() async {

@@ -40,7 +40,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         }
         print("tryinggggggggggggg");
         try {
-          // emit(LoginLoadingState());
+          emit(LoginLoadingState());
           print("tryingggggggggggggggggggggggg");
           final LoginRepository apiRepo = LoginRepository();
           // loginRes = await apiRepo.fetchLogin(event.screenCode);
@@ -109,9 +109,11 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         }
         Future setVersions() async {
           PlatformData? platformInfo = await initPlatformState();
-          event.request.browser = platformInfo?.browser;
-          event.request.browserVersion = "platformInfo?.browserVersion";
-          event.request.osVersion = "platformInfo?.osVersion";
+          if (HARDCODEPLATFORM == "WEB") {
+            event.request.browser = platformInfo?.browser;
+            event.request.browserVersion = platformInfo?.browserVersion;
+          }
+          event.request.osVersion = platformInfo?.osVersion;
         }
 
         await setVersions();
@@ -122,6 +124,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         print("info = ${event.request.osVersion}");
         print("info = ${event.request.type}");
         try {
+          print("calling api");
           final RegisterRepository apiRepo = RegisterRepository();
           String? Stat = await apiRepo.registerScreen(event.request);
           print(Stat);

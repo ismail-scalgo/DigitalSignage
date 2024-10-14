@@ -90,7 +90,8 @@ class _SingleZoneViewState extends State<SingleZoneView> {
 
   Widget getWidget(CompositionModel compositiondata) {
     if (compositiondata.fileFormat == "jpeg" ||
-        compositiondata.fileFormat == "jpg") {
+        compositiondata.fileFormat == "jpg" ||
+        compositiondata.fileFormat == "png") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
       return Container(
         width: (gwidth * widget.zonedata.widthPercent) / 100,

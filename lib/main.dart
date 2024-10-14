@@ -2,11 +2,12 @@
 
 import 'dart:developer';
 
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:digitalsignange/UI/ControllerWidget.dart';
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
 import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 import 'package:digitalsignange/UI/LoginScreen.dart';
-import 'package:digitalsignange/UI/RegisterScreen.dart';
+import 'package:digitalsignange/UI/SplashScreen.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/test.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: ControllerWidget());
+    return MaterialApp(
+        home: AnimatedSplashScreen(
+      splash: SplashScreen(),
+      nextScreen: ControllerWidget(),
+      backgroundColor: Colors.black,
+      duration: 3000,
+      splashTransition: SplashTransition.fadeTransition,
+    ));
+    // return MaterialApp(home: SplashScreen());
   }
 }

@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:collection';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
-import 'package:digitalsignange/UI/RegisterScreen.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/UI/RegisterScreen3.dart';
 import 'package:digitalsignange/UI/map.dart';
@@ -166,15 +165,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             (route) => false);
                       }
                       if (state is DisplayRegistration) {
-                        Navigator.of(context).push(createRoute());
+                        // Navigator.of(context).push(createRoute());
+                        Navigator.of(context)
+                            .push(FadeRoute(page: Registerscreen3()));
                       }
                       if (state is loginFailureState) {
                         print("failure state emittingggg");
+                        Navigator.pop(context);
                         showToast(context, state.message);
                       }
-                      // if (state is LoginLoadingState) {
-                      //   showLoad(context);
-                      // }
+                      if (state is LoginLoadingState) {
+                        showLoad(context);
+                      }
                     },
                     builder: (context, state) {
                       // if (state is LaunchScreen) {
@@ -219,22 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       },
     );
-    // return PageRouteBuilder(
-    //   pageBuilder: (context, animation, secondaryAnimation) => RegisterScreen(),
-    //   transitionsBuilder: (context, animation, secondaryAnimation, child) {
-    //     const begin = 0.0;
-    //     const end = 1.0;
-    //     const curve = Curves.easeIn;
-
-    //     var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-    //     var opacityAnimation = animation.drive(tween);
-
-    //     return FadeTransition(
-    //       opacity: opacityAnimation,
-    //       child: child,
-    //     );
-    //   },
-    // );
   }
 
   void showToast(BuildContext context, String message) {
@@ -280,3 +266,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 //login: ptcui
+
+class FadeRoute extends PageRouteBuilder {
+  final Widget page;
+  FadeRoute({required this.page})
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        );
+}

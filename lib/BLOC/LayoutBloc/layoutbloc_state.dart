@@ -10,7 +10,10 @@ class DisplayLayout extends LayoutblocState {
   DisplayLayout({required this.layoutdata});
 }
 
-class DefaultScreen extends LayoutblocState {}
+class DefaultScreen extends LayoutblocState {
+  int countdown;
+  DefaultScreen({required this.countdown});
+}
 
 class DisplayButton extends LayoutblocState {
   bool isvisible;
@@ -21,3 +24,7 @@ class Minimizescreen extends LayoutblocState {
   bool isvisible;
   Minimizescreen({required this.isvisible});
 }
+
+class NoBroadcastState extends LayoutblocState {}
+
+class TrasitionState extends LayoutblocState {}

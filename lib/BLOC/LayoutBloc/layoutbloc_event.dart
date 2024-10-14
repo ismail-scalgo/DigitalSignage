@@ -26,3 +26,33 @@ class ShrinkView extends LayoutblocEvent {
   bool isvisible;
   ShrinkView({required this.isvisible});
 }
+
+class CountDownEvent extends LayoutblocEvent {
+  int countdown;
+
+  CountDownEvent({required this.countdown});
+}
+
+class NoBroadCastEvent extends LayoutblocEvent {}
+
+class DisplayBroadcastEvent extends LayoutblocEvent {
+  LayoutData layoutData;
+
+  DisplayBroadcastEvent({required this.layoutData});
+}
+
+class currentBroadCastEnds extends LayoutblocEvent {
+  String current_datetime;
+
+  currentBroadCastEnds({required this.current_datetime});
+}
+
+class FetchNextBroadcastEvent extends LayoutblocEvent {
+  LayoutData previousLayout;
+
+  FetchNextBroadcastEvent({required this.previousLayout});
+}
+
+class LogoutEvent extends LayoutblocEvent {}
+
+class TrasnsitionEvent extends LayoutblocEvent {}

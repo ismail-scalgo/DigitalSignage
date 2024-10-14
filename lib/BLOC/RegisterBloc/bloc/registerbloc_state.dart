@@ -39,7 +39,7 @@ class PermissionDenied extends RegisterblocState {
 
 class RegisterLoadingState extends RegisterblocState {}
 
-// class LoginLoadingState extends RegisterblocState {}
+class LoginLoadingState extends RegisterblocState {}
 
 // class TextfieldError extends RegisterblocState {
 //   String? agentIdErr;
