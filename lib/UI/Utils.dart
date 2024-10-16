@@ -205,5 +205,9 @@ void clearData() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   // String? screenCode = prefs.getString('screenCode');
   prefs.remove('screenCode');
+  prefs.remove('NewScreenCode');
+  prefs.remove('isRegistered');
   print("logedout code = ${prefs.getString('screenCode')}");
+  print("logedout code = ${prefs.getString('NewScreenCode')}");
+  print("logedout code = ${prefs.getString('isRegistered')}");
 }

@@ -158,9 +158,9 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             event.request.location = "Karyavattom, trivandrum";
           }
         } else {
-          event.request.latitude = "Unknown";
-          event.request.longitude = "Unknown";
-          event.request.location = "Unknown";
+          event.request.latitude = "8.55";
+          event.request.longitude = "76.88";
+          event.request.location = "Karyavattom, trivandrum";
         }
         try {
           print("calling apiss");

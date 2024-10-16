@@ -63,18 +63,12 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     print("height = $height");
     factor = width / height;
     return Scaffold(
-      // backgroundColor: Colors.black,
       body: GestureDetector(
         onLongPress: () {
-          // setState(() {
-          //   isShrink = true;
-          // });
-
           apiBloc.add(visibleButton(isvisible: true));
           Future.delayed(Duration(seconds: 3), () {
             apiBloc.add(visibleButton(isvisible: false));
           });
-          // apiBloc.add(ShrinkView(isvisible: true));
         },
         child: Container(
           color: Colors.transparent,
@@ -94,14 +88,6 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       listener: (context, state) {},
                       builder: (context, state) {
                         print("Builder called in UI");
-                        // if (state is NoBroadcastState) {
-                        //   return Center(
-                        //     child: Text(
-                        //       "NO BROADCAST ON THIS SCREEN",
-                        //       style: TextStyle(fontSize: 20),
-                        //     ),
-                        //   );
-                        // }
                         if (state is NoBroadcastState) {
                           return NoBroadCastScreen();
                         }
