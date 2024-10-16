@@ -7,6 +7,7 @@ import 'package:digitalsignange/UI/ControllerWidget.dart';
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
 import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 import 'package:digitalsignange/UI/LoginScreen.dart';
+import 'package:digitalsignange/UI/NewLoginScreen.dart';
 import 'package:digitalsignange/UI/SplashScreen.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/test.dart';
@@ -31,11 +32,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         home: AnimatedSplashScreen(
       splash: SplashScreen(),
-      nextScreen: ControllerWidget(),
+      nextScreen: ScreenCodeScreen(),
       backgroundColor: Colors.black,
       duration: 3000,
       splashTransition: SplashTransition.fadeTransition,
     ));
-    // return MaterialApp(home: SplashScreen());
+    // return MaterialApp(home: ScreenCodeScreen());
   }
 }

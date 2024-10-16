@@ -35,6 +35,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("bloc created");
     on<LayoutblocEvent>((event, emit) async {
       if (event is FetchApi) {
+        print("fetch api event called");
         screen_code = event.screenCode;
         BroadCastModel? broadCastData =
             await LayoutRepository().newFetchData(event.screenCode);
@@ -48,7 +49,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         print("data = ${broadCastData}");
         if (broadCastData?.currentBroadCast == null) {
           RELOAD_FLAG_COUNT++;
-          print("no data");
+          print("no dataaaaaaaaa");
           emit(NoBroadcastState());
         } else {
           print("there is data");

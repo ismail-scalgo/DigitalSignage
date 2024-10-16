@@ -2,6 +2,7 @@
 
 import 'package:digitalsignange/UI/ControllerWidget.dart';
 import 'package:digitalsignange/UI/LoginScreen.dart';
+import 'package:digitalsignange/UI/NewLoginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_glow/flutter_glow.dart';
@@ -16,7 +17,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    nextScreen();
+    // nextScreen();
     super.initState();
   }
 
@@ -97,7 +98,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            ControllerWidget(),
+            ScreenCodeScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
             opacity: animation,

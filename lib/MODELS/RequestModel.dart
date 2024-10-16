@@ -1,6 +1,6 @@
 class RequestModel {
-  String agentId;
-  String name;
+  String? agentId;
+  String? name;
   String? browser;
   String? browserVersion;
   String? location;
@@ -13,8 +13,8 @@ class RequestModel {
   String? width;
   String? type;
   RequestModel({
-    required this.agentId,
-    required this.name,
+    this.agentId,
+    this.name,
     this.browser,
     this.browserVersion,
     this.location,
@@ -72,7 +72,7 @@ class RequestModel {
       'location_address': location,
       'location_latitude': latitude,
       'location_longitude': longitude,
-      'orientation': orientation,
+      'orientation_angle': orientation,
       'os': platform,
       'os_version': osVersion,
       'resolution_height': height,

@@ -31,7 +31,7 @@ class NoBroadCastScreen extends StatelessWidget {
               gradient: LinearGradient(
                 tileMode: TileMode.mirror,
                 colors: [
-                  Color.fromARGB(255, 255, 85, 33),
+                  Color.fromARGB(255, 218, 53, 3),
                   Color.fromARGB(255, 218, 53, 3)
                 ],
                 begin: Alignment.topCenter,

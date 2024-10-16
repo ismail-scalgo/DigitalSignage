@@ -41,8 +41,12 @@ class RegisterLoadingState extends RegisterblocState {}
 
 class LoginLoadingState extends RegisterblocState {}
 
-// class TextfieldError extends RegisterblocState {
-//   String? agentIdErr;
-//   String? nameErr;
-//   TextfieldError({this.agentIdErr, this.nameErr});
-// }
+class DisplayNewScreenCode extends RegisterblocState {
+  String screenCode;
+  DisplayNewScreenCode({required this.screenCode});
+}
+
+class DisplayOldScreenCode extends RegisterblocState {
+  String screenCode;
+  DisplayOldScreenCode({required this.screenCode});
+}

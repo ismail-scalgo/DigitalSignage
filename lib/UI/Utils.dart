@@ -100,17 +100,18 @@ Future<String?> detectDevice() async {
       deviceType = "Mobile";
       return deviceType;
     } else if (webInfo.userAgent!.contains("Macintosh")) {
-      deviceType = "IOS";
+      deviceType = "Desktop";
       return deviceType;
     } else if (webInfo.userAgent!.contains("Linux")) {
-      deviceType = "Linux";
+      print("browser info = ${webInfo.userAgent}");
+      deviceType = "Desktop";
       return deviceType;
     } else if (webInfo.userAgent!.contains("Windows")) {
-      deviceType = "Windows";
+      deviceType = "Desktop";
       return deviceType;
-    } else {
-      deviceType = "Unknown";
-      return deviceType;
+    } else if (webInfo.userAgent!.contains("iphone") ||
+        webInfo.userAgent!.contains("ipad")) {
+      deviceType = "iOS";
     }
   } else {
     final PlatformType currentPlatformType = PlatformDetector.platform.type;
@@ -128,6 +129,76 @@ Future<String?> detectDevice() async {
     }
     return deviceType;
   }
+}
+
+Future<String> getPlatform() async {
+  var deviceData = <String, dynamic>{};
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  String platform;
+
+  try {
+    if (kIsWeb) {
+      print("web");
+      // deviceData = _readWebBrowserInfo(await deviceInfoPlugin.webBrowserInfo);
+      WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+      // print(deviceData);
+      // print("platform = ${deviceData['platform']}");
+      platform = webBrowserInfo.platform!;
+      print("platform = $deviceData['platform']");
+      // request.platform = platform;
+      // PLATFORM = deviceData['platform'];
+      return platform;
+    } else {
+      if (Platform.isAndroid) {
+        platform = 'Android';
+      } else if (Platform.isIOS) {
+        platform = 'iOS';
+      } else if (Platform.isWindows) {
+        platform = 'Windows';
+      } else if (Platform.isLinux) {
+        platform = 'Linux';
+      } else if (Platform.isMacOS) {
+        platform = 'macOS';
+      } else {
+        platform = 'Unknown';
+      }
+      // print("platform = $platform");
+      // request.platform = platform;
+      return platform;
+    }
+  } on PlatformException {
+    // deviceData['platform'] = "Unknown";
+    platform = 'Unknown';
+    // deviceData = <String, dynamic>{
+    //   'Error:': 'Failed to get platform version.'
+    // };
+  }
+  // if (!mounted) platform = 'Unknown';
+  // setState(() {
+  //   deviceData = deviceData;
+  //   // print("platform = ${deviceData}");
+  // });
+  return platform;
+}
+
+Map<String, dynamic> _readWebBrowserInfo(WebBrowserInfo data) {
+  return <String, dynamic>{
+    'browserName': data.browserName.name,
+    'appCodeName': data.appCodeName,
+    'appName': data.appName,
+    'appVersion': data.appVersion,
+    'deviceMemory': data.deviceMemory,
+    'language': data.language,
+    'languages': data.languages,
+    'platform': data.platform,
+    'product': data.product,
+    'productSub': data.productSub,
+    'userAgent': data.userAgent,
+    'vendor': data.vendor,
+    'vendorSub': data.vendorSub,
+    'hardwareConcurrency': data.hardwareConcurrency,
+    'maxTouchPoints': data.maxTouchPoints,
+  };
 }
 
 void clearData() async {

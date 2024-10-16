@@ -22,6 +22,7 @@ import 'package:lottie/lottie.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_count_down/timer_count_down.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class LaunchingScreen extends StatefulWidget {
   String screenCode;
@@ -43,8 +44,15 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   @override
   void initState() {
     super.initState();
+    WakelockPlus.enable();
     apiBloc = BlocProvider.of<LayoutblocBloc>(context);
     loadLayout();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
   }
 
   @override
@@ -437,9 +445,11 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   }
 
   void loadLayout() async {
+    print("loaded");
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // return
     print("code = ${prefs.getString('screenCode')}");
+    print("fetch api added");
     apiBloc.add(FetchApi(screenCode: widget.screenCode));
   }
 }
