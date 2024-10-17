@@ -31,7 +31,6 @@ class RegisterRepository {
   }
 
   Future<String?> fetchScreenCode(RequestModel request) async {
-    // ResponeReg responseData = ResponeReg();
     print("enteringggggggggggggg");
     String status;
     final apiUrl = '$BASEURL/api/generate-screen-code/';
@@ -42,16 +41,9 @@ class RegisterRepository {
     if (response.statusCode == 201) {
       print("respose body = ${response.body}");
       final jsonData = json.decode(response.body);
-      // screen_code
-      // status = "success";
       return jsonData["screen_code"];
     } else {
       print("error");
-      // final jsonData = json.decode(response.body);
-      // print("error body = $jsonData");
-      // status = jsonData['message'];
-      // print(jsonData['message']);
-      // throw Exception(status);
     }
   }
 

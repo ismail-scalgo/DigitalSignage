@@ -15,7 +15,7 @@ String SOCKET_ADDRESS = 'ws://192.168.0.98:8765';
 
 Future<bool> isOffline() async {
   final connectivityResult = await Connectivity().checkConnectivity();
-  if (connectivityResult.contains(ConnectivityResult.none)) {
+  if (connectivityResult.contains(ConnectivityResult.none) || connectivityResult.contains(ConnectivityResult.bluetooth) || connectivityResult.contains(ConnectivityResult.vpn)) {
     return true;
   } else {
     return false;

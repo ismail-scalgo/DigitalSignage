@@ -1,7 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, avoid_print, unnecessary_import, duplicate_import, unused_import, prefer_interpolation_to_compose_strings, sort_child_properties_last
+// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, avoid_print, unnecessary_import, duplicate_import, unused_import, prefer_interpolation_to_compose_strings, sort_child_properties_last, unused_local_variable
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/UI/ImageScreen.dart';
@@ -22,6 +24,7 @@ import 'package:lottie/lottie.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_count_down/timer_count_down.dart';
+import 'package:toastification/toastification.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class LaunchingScreen extends StatefulWidget {
@@ -38,15 +41,19 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   bool isLoad = true;
   bool isButtonVisible = true;
   bool isShrink = false;
+  Connectivity connectivity = Connectivity();
 
   late LayoutblocBloc apiBloc;
 
   @override
   void initState() {
     super.initState();
+    checkConnectivity();
     WakelockPlus.enable();
     apiBloc = BlocProvider.of<LayoutblocBloc>(context);
     loadLayout();
+    // late StreamSubscription<List<ConnectivityResult>> connectivitySubscription;
+    // connectivitySubscription = connectivity.onConnectivityChanged.listen(updateConnectionStatus);
   }
 
   @override
@@ -143,8 +150,11 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                           );
                         }
                         if (state is TrasitionState) {
-                          return Center(
-                            child: CircularProgressIndicator(),
+                          return Container(
+                            color: Colors.black,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
                           );
                         }
                         if (state is DefaultScreen) {
@@ -191,12 +201,15 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             ],
                           ));
                         }
-                        return Center(
-                          child: CircularProgressIndicator(),
-                          // child: Container(
-                          //     height: height / 3,
-                          //     width: width / 3.5,
-                          //     child: Lottie.asset('assets/Shoes.json')),
+                        return Container(
+                          color: Colors.black,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                            // child: Container(
+                            //     height: height / 3,
+                            //     width: width / 3.5,
+                            //     child: Lottie.asset('assets/Shoes.json')),
+                          ),
                         );
                       },
                     ),
@@ -367,53 +380,95 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     // );
   }
 
-  Future<void> showMyDialog(BuildContext context) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Center(child: Text('Logout')),
-          content: const SingleChildScrollView(
-            child: ListBody(
-              children: [
-                Center(child: Text('Do you want to logout ?')),
-              ],
+  void showMyDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            scrollable: true,
+            title: Text('Login'),
+            content: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        icon: Icon(Icons.account_box),
+                      ),
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        icon: Icon(Icons.email),
+                      ),
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Message',
+                        icon: Icon(Icons.message),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  child: Text('No'),
+            actions: [
+              ElevatedButton(
+                  child: Text("Submit"),
                   onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: Text('Yes'),
-                  onPressed: () {
-                    print("button presseed");
-                    apiBloc.add(LogoutEvent());
-                    // Navigator.of(context).pop();
-                    // CircularProgressIndicator();
-                    // Future.delayed(Duration(seconds: 2), () {
-                    clearData();
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                        (route) => false);
-                    // });
-                    // Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            )
-          ],
-        );
-      },
-    );
+                    // your code
+                  })
+            ],
+          );
+        });
+    // return showDialog<void>(
+    //   context: context,
+    //   barrierDismissible: false,
+    //   builder: (BuildContext context) {
+    //     return AlertDialog(
+    //       title: Center(child: Text('Logout')),
+    //       content: const SingleChildScrollView(
+    //         child: ListBody(
+    //           children: [
+    //             Center(child: Text('Do you want to logout ?')),
+    //           ],
+    //         ),
+    //       ),
+    //       actions: [
+    //         Row(
+    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //           children: [
+    //             TextButton(
+    //               child: Text('No'),
+    //               onPressed: () {
+    //                 Navigator.of(context).pop();
+    //               },
+    //             ),
+    //             TextButton(
+    //               child: Text('Yes'),
+    //               onPressed: () {
+    //                 print("button presseed");
+    //                 apiBloc.add(LogoutEvent());
+    //                 // Navigator.of(context).pop();
+    //                 // CircularProgressIndicator();
+    //                 // Future.delayed(Duration(seconds: 2), () {
+    //                 clearData();
+    //                 Navigator.pushAndRemoveUntil(
+    //                     context,
+    //                     MaterialPageRoute(builder: (context) => LoginScreen()),
+    //                     (route) => false);
+    //                 // });
+    //                 // Navigator.of(context).pop();
+    //               },
+    //             ),
+    //           ],
+    //         )
+    //       ],
+    //     );
+    //   },
+    // );
   }
 
   String formatTime(int totalSeconds) {
@@ -437,5 +492,38 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     print("code = ${prefs.getString('screenCode')}");
     print("fetch api added");
     apiBloc.add(FetchApi(screenCode: widget.screenCode));
+  }
+  void checkConnectivity() async {
+    if (await isOffline()) {
+      showToast(context, "No Internet Connection");
+    }
+  }
+  void showToast(BuildContext context, String message) {
+    toastification.show(
+      context: context,
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      foregroundColor: Color.fromARGB(255, 131, 154, 255),
+      type: ToastificationType.success,
+      style: ToastificationStyle.simple,
+      title: Text(message),
+      alignment: Alignment.topRight,
+      autoCloseDuration: const Duration(seconds: 4),
+    );
+  }
+
+  void updateConnectionStatus(List<ConnectivityResult> result) async {
+    print("listeninggg");
+    print(result);
+    checkConnectivity();
+    if (!await isOffline()) {
+      apiBloc.add(FetchApi(screenCode: widget.screenCode));
+    }
+    // if (!result.contains(ConnectivityResult)) {
+    //   checkConnectivity();
+    //   apiBloc.add(FetchApi(screenCode: widget.screenCode));
+    // }
+    // if (result.contains(ConnectivityResult.none)) {
+    //   checkConnectivity();
+    // }
   }
 }

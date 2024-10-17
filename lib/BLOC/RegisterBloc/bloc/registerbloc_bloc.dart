@@ -175,21 +175,6 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           event.request.agentId = "Unknown";
           print("requestinggg");
           final RegisterRepository registerRepo = RegisterRepository();
-          print("requestinggg");
-          print("data1 = ${event.request.name}");
-          print("data1 = ${event.request.platform}");
-          print("data1 = ${event.request.type}");
-          print("data1 = ${event.request.osVersion}");
-          print("data1 = ${event.request.browser}");
-          print("data1 = ${event.request.browserVersion}");
-          print("data1 = ${event.request.orientation}");
-          print("data1 = ${event.request.agentId}");
-          print("data1 = ${event.request.latitude}");
-          print("data1 = ${event.request.longitude}");
-          print("data1 = ${event.request.location}");
-          print("data1 = ${event.request.height}");
-          print("data1 = ${event.request.width}");
-
           String? screenCode =
               await registerRepo.fetchScreenCode(event.request);
           print(screenCode);
@@ -199,7 +184,6 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           print(e);
         }
       }
-
       if (event is DisplayScreenCode) {
         connect(event.screenCode);
         // print("emitting old");
@@ -215,7 +199,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           print("data = ${data?.message}");
           if (!data!.isRegistered!) {
             print("emitting old");
-            emit(DisplayOldScreenCode(screenCode: event.screenCode));
+            emit(DisplayNewScreenCode(screenCode: event.screenCode));
           }
           if (data!.isRegistered!) {
             final SharedPreferences prefs =
