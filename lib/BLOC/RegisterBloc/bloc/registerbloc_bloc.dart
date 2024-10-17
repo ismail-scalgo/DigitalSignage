@@ -205,19 +205,14 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             final SharedPreferences prefs =
                 await SharedPreferences.getInstance();
             prefs.setBool('isRegistered', true);
-            print("launchingggg");
             closeConnection();
-            // globalConnection.close();
-            print("launchingggg");
             emit(LaunchScreen(code: event.screenCode));
           }
         } catch (e) {}
       }
-
       if (event is ConnectSocket) {
         connect(event.screenCode);
       }
-
       if (event is LaunchSignage) {
         emit(LaunchScreen(code: event.screenCode));
       }
@@ -231,9 +226,6 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
       print("socket message = $message");
       var jsonresponce = jsonDecode(message);
       print("socket response = $jsonresponce");
-      print("socket updated time = ${jsonresponce['updated_at']}");
-      log("socket response = $jsonresponce");
-      log("socket updated time = ${jsonresponce['updated_at']}");
       add(DisplayScreenCode(screenCode: screencode));
     }, onError: (error) {
       print("Error receiving message: $error");

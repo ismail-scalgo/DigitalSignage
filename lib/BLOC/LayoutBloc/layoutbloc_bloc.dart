@@ -45,7 +45,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         BroadCastModel? broadCastData =
             await LayoutRepository().newFetchData(event.screenCode);
         print(isFirstLoad);
-        print("goinggggggggggggggggggggggggggggggggggggggg");
         print("data = ${broadCastData}");
         if (broadCastData?.currentBroadCast == null) {
           RELOAD_FLAG_COUNT++;
@@ -63,7 +62,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
               preloadContents(next_broadcast!);
             }
           }
-
           if (currentBroadcastInString !=
                   broadCastData?.currentBroadCast?.stringData ||
               nextBroadcastInString !=
@@ -81,7 +79,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           }
         }
       }
-
       if (event is StartEvent) {
         emit(DisplayLayout(layoutdata: event.layoutdata));
       }
@@ -95,18 +92,15 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is CountDownEvent) {
         emit(DefaultScreen(countdown: event.countdown));
       }
-
       if (event is NoBroadCastEvent) {
         emit(NoBroadcastState());
       }
-
       if (event is DisplayBroadcastEvent) {
         emit(DisplayLayout(layoutdata: event.layoutData));
       }
       if (event is LogoutEvent) {
         print("logoutttttttttttttttttttt");
         currentBroadcastInString = "";
-        // globalConnection.close();
       }
       if (event is TrasnsitionEvent) {
         emit(TrasitionState());
@@ -114,7 +108,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
       if (event is currentBroadCastEnds) {
         print("CURRENT BROADCAST ENDS");
-
         if (next_broadcast == null) {
           add(NoBroadCastEvent());
         } else {
@@ -132,7 +125,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             preloadContents(next_broadcast!);
           }
         }
-
         if (current_broadcast == null) {
           currentBroadcastInString = '';
         } else {
@@ -163,7 +155,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!);
     }
     print("START TIME DIFFERENCEEEEEEEEEEEEEE  $start_difference");
-
     print("END TIME DIFFERENCEEEEEEEEEEEEEE  $end_difference");
 
     int current_reload_flag_count = RELOAD_FLAG_COUNT;
