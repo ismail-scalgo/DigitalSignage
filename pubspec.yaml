@@ -75,10 +75,19 @@ dependencies:
   qr_flutter: ^4.1.0
   pretty_qr_code: ^3.3.0
   
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter  
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/scalgo_logo.png"
+  adaptive_icon_background: "assets/scalgo_logo.png"
+  adaptive_icon_foreground: "assets/scalgo_logo.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -114,6 +123,8 @@ flutter:
     - assets/Rocket.json
     - assets/GreenShoes.json
     - assets/QR.webp
+    - assets/icon.png
+    - assets/scalgo_logo.png
 
     
     # - images/a_dot_ham.jpeg loginAnim
