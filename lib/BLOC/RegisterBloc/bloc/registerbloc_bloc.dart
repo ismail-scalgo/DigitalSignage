@@ -202,10 +202,10 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             emit(DisplayNewScreenCode(screenCode: event.screenCode));
           }
           if (data!.isRegistered!) {
+            closeConnection();
             final SharedPreferences prefs =
                 await SharedPreferences.getInstance();
             prefs.setBool('isRegistered', true);
-            closeConnection();
             emit(LaunchScreen(code: event.screenCode));
           }
         } catch (e) {}

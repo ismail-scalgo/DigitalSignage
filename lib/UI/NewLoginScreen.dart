@@ -96,8 +96,8 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                           "Pair device",
                           style: TextStyle(
                               color: const Color.fromARGB(255, 190, 190, 190),
-                              // fontSize: 25,
-                              fontSize: width / 45,
+                              fontSize: 25,
+                              // fontSize: width / 45,
                               fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
@@ -107,8 +107,8 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                           "1,  Login to your Digital Signage account at www.web-sgdsg.com",
                           style: TextStyle(
                               color: const Color.fromARGB(255, 190, 190, 190),
-                              // fontSize: 20,
-                              fontSize: width / 50,
+                              fontSize: 20,
+                              // fontSize: width / 50,
                               fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
@@ -118,7 +118,8 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                           "2,  Select New Screen and enter this code in the popup",
                           style: TextStyle(
                               color: const Color.fromARGB(255, 190, 190, 190),
-                              fontSize: width / 50,
+                              fontSize: 20,
+                              // fontSize: width / 50,
                               fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
@@ -128,44 +129,44 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                           state.screenCode,
                           style: TextStyle(
                               color: const Color.fromARGB(255, 190, 190, 190),
-                              // fontSize: 50,
-                              fontSize: width / 20,
+                              fontSize: 50,
+                              // fontSize: width / 20,
                               fontWeight: FontWeight.bold),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 50),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // QrImageView(
-                              //   data: 'Flutter',
-                              //   version: QrVersions.auto,
-                              //   size: 320,
-                              //   gapless: false,
-                              //   embeddedImage: AssetImage('assets/QR.webp'),
-                              //   embeddedImageStyle: QrEmbeddedImageStyle(
-                              //     size: Size(250, 250),
-                              //   ),
-                              // ),
-                              Container(
-                                color: Colors.white,
-                                height: height / 4,
-                                width: height / 4,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: PrettyQrView.data(
-                                    data: 'https://www.nike.com/',
-                                    // decoration: const PrettyQrDecoration(
-                                    //   image: PrettyQrDecorationImage(
-                                    //     image: AssetImage('assets/QR.webp'),
-                                    //   ),
-                                    // ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
+                        // Padding(
+                        //   padding: const EdgeInsets.only(top: 50),
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.center,
+                        //     children: [
+                        //       // QrImageView(
+                        //       //   data: 'Flutter',
+                        //       //   version: QrVersions.auto,
+                        //       //   size: 320,
+                        //       //   gapless: false,
+                        //       //   embeddedImage: AssetImage('assets/QR.webp'),
+                        //       //   embeddedImageStyle: QrEmbeddedImageStyle(
+                        //       //     size: Size(250, 250),
+                        //       //   ),
+                        //       // ),
+                        //       Container(
+                        //         color: Colors.white,
+                        //         height: height / 4,
+                        //         width: height / 4,
+                        //         child: Padding(
+                        //           padding: const EdgeInsets.all(15.0),
+                        //           child: PrettyQrView.data(
+                        //             data: 'https://www.nike.com/',
+                        //             // decoration: const PrettyQrDecoration(
+                        //             //   image: PrettyQrDecorationImage(
+                        //             //     image: AssetImage('assets/QR.webp'),
+                        //             //   ),
+                        //             // ),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // )
                       ],
                     ),
                   ),
@@ -304,12 +305,12 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
   void showToast(BuildContext context, String message) {
     toastification.show(
       context: context,
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
-      foregroundColor: Color.fromARGB(255, 131, 154, 255),
+      backgroundColor: Color.fromARGB(255, 0, 0, 0),
+      foregroundColor: Color.fromARGB(255, 63, 0, 235),
       type: ToastificationType.success,
       style: ToastificationStyle.simple,
       title: Text(message),
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.topRight,
       autoCloseDuration: const Duration(seconds: 2),
     );
   }

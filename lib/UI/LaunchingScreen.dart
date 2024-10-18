@@ -13,6 +13,7 @@ import 'package:digitalsignange/MODELS/MediaDetailModel.dart';
 import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
 import 'package:digitalsignange/MODELS/ZoneModel.dart';
 import 'package:digitalsignange/UI/LoginScreen.dart';
+import 'package:digitalsignange/UI/NewLoginScreen.dart';
 import 'package:digitalsignange/UI/NoBroadcastScreen.dart';
 import 'package:digitalsignange/UI/SingleZoneView.dart';
 import 'package:digitalsignange/UI/Utils.dart';
@@ -381,94 +382,94 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   }
 
   void showMyDialog(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            scrollable: true,
-            title: Text('Login'),
-            content: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Form(
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        icon: Icon(Icons.account_box),
-                      ),
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        icon: Icon(Icons.email),
-                      ),
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Message',
-                        icon: Icon(Icons.message),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              ElevatedButton(
-                  child: Text("Submit"),
-                  onPressed: () {
-                    // your code
-                  })
-            ],
-          );
-        });
-    // return showDialog<void>(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (BuildContext context) {
-    //     return AlertDialog(
-    //       title: Center(child: Text('Logout')),
-    //       content: const SingleChildScrollView(
-    //         child: ListBody(
-    //           children: [
-    //             Center(child: Text('Do you want to logout ?')),
-    //           ],
+    // return showDialog(
+    //     context: context,
+    //     builder: (BuildContext context) {
+    //       return AlertDialog(
+    //         scrollable: true,
+    //         title: Text('Login'),
+    //         content: Padding(
+    //           padding: const EdgeInsets.all(8.0),
+    //           child: Form(
+    //             child: Column(
+    //               children: <Widget>[
+    //                 TextFormField(
+    //                   decoration: InputDecoration(
+    //                     labelText: 'Name',
+    //                     icon: Icon(Icons.account_box),
+    //                   ),
+    //                 ),
+    //                 TextFormField(
+    //                   decoration: InputDecoration(
+    //                     labelText: 'Email',
+    //                     icon: Icon(Icons.email),
+    //                   ),
+    //                 ),
+    //                 TextFormField(
+    //                   decoration: InputDecoration(
+    //                     labelText: 'Message',
+    //                     icon: Icon(Icons.message),
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
     //         ),
-    //       ),
-    //       actions: [
-    //         Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //           children: [
-    //             TextButton(
-    //               child: Text('No'),
+    //         actions: [
+    //           ElevatedButton(
+    //               child: Text("Submit"),
     //               onPressed: () {
-    //                 Navigator.of(context).pop();
-    //               },
-    //             ),
-    //             TextButton(
-    //               child: Text('Yes'),
-    //               onPressed: () {
-    //                 print("button presseed");
-    //                 apiBloc.add(LogoutEvent());
-    //                 // Navigator.of(context).pop();
-    //                 // CircularProgressIndicator();
-    //                 // Future.delayed(Duration(seconds: 2), () {
-    //                 clearData();
-    //                 Navigator.pushAndRemoveUntil(
-    //                     context,
-    //                     MaterialPageRoute(builder: (context) => LoginScreen()),
-    //                     (route) => false);
-    //                 // });
-    //                 // Navigator.of(context).pop();
-    //               },
-    //             ),
-    //           ],
-    //         )
-    //       ],
-    //     );
-    //   },
-    // );
+    //                 // your code
+    //               })
+    //         ],
+    //       );
+    //     });
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(child: Text('Logout')),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Center(child: Text('Do you want to logout ?')),
+              ],
+            ),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  child: Text('No'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('Yes'),
+                  onPressed: () {
+                    print("button presseed");
+                    apiBloc.add(LogoutEvent());
+                    // Navigator.of(context).pop();
+                    // CircularProgressIndicator();
+                    // Future.delayed(Duration(seconds: 2), () {
+                    clearData();
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => ScreenCodeScreen()),
+                        (route) => false);
+                    // });
+                    // Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
   }
 
   String formatTime(int totalSeconds) {
