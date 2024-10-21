@@ -125,6 +125,8 @@ flutter:
     - assets/QR.webp
     - assets/icon.png
     - assets/scalgo_logo.png
+    - assets/giff2.webp
+    
 
     
     # - images/a_dot_ham.jpeg loginAnim

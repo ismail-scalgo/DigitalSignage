@@ -50,3 +50,5 @@ class DisplayOldScreenCode extends RegisterblocState {
   String screenCode;
   DisplayOldScreenCode({required this.screenCode});
 }
+
+class OfflineState extends RegisterblocState {}

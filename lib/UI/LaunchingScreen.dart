@@ -15,6 +15,7 @@ import 'package:digitalsignange/MODELS/ZoneModel.dart';
 import 'package:digitalsignange/UI/LoginScreen.dart';
 import 'package:digitalsignange/UI/NewLoginScreen.dart';
 import 'package:digitalsignange/UI/NoBroadcastScreen.dart';
+import 'package:digitalsignange/UI/NoInternetScreen.dart';
 import 'package:digitalsignange/UI/SingleZoneView.dart';
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter/material.dart';
@@ -98,6 +99,17 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                         print("Builder called in UI");
                         if (state is NoBroadcastState) {
                           return NoBroadCastScreen();
+                        }
+                        if (state is OfflineState) {
+                          return NoInternetScreen();
+                        }
+                        if (state is MediaLoadingState) {
+                          return Container(
+                            color: Colors.black,
+                            child: Center(
+                              child: Text("FILES DOWNLOADING",style: TextStyle(fontSize: 20, color: Colors.white),),
+                            ),
+                          );
                         }
                         print("state is $state");
                         if (state is DisplayLayout) {
@@ -256,70 +268,40 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                   return Center();
                 },
               ),
-              if (isShrink)
-                Positioned(
-                  // right: 10,
-                  left: width,
-                  // right: width,
-                  width: width,
-                  bottom: height * 0.1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            isShrink = false;
-                          });
-                        },
-                        child: Text('Button 1'),
-                      ),
-                      SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Handle button 2 press
-                        },
-                        child: Text('Button 2'),
-                      ),
-                    ],
-                  ),
-                ),
+              // if (isShrink)
+              //   Positioned(
+              //     // right: 10,
+              //     left: width,
+              //     // right: width,
+              //     width: width,
+              //     bottom: height * 0.1,
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         ElevatedButton(
+              //           onPressed: () {
+              //             setState(() {
+              //               isShrink = false;
+              //             });
+              //           },
+              //           child: Text('Button 1'),
+              //         ),
+              //         SizedBox(height: 10),
+              //         ElevatedButton(
+              //           onPressed: () {
+              //             // Handle button 2 press
+              //           },
+              //           child: Text('Button 2'),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
             ],
           ),
         ),
       ),
     );
   }
-
-  // List<StaggeredGridTile> displayGrids(Map<int, MediaDetails> layoutMap) {
-  //   List<MediaDetails> layoutDetails = [];
-  //   List<StaggeredGridTile> staggeredList = [];
-  //   staggeredList.clear();
-  //   layoutDetails.clear();
-  //   layoutDetails = layoutMap.values.toList();
-
-  //   for (int index = 0; index < layoutDetails.length; index++) {
-  //     Widget currentWidget = BlocConsumer<LayoutblocBloc, LayoutblocState>(
-  //       listener: (context, state) {},
-  //       buildWhen: (previous, current) {
-  //         DisplayLayout previousState = previous as DisplayLayout;
-  //         DisplayLayout currentState = current as DisplayLayout;
-  //         return previousState.mediaMap[index + 1]!.currentMediaPosition !=
-  //             currentState.mediaMap[index + 1]!.currentMediaPosition;
-  //       },
-  //       builder: (context, state) {
-  //         return SingleZoneView(
-  //             details: (state as DisplayLayout).mediaMap[index + 1]!);
-  //       },
-  //     );
-  //     var count = StaggeredGridTile.count(
-  //         crossAxisCellCount: layoutDetails[index].width,
-  //         mainAxisCellCount: layoutDetails[index].height / factor,
-  //         child: currentWidget);
-  //     staggeredList.add(count);
-  //   }
-  //   return staggeredList;
-  // }
 
   List<StaggeredGridTile> buildGrids(LayoutData layoutdata) {
     List<StaggeredGridTile> staggeredList = [];
@@ -355,75 +337,9 @@ class _LyoutScreenState extends State<LaunchingScreen> {
       textColor: Colors.black,
       buttonTextColor: Colors.black,
     );
-    // PanaraCustomDialog.show(
-    //   context,
-    //   children: [
-    //     Text(
-    //       "Hello",
-    //       style: TextStyle(
-    //         fontSize: 20,
-    //       ),
-    //       textAlign: TextAlign.center,
-    //     ),
-    //     Text(
-    //       "This is the PanaraCustomDialog",
-    //       style: TextStyle(fontSize: 16),
-    //       textAlign: TextAlign.center,
-    //     ),
-    //     // Add your own widgets here
-    //   ],
-    //   mainAxisAlignment: MainAxisAlignment.center,
-    //   crossAxisAlignment: CrossAxisAlignment.center,
-    //   backgroundColor: Colors.white,
-    //   margin: EdgeInsets.all(20),
-    //   padding: EdgeInsets.all(20),
-    //   barrierDismissible: false,
-    // );
   }
 
   void showMyDialog(BuildContext context) async {
-    // return showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return AlertDialog(
-    //         scrollable: true,
-    //         title: Text('Login'),
-    //         content: Padding(
-    //           padding: const EdgeInsets.all(8.0),
-    //           child: Form(
-    //             child: Column(
-    //               children: <Widget>[
-    //                 TextFormField(
-    //                   decoration: InputDecoration(
-    //                     labelText: 'Name',
-    //                     icon: Icon(Icons.account_box),
-    //                   ),
-    //                 ),
-    //                 TextFormField(
-    //                   decoration: InputDecoration(
-    //                     labelText: 'Email',
-    //                     icon: Icon(Icons.email),
-    //                   ),
-    //                 ),
-    //                 TextFormField(
-    //                   decoration: InputDecoration(
-    //                     labelText: 'Message',
-    //                     icon: Icon(Icons.message),
-    //                   ),
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         actions: [
-    //           ElevatedButton(
-    //               child: Text("Submit"),
-    //               onPressed: () {
-    //                 // your code
-    //               })
-    //         ],
-    //       );
-    //     });
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -458,7 +374,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                     clearData();
                     Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => ScreenCodeScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => ScreenCodeScreen()),
                         (route) => false);
                     // });
                     // Navigator.of(context).pop();
@@ -494,16 +411,19 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     print("fetch api added");
     apiBloc.add(FetchApi(screenCode: widget.screenCode));
   }
+
   void checkConnectivity() async {
     if (await isOffline()) {
       showToast(context, "No Internet Connection");
+      apiBloc.add(OfflineEvent());
     }
   }
+
   void showToast(BuildContext context, String message) {
     toastification.show(
       context: context,
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
-      foregroundColor: Color.fromARGB(255, 131, 154, 255),
+      backgroundColor: Color.fromARGB(255, 0, 0, 0),
+      foregroundColor: Color.fromARGB(255, 255, 255, 255),
       type: ToastificationType.success,
       style: ToastificationStyle.simple,
       title: Text(message),
@@ -519,12 +439,5 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     if (!await isOffline()) {
       apiBloc.add(FetchApi(screenCode: widget.screenCode));
     }
-    // if (!result.contains(ConnectivityResult)) {
-    //   checkConnectivity();
-    //   apiBloc.add(FetchApi(screenCode: widget.screenCode));
-    // }
-    // if (result.contains(ConnectivityResult.none)) {
-    //   checkConnectivity();
-    // }
   }
 }

@@ -38,3 +38,5 @@ class ConnectSocket extends RegisterblocEvent {
   String screenCode;
   ConnectSocket({required this.screenCode});
 }
+
+class OfflineEvent extends RegisterblocEvent {}

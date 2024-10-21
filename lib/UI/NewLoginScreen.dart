@@ -5,6 +5,7 @@ import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/RequestModel.dart';
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
+import 'package:digitalsignange/UI/NoInternetScreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -174,80 +175,9 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
               ),
             );
           }
-          // if (state is DisplayOldScreenCode) {
-          //   return Container(
-          //     decoration: BoxDecoration(
-          //       gradient: LinearGradient(
-          //         tileMode: TileMode.mirror,
-          //         colors: [
-          //           Color.fromARGB(255, 86, 0, 224),
-          //           Color.fromARGB(255, 0, 0, 0),
-          //           Color.fromARGB(255, 0, 0, 0),
-          //           Color.fromARGB(255, 0, 0, 0),
-          //           Color.fromARGB(255, 0, 0, 0)
-          //         ],
-          //         begin: Alignment.topCenter,
-          //         end: Alignment.bottomCenter,
-          //       ),
-          //     ),
-          //     height: height,
-          //     width: width,
-          //     child: Column(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       crossAxisAlignment: CrossAxisAlignment.center,
-          //       children: [
-          //         Container(
-          //           // color: Colors.white,
-          //           height: height / 1.2,
-          //           width: width / 1.2,
-          //           child: Column(
-          //             mainAxisAlignment: MainAxisAlignment.center,
-          //             crossAxisAlignment: CrossAxisAlignment.start,
-          //             children: [
-          //               Text(
-          //                 "Pair device",
-          //                 style: TextStyle(
-          //                     color: const Color.fromARGB(255, 190, 190, 190),
-          //                     fontSize: 25,
-          //                     fontWeight: FontWeight.bold),
-          //               ),
-          //               SizedBox(
-          //                 height: 40,
-          //               ),
-          //               Text(
-          //                 "1,  Login to your Digital Signage account at www.web-sgdsg.com",
-          //                 style: TextStyle(
-          //                     color: const Color.fromARGB(255, 190, 190, 190),
-          //                     fontSize: 20,
-          //                     fontWeight: FontWeight.bold),
-          //               ),
-          //               SizedBox(
-          //                 height: 40,
-          //               ),
-          //               Text(
-          //                 "2,  Select New Screen and enter this code in the popup",
-          //                 style: TextStyle(
-          //                     color: const Color.fromARGB(255, 190, 190, 190),
-          //                     fontSize: 20,
-          //                     fontWeight: FontWeight.bold),
-          //               ),
-          //               SizedBox(
-          //                 height: 50,
-          //               ),
-          //               Text(
-          //                 state.screenCode,
-          //                 style: TextStyle(
-          //                     color: const Color.fromARGB(255, 190, 190, 190),
-          //                     fontSize: 50,
-          //                     fontWeight: FontWeight.bold),
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   );
-          // }
+          if (state is OfflineState) {
+            return NoInternetScreen();
+          }
           return Container(
             color: Colors.black,
             width: width,
@@ -297,16 +227,20 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
     print("adding event");
     registerBloc.add(GetScreenCode(request: request));
   }
+
   void checkConnectivity() async {
     if (await isOffline()) {
+      print("adding offline event");
+      registerBloc.add(OfflineEvent());
       showToast(context, "No Internet Connection");
     }
   }
+
   void showToast(BuildContext context, String message) {
     toastification.show(
       context: context,
       backgroundColor: Color.fromARGB(255, 0, 0, 0),
-      foregroundColor: Color.fromARGB(255, 63, 0, 235),
+      foregroundColor: Color.fromARGB(255, 253, 253, 253),
       type: ToastificationType.success,
       style: ToastificationStyle.simple,
       title: Text(message),

@@ -56,3 +56,7 @@ class FetchNextBroadcastEvent extends LayoutblocEvent {
 class LogoutEvent extends LayoutblocEvent {}
 
 class TrasnsitionEvent extends LayoutblocEvent {}
+
+class OfflineEvent extends LayoutblocEvent {}
+
+class MediaLoadingEvent extends LayoutblocEvent {}

@@ -15,7 +15,9 @@ String SOCKET_ADDRESS = 'ws://web-dev-sgdsignage.scalgo.net/ws/';
 
 Future<bool> isOffline() async {
   final connectivityResult = await Connectivity().checkConnectivity();
-  if (connectivityResult.contains(ConnectivityResult.none) || connectivityResult.contains(ConnectivityResult.bluetooth) || connectivityResult.contains(ConnectivityResult.vpn)) {
+  if (connectivityResult.contains(ConnectivityResult.none) ||
+      connectivityResult.contains(ConnectivityResult.bluetooth) ||
+      connectivityResult.contains(ConnectivityResult.vpn)) {
     return true;
   } else {
     return false;

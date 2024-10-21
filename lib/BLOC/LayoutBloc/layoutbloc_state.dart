@@ -28,3 +28,7 @@ class Minimizescreen extends LayoutblocState {
 class NoBroadcastState extends LayoutblocState {}
 
 class TrasitionState extends LayoutblocState {}
+
+class OfflineState extends LayoutblocState {}
+
+class MediaLoadingState extends LayoutblocState {}

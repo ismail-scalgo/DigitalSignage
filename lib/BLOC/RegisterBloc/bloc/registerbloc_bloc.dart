@@ -213,6 +213,10 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
       if (event is ConnectSocket) {
         connect(event.screenCode);
       }
+      if (event is OfflineEvent) {
+        print("emitting offline event");
+        emit(OfflineState());
+      }
       if (event is LaunchSignage) {
         emit(LaunchScreen(code: event.screenCode));
       }

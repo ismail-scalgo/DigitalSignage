@@ -57,7 +57,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           next_broadcast = broadCastData?.NextBroadCast;
 
           if (HARDCODEPLATFORM != 'WEB') {
-            preloadContents(current_broadcast!);
+            add(MediaLoadingEvent());
+            await preloadContents(current_broadcast!);
             if (next_broadcast != null) {
               preloadContents(next_broadcast!);
             }
@@ -78,6 +79,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             manageBroadcast(current_broadcast!);
           }
         }
+      }
+      if (event is MediaLoadingEvent) {
+        emit(MediaLoadingState());
       }
       if (event is StartEvent) {
         emit(DisplayLayout(layoutdata: event.layoutdata));
@@ -104,6 +108,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       if (event is TrasnsitionEvent) {
         emit(TrasitionState());
+      }
+      if (event is OfflineEvent) {
+        emit(OfflineState());
       }
 
       if (event is currentBroadCastEnds) {
@@ -246,12 +253,22 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     return difference.inSeconds;
   }
 
-  void preloadContents(LayoutData broadcastData) async {
+  // void preloadContents(LayoutData broadcastData) async {
+  //   print("cacheiggg");
+  //   broadcastData.zoneData!.forEach((zonedata) {
+  //     zonedata.compositionModels.forEach((content) {
+  //       DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
+  //     });
+  //   });
+  // }
+  Future preloadContents(LayoutData broadcastData) async {
     print("cacheiggg");
-    broadcastData.zoneData!.forEach((zonedata) {
-      zonedata.compositionModels.forEach((content) {
-        DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
-      });
-    });
+    for (var zoneData in broadcastData.zoneData!) {
+      for (var content in zoneData.compositionModels) {
+        await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
+      }
+      ;
+    }
+    ;
   }
 }
