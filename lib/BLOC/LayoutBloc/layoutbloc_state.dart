@@ -32,3 +32,7 @@ class TrasitionState extends LayoutblocState {}
 class OfflineState extends LayoutblocState {}
 
 class MediaLoadingState extends LayoutblocState {}
+
+class ProgressState extends LayoutblocState {}
+
+class LogoutState extends LayoutblocState {}

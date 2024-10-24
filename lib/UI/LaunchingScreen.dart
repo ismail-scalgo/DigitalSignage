@@ -14,6 +14,7 @@ import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
 import 'package:digitalsignange/MODELS/ZoneModel.dart';
 import 'package:digitalsignange/UI/LoginScreen.dart';
 import 'package:digitalsignange/UI/NewLoginScreen.dart';
+import 'package:digitalsignange/UI/NoBroadCastScreen2.dart';
 import 'package:digitalsignange/UI/NoBroadcastScreen.dart';
 import 'package:digitalsignange/UI/NoInternetScreen.dart';
 import 'package:digitalsignange/UI/SingleZoneView.dart';
@@ -22,11 +23,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 import 'package:toastification/toastification.dart';
+import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class LaunchingScreen extends StatefulWidget {
@@ -44,11 +47,12 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   bool isButtonVisible = true;
   bool isShrink = false;
   Connectivity connectivity = Connectivity();
-
+  late VideoPlayerController controller;
   late LayoutblocBloc apiBloc;
 
   @override
   void initState() {
+    super.initState();
     super.initState();
     checkConnectivity();
     WakelockPlus.enable();
@@ -61,6 +65,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   @override
   void dispose() {
     WakelockPlus.disable();
+    controller.dispose();
     super.dispose();
   }
 
@@ -106,8 +111,38 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                         if (state is MediaLoadingState) {
                           return Container(
                             color: Colors.black,
-                            child: Center(
-                              child: Text("FILES DOWNLOADING",style: TextStyle(fontSize: 20, color: Colors.white),),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    LoadingWidget(height, width),
+                                    Text(
+                                      "FILES DOWNLOADING",
+                                      style: GoogleFonts.playfairDisplay(
+                                        textStyle: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            // fontWeight: FontWeight.bold,
+                                            letterSpacing: 0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // Text(
+                                //   "FILES DOWNLOADING",
+                                //   style: GoogleFonts.playfairDisplay(
+                                //     textStyle: TextStyle(
+                                //         color: Colors.white,
+                                //         fontSize: 18,
+                                //         // fontWeight: FontWeight.bold,
+                                //         letterSpacing: 0),
+                                //   ),
+                                // ),
+                                // LoadingWidget(height, width),
+                              ],
                             ),
                           );
                         }
@@ -166,58 +201,181 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                           return Container(
                             color: Colors.black,
                             child: Center(
-                              child: CircularProgressIndicator(),
+                              child: LoadingWidget(height, width),
                             ),
                           );
                         }
                         if (state is DefaultScreen) {
-                          return Center(
-                              child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                  height: height / 3,
-                                  width: width / 3.5,
-                                  child: Lottie.asset('assets/Shoes.json')),
-                              Countdown(
-                                // controller: _controller,
-                                seconds: state.countdown,
-                                build: (_, double time) => Column(
+                          loadPlayer();
+                          return Container(
+                            width: width,
+                            height: height,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  child: VideoPlayer(controller),
+                                ),
+                                Container(
+                                  color: Color.fromARGB(255, 44, 43, 43)
+                                      .withOpacity(0.8),
+                                  // decoration: BoxDecoration(
+                                  //     color: Color.fromARGB(255, 44, 43, 43)
+                                  //         .withOpacity(0.8)),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      "NEXT IN",
-                                      style: TextStyle(
-                                          letterSpacing: 18,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              Color.fromARGB(255, 255, 217, 0)),
-                                    ),
-                                    Text(
-                                      formatTime(time.toInt()),
-                                      style: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.blue),
+                                    Center(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          // Text(
+                                          //   "NO",
+                                          //   style: GoogleFonts.protestStrike(
+                                          //       textStyle: TextStyle(
+                                          //           // color: Color.fromARGB(255, 65, 51, 51),
+                                          //           color: Color.fromARGB(
+                                          //               255, 216, 213, 213),
+                                          //           fontSize: width > height
+                                          //               ? width / 12
+                                          //               : height / 12,
+                                          //           fontWeight:
+                                          //               FontWeight.w500),
+                                          //       height: 0.8),
+                                          // ),
+                                          // Text(
+                                          //   "BROADCAST.",
+                                          //   style: GoogleFonts.protestStrike(
+                                          //     textStyle: TextStyle(
+                                          //         color: Color.fromARGB(
+                                          //             255, 218, 46, 15),
+                                          //         fontSize: width > height
+                                          //             ? width / 17
+                                          //             : height / 17,
+                                          //         fontWeight: FontWeight.bold,
+                                          //         letterSpacing: 0),
+                                          //   ),
+                                          // ),
+                                          Countdown(
+                                            // controller: _controller,
+                                            seconds: state.countdown,
+                                            build: (_, double time) => Column(
+                                              children: [
+                                                // Text(
+                                                //   "NEXT IN",
+                                                //   style: TextStyle(
+                                                //       letterSpacing: 18,
+                                                //       fontSize: 18,
+                                                //       fontWeight:
+                                                //           FontWeight.bold,
+                                                //       color: Color.fromARGB(
+                                                //           255, 255, 217, 0)),
+                                                // ),
+                                                Text(
+                                                  "BROADCAST in",
+                                                  style: GoogleFonts
+                                                      .playfairDisplay(
+                                                    textStyle: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 218, 46, 15),
+                                                        fontSize: width > height
+                                                            ? width / 17
+                                                            : height / 17,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        letterSpacing: 0),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  formatTime(time.toInt()),
+                                                  style: GoogleFonts
+                                                      .playfairDisplay(
+                                                    textStyle: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 255, 255, 255),
+                                                        fontSize: 25,
+                                                        fontWeight:
+                                                            FontWeight.w100,
+                                                        letterSpacing: 5),
+                                                  ),
+                                                  // style: TextStyle(
+                                                  //     fontSize: 25,
+                                                  //     fontWeight:
+                                                  //         FontWeight.bold,
+                                                  //     color: const Color.fromARGB(255, 255, 255, 255)),
+                                                ),
+                                              ],
+                                            ),
+                                            interval: Duration(seconds: 1),
+                                            onFinished: () {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content:
+                                                      Text('BROADCAST LIVE'),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                                interval: Duration(seconds: 1),
-                                onFinished: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('BROADCAST LIVE'),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ));
+                              ],
+                            ),
+                          );
+                          // return Center(
+                          //     child: Column(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          // children: [
+                          //   Container(
+                          //       height: height / 3,
+                          //       width: width / 3.5,
+                          //       child: Lottie.asset('assets/Shoes.json')),
+                          //   Countdown(
+                          //     // controller: _controller,
+                          //     seconds: state.countdown,
+                          //     build: (_, double time) => Column(
+                          //       children: [
+                          //         Text(
+                          //           "NEXT IN",
+                          //           style: TextStyle(
+                          //               letterSpacing: 18,
+                          //               fontSize: 18,
+                          //               fontWeight: FontWeight.bold,
+                          //               color:
+                          //                   Color.fromARGB(255, 255, 217, 0)),
+                          //         ),
+                          //         Text(
+                          //           formatTime(time.toInt()),
+                          //           style: TextStyle(
+                          //               fontSize: 25,
+                          //               fontWeight: FontWeight.bold,
+                          //               color: Colors.blue),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //     interval: Duration(seconds: 1),
+                          //     onFinished: () {
+                          //       ScaffoldMessenger.of(context).showSnackBar(
+                          //         SnackBar(
+                          //           content: Text('BROADCAST LIVE'),
+                          //         ),
+                          //       );
+                          //     },
+                          //   ),
+                          // ],
+                          // ));
                         }
                         return Container(
                           color: Colors.black,
                           child: Center(
-                            child: CircularProgressIndicator(),
+                            child: LoadingWidget(height, width),
                             // child: Container(
                             //     height: height / 3,
                             //     width: width / 3.5,
@@ -368,9 +526,6 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                   onPressed: () {
                     print("button presseed");
                     apiBloc.add(LogoutEvent());
-                    // Navigator.of(context).pop();
-                    // CircularProgressIndicator();
-                    // Future.delayed(Duration(seconds: 2), () {
                     clearData();
                     Navigator.pushAndRemoveUntil(
                         context,
@@ -401,6 +556,26 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     int seconds = totalSeconds % 60;
 
     return '${days.toString().padLeft(2, '0')} : ${hours.toString().padLeft(2, '0')} : ${minutes.toString().padLeft(2, '0')} : ${seconds.toString().padLeft(2, '0')}';
+  }
+
+  void loadPlayer() async {
+    // controller = VideoPlayerController.asset('assets/signageVideo1.mp4');
+    // controller.initialize();
+    // controller.setVolume(0);
+    controller = VideoPlayerController.asset('assets/signageVideo1.mp4');
+    controller.initialize();
+    controller.setVolume(0);
+    controller.setPlaybackSpeed(0.8);
+    controller.setLooping(true);
+    controller.play();
+  }
+
+  Widget LoadingWidget(double height, double width) {
+    return Center(
+        child: Container(
+            width: width / 10,
+            height: width / 10,
+            child: Lottie.asset('assets/loading3.json')));
   }
 
   void loadLayout() async {

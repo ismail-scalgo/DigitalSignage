@@ -13,11 +13,13 @@ import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fullscreen_window/fullscreen_window.dart';
 import 'package:media_kit/media_kit.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
+  FullScreenWindow.setFullScreen(true);
   runApp(MultiBlocProvider(providers: [
     BlocProvider(create: (context) => LayoutblocBloc()),
     BlocProvider(create: (context) => RegisterblocBloc()),

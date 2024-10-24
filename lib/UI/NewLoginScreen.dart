@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
@@ -182,7 +183,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
             color: Colors.black,
             width: width,
             height: height,
-            child: Center(child: CircularProgressIndicator()),
+            child: LoadingWidget(height, width),
           );
         },
       )),
@@ -193,7 +194,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // prefs.remove('NewScreenCode');
     // prefs.remove('isRegistered');
-    // await prefs.setString('NewScreenCode', "RZ95T1");
+    // await prefs.setString('NewScreenCode', "9B796Z");
     String? screenCode = prefs.getString('NewScreenCode');
     bool? isRegistered = prefs.getBool('isRegistered');
     if (isRegistered == null) {
@@ -234,6 +235,14 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
       registerBloc.add(OfflineEvent());
       showToast(context, "No Internet Connection");
     }
+  }
+
+  Widget LoadingWidget(double height, double width) {
+    return Center(
+        child: Container(
+            width: width / 10,
+            height: width / 10,
+            child: Lottie.asset('assets/loading3.json')));
   }
 
   void showToast(BuildContext context, String message) {

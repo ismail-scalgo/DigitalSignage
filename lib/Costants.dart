@@ -4,10 +4,9 @@ import 'package:toastification/toastification.dart';
 
 String BASEURL = "https://web-test-sgdsignage.scalgo.net";
 // String BASEURL = "http://192.168.0.98:8000";
-// String LOCAL_BASEURL = "http://192.168.0.98:8000";
 List<String> mediaTypes = ["jpeg", "mp4"];
 String PLATFORM = 'WEB';
-String HARDCODEPLATFORM = 'ANDROIDTV';
+String HARDCODEPLATFORM = 'ANDROID';
 double gheight = 0;
 double gwidth = 0;
 String SOCKET_ADDRESS = 'ws://web-dev-sgdsignage.scalgo.net/ws/';

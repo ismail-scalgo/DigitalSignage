@@ -74,6 +74,7 @@ dependencies:
   # better_player: ^0.0.84
   qr_flutter: ^4.1.0
   pretty_qr_code: ^3.3.0
+  fullscreen_window: ^1.0.3
   
   
 
@@ -109,25 +110,14 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/burger.jpeg
     - assets/loading.json
-    - assets/Animation.json
     - assets/loginAnim.json
-    - assets/Buildings.json
     - assets/Profiles.json
     - assets/Shoes.json
-    - assets/BlueCar.json
-    - assets/loading1.json
-    - assets/loading2.json
     - assets/loading3.json
-    - assets/Rocket.json
-    - assets/GreenShoes.json
     - assets/QR.webp
-    - assets/icon.png
     - assets/scalgo_logo.png
-    - assets/giff2.webp
-    
-
+    - assets/signageVideo1.mp4
     
     # - images/a_dot_ham.jpeg loginAnim
 

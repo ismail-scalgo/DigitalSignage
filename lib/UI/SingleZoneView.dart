@@ -30,6 +30,7 @@ class _SingleZoneViewState extends State<SingleZoneView> {
 
   @override
   void initState() {
+    print("intit state calleddddddddddddddddddddddddd");
     // widget.details.contentsList.forEach((element) {
 
     //   if(element.duration == "0.0") {
@@ -37,6 +38,14 @@ class _SingleZoneViewState extends State<SingleZoneView> {
     //   }
     // });
     // TODO: implement initState
+    if (isfirst) {
+      widget.zonedata.compositionModels.forEach((element) {
+        widgetList.add(getWidget(element));
+      });
+      changeController();
+      isfirst = false;
+      // change();
+    }
     super.initState();
   }
 
@@ -50,14 +59,6 @@ class _SingleZoneViewState extends State<SingleZoneView> {
 
   @override
   Widget build(BuildContext context) {
-    if (isfirst) {
-      widget.zonedata.compositionModels.forEach((element) {
-        widgetList.add(getWidget(element));
-        changeController();
-        isfirst = false;
-      });
-    }
-
     return Container(
       child: Stack(
         children: [
@@ -115,7 +116,8 @@ class _SingleZoneViewState extends State<SingleZoneView> {
     if (widget.zonedata.compositionModels.length - 1 < currentIndex) {
       currentIndex = 0;
     }
-
+    // print(
+    // "content durationnnnnnnnnnnnnnnnnnnnnnnnnnnnnn  = ${widget.zonedata.compositionModels[currentIndex].fileDuration}");
     Future.delayed(
         Duration(
             seconds: double.parse(widget

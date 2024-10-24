@@ -9,6 +9,7 @@ import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/BroadCastModel.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/REPOSITORIES/XcompositionRepository.dart';
+import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:meta/meta.dart';
 import 'package:web_socket_client/web_socket_client.dart';
@@ -37,15 +38,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is FetchApi) {
         print("fetch api event called");
         if (isFirstLoad) {
-          print("connectingggg");
           isFirstLoad = false;
           connect(event.screenCode);
         }
         screen_code = event.screenCode;
         BroadCastModel? broadCastData =
             await LayoutRepository().newFetchData(event.screenCode);
-        print(isFirstLoad);
         print("data = ${broadCastData}");
+        // if(broadCastData?.message == "no exist") {
+        //   add(LogoutEvent());
+          
+        // }
         if (broadCastData?.currentBroadCast == null) {
           RELOAD_FLAG_COUNT++;
           print("no dataaaaaaaaa");
@@ -56,17 +59,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           current_broadcast = layoutdata;
           next_broadcast = broadCastData?.NextBroadCast;
 
-          if (HARDCODEPLATFORM != 'WEB') {
-            add(MediaLoadingEvent());
-            await preloadContents(current_broadcast!);
-            if (next_broadcast != null) {
-              preloadContents(next_broadcast!);
-            }
-          }
           if (currentBroadcastInString !=
                   broadCastData?.currentBroadCast?.stringData ||
               nextBroadcastInString !=
                   broadCastData!.NextBroadCast?.stringData) {
+            if (HARDCODEPLATFORM != 'WEB') {
+              add(MediaLoadingEvent());
+              await preloadContents(current_broadcast!);
+              if (next_broadcast != null) {
+                preloadContents(next_broadcast!);
+              }
+            }
             add(TrasnsitionEvent());
             await Future.delayed(Duration(seconds: 1));
             print("data changingggggggggg");
@@ -81,7 +84,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         }
       }
       if (event is MediaLoadingEvent) {
-        emit(MediaLoadingState());
+        if (HARDCODEPLATFORM != "WEB") {
+          emit(MediaLoadingState());
+        }
       }
       if (event is StartEvent) {
         emit(DisplayLayout(layoutdata: event.layoutdata));
@@ -94,7 +99,18 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
 
       if (event is CountDownEvent) {
-        emit(DefaultScreen(countdown: event.countdown));
+        if(event.countdown <= 3) {
+          emit(TrasitionState());
+        }
+        else if(event.countdown > 5) {
+          emit(TrasitionState());
+        await Future.delayed(Duration(seconds: 2));
+        int countDown = event.countdown - 2;
+        emit(DefaultScreen(countdown: countDown));
+        } else {
+          emit(DefaultScreen(countdown: event.countdown));
+        }
+        // emit(DefaultScreen(countdown: event.countdown));
       }
       if (event is NoBroadCastEvent) {
         emit(NoBroadcastState());
@@ -104,7 +120,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       if (event is LogoutEvent) {
         print("logoutttttttttttttttttttt");
+        clearData();
         currentBroadcastInString = "";
+        isFirstLoad = true;
+        globalConnection.close();
+        emit(LogoutState());
       }
       if (event is TrasnsitionEvent) {
         emit(TrasitionState());

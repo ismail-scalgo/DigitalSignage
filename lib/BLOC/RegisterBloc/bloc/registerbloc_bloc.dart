@@ -270,6 +270,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
   }
 
   void closeConnection() {
+    print("disconnected");
     if (globalConnection != null) {
       try {
         globalConnection.close();

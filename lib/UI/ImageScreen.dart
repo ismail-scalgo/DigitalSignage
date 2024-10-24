@@ -5,6 +5,7 @@ import 'package:flutter_cache_manager/file.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:lottie/lottie.dart';
 
 class ImageScreen extends StatefulWidget {
   String url;
@@ -29,8 +30,15 @@ class _ImageScreenState extends State<ImageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return isLoad
-        ? Center(child: CircularProgressIndicator())
+        ? Center(
+            child: Center(
+                child: Container(
+                    width: width / 10,
+                    height: width / 10,
+                    child: Lottie.asset('assets/loading3.json'))))
         : Container(child: Image.network(widget.url, fit: BoxFit.fill));
     // : Container(child: Image(image: CachedNetworkImageProvider(widget.url)),);
   }
@@ -39,5 +47,13 @@ class _ImageScreenState extends State<ImageScreen> {
     // imageFile = await DefaultCacheManager().getSingleFile(widget.url);
     isLoad = false;
     setState(() {});
+  }
+
+  Widget LoadingWidget(double height, double width) {
+    return Center(
+        child: Container(
+            width: width / 10,
+            height: width / 10,
+            child: Lottie.asset('assets/loading3.json')));
   }
 }

@@ -161,151 +161,10 @@ class LayoutRepository {
     // BroadCastModel? broadCastData;
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-
-      // jsonData = {
-      //   "data": {
-      //     "first_broadcast_data": {
-      //       "id": 75,
-      //       "name": "Layout 3",
-      //       "message": "Live Broadcast",
-      //       "current_datetime": "2024-09-30T06:40:23",
-      //       "updated_datetime": "2024-09-30T06:19:46",
-      //       "start_datetime": "2024-09-30T06:41:00",
-      //       "end_datetime": "2024-09-30T06:41:30",
-      //       "orientation_angle": 90,
-      //       "zone_count": 3,
-      //       "zone_data": [
-      //         {
-      //           "id": 1,
-      //           "name": "Zone 1",
-      //           "xPercent": 0,
-      //           "yPercent": 0,
-      //           "widthPercent": 80,
-      //           "heightPercent": 70,
-      //           "contents": [
-      //             {
-      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
-      //               "file_format": "mp4",
-      //               "duration": "30.0"
-      //             },
-      //             {
-      //               "file_upload": "/media/uploads/Adv_image.jpg",
-      //               "file_format": "jpg",
-      //               "duration": "40.0"
-      //             },
-      //             {
-      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
-      //               "file_format": "mp4",
-      //               "duration": "10.0"
-      //             }
-      //           ]
-      //         },
-      //         {
-      //           "id": 2,
-      //           "name": "Zone 2",
-      //           "xPercent": 80,
-      //           "yPercent": 0,
-      //           "widthPercent": 20,
-      //           "heightPercent": 70,
-      //           "contents": [
-      //             {
-      //               "file_upload": "/media/uploads/Adv_image.jpg",
-      //               "file_format": "jpg",
-      //               "duration": "50.0"
-      //             }
-      //           ]
-      //         },
-      //         {
-      //           "id": 3,
-      //           "name": "Zone 3",
-      //           "xPercent": 0,
-      //           "yPercent": 70,
-      //           "widthPercent": 100,
-      //           "heightPercent": 30,
-      //           "contents": [
-      //             {
-      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
-      //               "file_format": "mp4",
-      //               "duration": "60.0"
-      //             }
-      //           ]
-      //         }
-      //       ]
-      //     },
-      //     "second_broadcast_data": {
-      //       "id": 78,
-      //       "name": "Layout 1",
-      //       "message": "Live Broadcast",
-      //       "current_datetime": "2024-09-30T06:40:50",
-      //       "updated_datetime": "2024-09-30T06:19:46",
-      //       "start_datetime": "2024-09-30T06:42:30",
-      //       "end_datetime": "2024-09-30T06:43:00",
-      //       "orientation_angle": 90,
-      //       "zone_count": 1,
-      //       "zone_data": [
-      //         {
-      //           "id": 1,
-      //           "name": "Zone 1",
-      //           "xPercent": 0,
-      //           "yPercent": 0,
-      //           "widthPercent": 100,
-      //           "heightPercent": 100,
-      //           "contents": [
-      //             {
-      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
-      //               "file_format": "mp4",
-      //               "duration": "30.0"
-      //             },
-      //             {
-      //               "file_upload": "/media/uploads/Adv_image.jpg",
-      //               "file_format": "jpg",
-      //               "duration": "40.0"
-      //             },
-      //             {
-      //               "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
-      //               "file_format": "mp4",
-      //               "duration": "10.0"
-      //             }
-      //           ]
-      //         },
-      // {
-      //   "id": 2,
-      //   "name": "Zone 2",
-      //   "xPercent": 80,
-      //   "yPercent": 0,
-      //   "widthPercent": 20,
-      //   "heightPercent": 70,
-      //   "contents": [
-      //     {
-      //       "file_upload": "/media/uploads/Adv_image.jpg",
-      //       "file_format": "jpg",
-      //       "duration": "50.0"
-      //     }
-      //   ]
-      // },
-      // {
-      //   "id": 3,
-      //   "name": "Zone 3",
-      //   "xPercent": 0,
-      //   "yPercent": 70,
-      //   "widthPercent": 100,
-      //   "heightPercent": 30,
-      //   "contents": [
-      //     {
-      //       "file_upload": "/media/uploads/Adv_video_BEkxyj7.mp4",
-      //       "file_format": "mp4",
-      //       "duration": "60.0"
-      //     }
-      //   ]
-      // }
-      //       ]
-      //     }
-      //   }
-      // };
-
       LayoutData? currentBroadcastData;
       LayoutData? nextBroadcastData;
       print("data1 = ${jsonData["data"]["first_broadcast_data"]}");
+      // String? screenStatus = jsonData["message"];
       if (jsonData["data"]["first_broadcast_data"]['message'] ==
           "Live Broadcast") {
         currentBroadcastData =
@@ -323,6 +182,7 @@ class LayoutRepository {
       }
 
       BroadCastModel broadCastData = BroadCastModel(
+        // message: screenStatus,
         currentBroadCast: currentBroadcastData,
         NextBroadCast: nextBroadcastData,
       );
