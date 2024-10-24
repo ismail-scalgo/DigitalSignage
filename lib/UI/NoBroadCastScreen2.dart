@@ -62,70 +62,104 @@ class _NoBroadCastScreenState extends State<NoBroadCastScreen> {
   }
 
   Widget noBroadCast(double height, double width) {
-    return Padding(
-      padding: const EdgeInsets.all(0),
-      child: Container(
-        width: width,
-        height: height,
-        child: Stack(
-          children: [
-            Container(
-              child: VideoPlayer(controller),
-              // child: Center(child: Text("No Broadcast"),),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 44, 43, 43).withOpacity(0.8)),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: Container(
-                    width: width / 2,
-                    height: height / 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "NO",
-                          style: GoogleFonts.playfairDisplay(
-                              textStyle: TextStyle(
-                                  color: Color.fromARGB(255, 216, 213, 213),
-                                  fontSize: width / 12,
-                                  // fontSize: width > height
-                                  //     ? width / 12
-                                  //     : height / 12,
-                                  fontWeight: FontWeight.bold),
-                              height: 0.8),
-                        ),
-                        Text(
-                          "BROADCAST.",
-                          // holtwoodOneSc
-                          // bonaNova
-                          // bodoniModa
-                          // protestStrike
-                          style: GoogleFonts.notable(
+    return Container(
+      width: width,
+      height: height,
+      child: Stack(
+        children: [
+          Container(
+            child: VideoPlayer(controller),
+            // child: Center(child: Text("No Broadcast"),),
+          ),
+          Container(
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 44, 43, 43).withOpacity(0.8)),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                        "NO",
+                        style: GoogleFonts.protestStrike(
                             textStyle: TextStyle(
-                                color: Color.fromARGB(255, 218, 46, 15),
-                                fontSize: width / 17,
+                                color: Color.fromARGB(255, 219, 210, 210),
+                                fontSize: width / 12,
                                 // fontSize: width > height
-                                //     ? width / 17
-                                //     : height / 17,
-                                // fontWeight: FontWeight.bold,
-                                letterSpacing: 0),
-                          ),
+                                //     ? width / 12
+                                //     : height / 12,
+                                fontWeight: FontWeight.bold),
+                            height: 0.8),
+                      ),
+                      SizedBox(width: width / 110,),
+                      Text(
+                        "BROADCAST.",
+                        // holtwoodOneSc
+                        // bonaNova
+                        // bodoniModa
+                        // protestStrike
+                        style: GoogleFonts.protestStrike(
+                          textStyle: TextStyle(
+                              color: Color.fromARGB(255, 218, 46, 15),
+                              fontSize: width / 17,
+                              // fontSize: width > height
+                              //     ? width / 17
+                              //     : height / 17,
+                              // fontWeight: FontWeight.bold,
+                              letterSpacing: 0),
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
+                // child: 
+                // Container(
+                //   width: width / 2,
+                //   height: height / 2,
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     children: [
+                //       Text(
+                //         "NO",
+                //         style: GoogleFonts.playfairDisplay(
+                //             textStyle: TextStyle(
+                //                 color: Color.fromARGB(255, 216, 213, 213),
+                //                 fontSize: width / 12,
+                //                 // fontSize: width > height
+                //                 //     ? width / 12
+                //                 //     : height / 12,
+                //                 fontWeight: FontWeight.bold),
+                //             height: 0.8),
+                //       ),
+                //       Text(
+                //         "BROADCAST.",
+                //         // holtwoodOneSc
+                //         // bonaNova
+                //         // bodoniModa
+                //         // protestStrike
+                //         style: GoogleFonts.notable(
+                //           textStyle: TextStyle(
+                //               color: Color.fromARGB(255, 218, 46, 15),
+                //               fontSize: width / 17,
+                //               // fontSize: width > height
+                //               //     ? width / 17
+                //               //     : height / 17,
+                //               // fontWeight: FontWeight.bold,
+                //               letterSpacing: 0),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

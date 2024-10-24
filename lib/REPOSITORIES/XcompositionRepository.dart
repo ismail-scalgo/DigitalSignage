@@ -1,5 +1,7 @@
 // ignore_for_file: unused_local_variable
 
+import 'dart:developer';
+
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/BroadCastModel.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
@@ -156,15 +158,15 @@ class LayoutRepository {
 
   Future<BroadCastModel?> newFetchData(String code) async {
     print("enteringggg");
+    LayoutData? currentBroadcastData;
+    LayoutData? nextBroadcastData;
     String data_url = '$BASEURL/api/launch-signage-screen/?code=$code';
     var response = await http.get(Uri.parse(data_url));
     // BroadCastModel? broadCastData;
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      LayoutData? currentBroadcastData;
-      LayoutData? nextBroadcastData;
+      String screenStatus = jsonData["message"];
       print("data1 = ${jsonData["data"]["first_broadcast_data"]}");
-      // String? screenStatus = jsonData["message"];
       if (jsonData["data"]["first_broadcast_data"]['message'] ==
           "Live Broadcast") {
         currentBroadcastData =
@@ -182,7 +184,7 @@ class LayoutRepository {
       }
 
       BroadCastModel broadCastData = BroadCastModel(
-        // message: screenStatus,
+        message: screenStatus,
         currentBroadCast: currentBroadcastData,
         NextBroadCast: nextBroadcastData,
       );
@@ -194,6 +196,15 @@ class LayoutRepository {
       return broadCastData;
     } else {
       print(" irresponse error");
+      var jsonData = json.decode(response.body);
+      log("message1 = ${jsonData["message"]}");
+      // String screenStatus = jsonData["message"];
+      BroadCastModel broadCastData = BroadCastModel(
+        message: jsonData["message"],
+        currentBroadCast: null,
+        NextBroadCast: null,
+      );
+      return broadCastData;
     }
   }
 }

@@ -2,8 +2,8 @@
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 
 class BroadCastModel {
-  // String? message;
+  String? message;
   LayoutData? currentBroadCast;
   LayoutData? NextBroadCast;
-  BroadCastModel({this.currentBroadCast, this.NextBroadCast});
+  BroadCastModel({this.currentBroadCast, this.NextBroadCast, this.message});
 }

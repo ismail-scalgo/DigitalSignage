@@ -36,6 +36,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("bloc created");
     on<LayoutblocEvent>((event, emit) async {
       if (event is FetchApi) {
+        log("fetch api event called");
         print("fetch api event called");
         if (isFirstLoad) {
           isFirstLoad = false;
@@ -45,10 +46,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         BroadCastModel? broadCastData =
             await LayoutRepository().newFetchData(event.screenCode);
         print("data = ${broadCastData}");
-        // if(broadCastData?.message == "no exist") {
-        //   add(LogoutEvent());
-          
-        // }
+        log("first");
+        log("message = ${broadCastData?.message}");
+        if (broadCastData?.message == "Screen Code doesn't exist") {
+          log("first2");
+          add(LogoutEvent());
+        }
         if (broadCastData?.currentBroadCast == null) {
           RELOAD_FLAG_COUNT++;
           print("no dataaaaaaaaa");
@@ -99,14 +102,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
 
       if (event is CountDownEvent) {
-        if(event.countdown <= 3) {
+        if (event.countdown <= 3) {
           emit(TrasitionState());
-        }
-        else if(event.countdown > 5) {
+        } else if (event.countdown > 5) {
           emit(TrasitionState());
-        await Future.delayed(Duration(seconds: 2));
-        int countDown = event.countdown - 2;
-        emit(DefaultScreen(countdown: countDown));
+          await Future.delayed(Duration(seconds: 2));
+          int countDown = event.countdown - 2;
+          emit(DefaultScreen(countdown: countDown));
         } else {
           emit(DefaultScreen(countdown: event.countdown));
         }
@@ -120,10 +122,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       if (event is LogoutEvent) {
         print("logoutttttttttttttttttttt");
+        log("first3");
         clearData();
         currentBroadcastInString = "";
         isFirstLoad = true;
         globalConnection.close();
+        log("first4");
         emit(LogoutState());
       }
       if (event is TrasnsitionEvent) {

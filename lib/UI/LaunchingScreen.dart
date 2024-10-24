@@ -99,11 +99,22 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       buildWhen: (previous, current) {
                         return current is! DisplayButton;
                       },
-                      listener: (context, state) {},
+                      listener: (context, state) async {
+                        if (state is LogoutState) {
+                          // LoadingWidget(height, width);
+                          // await Future.delayed(Duration(seconds: 2));
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ScreenCodeScreen()),
+                              (route) => false);
+                        }
+                      },
                       builder: (context, state) {
                         print("Builder called in UI");
                         if (state is NoBroadcastState) {
-                          return NoBroadCastScreen();
+                          return Center(child: Text("no broad"));
+                          // return NoBroadCastScreen();
                         }
                         if (state is OfflineState) {
                           return NoInternetScreen();
@@ -476,27 +487,6 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     return staggeredList;
   }
 
-  void showDialogBox(BuildContext content) {
-    PanaraConfirmDialog.show(
-      context,
-      title: "Hello",
-      message: "This is the PanaraConfirmDialog",
-      confirmButtonText: "Confirm",
-      cancelButtonText: "Cancel",
-      onTapCancel: () {
-        Navigator.pop(context);
-      },
-      onTapConfirm: () {
-        Navigator.pop(context);
-      },
-      panaraDialogType: PanaraDialogType.custom,
-      barrierDismissible: false,
-      color: Colors.black,
-      textColor: Colors.black,
-      buttonTextColor: Colors.black,
-    );
-  }
-
   void showMyDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,
@@ -526,12 +516,12 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                   onPressed: () {
                     print("button presseed");
                     apiBloc.add(LogoutEvent());
-                    clearData();
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ScreenCodeScreen()),
-                        (route) => false);
+                    // clearData();
+                    // Navigator.pushAndRemoveUntil(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => ScreenCodeScreen()),
+                    //     (route) => false);
                     // });
                     // Navigator.of(context).pop();
                   },
