@@ -71,10 +71,11 @@ dependencies:
   flutter_glow: ^0.3.2
   cached_network_image: ^3.4.1
   wakelock_plus: ^1.2.8
-  # better_player: ^0.0.84
+  better_player: ^0.0.84
   qr_flutter: ^4.1.0
   pretty_qr_code: ^3.3.0
   fullscreen_window: ^1.0.3
+  # flutter_vlc_player: ^7.4.2
   
   
 

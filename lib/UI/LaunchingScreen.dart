@@ -113,8 +113,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       builder: (context, state) {
                         print("Builder called in UI");
                         if (state is NoBroadcastState) {
-                          return Center(child: Text("no broad"));
-                          // return NoBroadCastScreen();
+                          // return Center(child: Text("no broad"));
+                          return NoBroadCastScreen();
                         }
                         if (state is OfflineState) {
                           return NoInternetScreen();

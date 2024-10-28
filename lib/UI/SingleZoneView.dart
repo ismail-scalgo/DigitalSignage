@@ -1,7 +1,11 @@
+import 'package:better_player/better_player.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
+import 'package:digitalsignange/UI/AndroidVideoPlayer.dart';
+import 'package:digitalsignange/UI/BetterVideoplayer.dart';
 import 'package:digitalsignange/UI/ImageScreen.dart';
+import 'package:digitalsignange/UI/MyVlcPlayer.dart';
 
 import 'package:digitalsignange/UI/PdfView.dart';
 import 'package:digitalsignange/UI/VideoPLayer.dart';
@@ -101,8 +105,15 @@ class _SingleZoneViewState extends State<SingleZoneView> {
       );
     } else if (compositiondata.fileFormat == "mp4") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
-      return CustomVideoPlayer(url: fullUrl);
+
+      double aspectRatio=(gwidth * widget.zonedata.widthPercent)/(gheight * widget.zonedata.heightPercent);
+     return CustomVideoPlayer(url: fullUrl);
       // return VideoPlayer(url: fullUrl);
+    //  return MyVlcPlayer(aspectratio: aspectRatio, url: fullUrl);
+    // return AndroidVideoPlayer(url: fullUrl);
+    // return AspectRatio(
+    //   aspectRatio: aspectRatio,
+    //   child:AndroidVideoPlayer(url: fullUrl));
     } else if (compositiondata.fileFormat == "pdf") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
       return CustomPdf(fullUrl);

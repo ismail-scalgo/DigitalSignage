@@ -9,6 +9,7 @@ import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/BroadCastModel.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/REPOSITORIES/XcompositionRepository.dart';
+import 'package:digitalsignange/UI/BetterPLayerCacheObject.dart';
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:meta/meta.dart';
@@ -38,6 +39,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is FetchApi) {
         log("fetch api event called");
         print("fetch api event called");
+        BETTERPLAYERCACHEOBJECTS.forEach((key,value){
+             value.dispose(forceDispose: true);
+        });
+
+        BETTERPLAYERCACHEOBJECTS.clear();
         if (isFirstLoad) {
           isFirstLoad = false;
           connect(event.screenCode);
@@ -289,7 +295,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("cacheiggg");
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
-        await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
+      var file=  await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
+      FILEPATH[BASEURL+content.fileUrl]=file.path;
       }
       ;
     }

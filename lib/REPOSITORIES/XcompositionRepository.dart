@@ -165,7 +165,7 @@ class LayoutRepository {
     // BroadCastModel? broadCastData;
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      String screenStatus = jsonData["message"];
+      String? screenStatus = jsonData["message"];
       print("data1 = ${jsonData["data"]["first_broadcast_data"]}");
       if (jsonData["data"]["first_broadcast_data"]['message'] ==
           "Live Broadcast") {

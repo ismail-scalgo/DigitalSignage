@@ -302,12 +302,12 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
   @override
   void initState() {
     super.initState();
-    HARDCODEPLATFORM == "WEB" ? loadWeb() : loadDevice();
+    HARDCODEPLATFORM != "WEB" ? loadWeb() : loadDevice();
   }
 
   @override
   void dispose() {
-    if (HARDCODEPLATFORM == "WEB") {
+    if (HARDCODEPLATFORM != "WEB") {
       controllerweb.player.dispose();
     } else {
       controller.dispose();
@@ -333,7 +333,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
   }
 
   Widget getplayer() {
-    return HARDCODEPLATFORM == "WEB"
+    return HARDCODEPLATFORM != "WEB"
         ? SizedBox(
             child: Video(
               fit: BoxFit.fill,
