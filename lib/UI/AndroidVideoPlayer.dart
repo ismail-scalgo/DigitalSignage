@@ -3,8 +3,7 @@
 import 'package:digitalsignange/Costants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+
 import 'package:video_player/video_player.dart';
 
 // import 'package:video_player_media_kit/video_player_media_kit.dart';
