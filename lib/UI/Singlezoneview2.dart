@@ -1,15 +1,15 @@
-import 'package:better_player/better_player.dart';
+
 
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/UI/AndroidVideoPlayer.dart';
-import 'package:digitalsignange/UI/BetterVideoplayer.dart';
+
 import 'package:digitalsignange/UI/ImageScreen.dart';
 import 'package:digitalsignange/UI/LinuxVideoPlayer.dart';
 import 'package:digitalsignange/UI/MyVlcPlayer.dart';
 
 import 'package:digitalsignange/UI/PdfView.dart';
-import 'package:digitalsignange/UI/VideoPLayer.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pdfx/pdfx.dart';

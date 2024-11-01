@@ -1,3 +1,4 @@
+import 'package:digitalsignange/UI/VIDEOLOCK.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:video_player/video_player.dart';
@@ -36,9 +37,29 @@ class _LinuxVideoPlayerState extends State<LinuxVideoPlayer> {
 
 
 
+
+
+Future preload() async
+{
+    if(ISVIDEOLOCKED)
+    {
+      await Future.delayed(Duration(milliseconds: 200));
+      preload();
+      
+    }
+    else
+    {
+      ISVIDEOLOCKED=true;
+     await load();
+     ISVIDEOLOCKED=false;
+    }
+
+}
+
+
     Future load() async
   {
-var file = await DefaultCacheManager().getSingleFile(widget.url);
+    var file = await DefaultCacheManager().getSingleFile(widget.url);
 
      _controller = VideoPlayerController.file(file);
 
@@ -46,7 +67,7 @@ var file = await DefaultCacheManager().getSingleFile(widget.url);
     
     });
     _controller.setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
+   await _controller.initialize();
     _controller.play();
     isloading =false;
     setState(() {

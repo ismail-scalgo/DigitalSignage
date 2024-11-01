@@ -17,7 +17,7 @@ import 'package:digitalsignange/UI/NewLoginScreen.dart';
 import 'package:digitalsignange/UI/NoBroadCastScreen2.dart';
 import 'package:digitalsignange/UI/NoBroadcastScreen.dart';
 import 'package:digitalsignange/UI/NoInternetScreen.dart';
-import 'package:digitalsignange/UI/SingleZoneView.dart';
+
 import 'package:digitalsignange/UI/Singlezoneview2.dart';
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter/material.dart';

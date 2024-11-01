@@ -32,7 +32,7 @@ class AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
 
     await controller.dispose();
 
-     TOTALPLAYERNO =TOTALPLAYERNO-1;
+   
    
 
     super.dispose();
@@ -78,8 +78,7 @@ class AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
     });
 
 
-    TOTALPLAYERNO =TOTALPLAYERNO+1;
 
-    print("PLAYER TOTAL NO="+TOTALPLAYERNO.toString());
+
   }
 }
