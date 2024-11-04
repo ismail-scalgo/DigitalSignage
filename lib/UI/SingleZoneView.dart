@@ -106,14 +106,15 @@ class _SingleZoneViewState extends State<SingleZoneView> {
     } else if (compositiondata.fileFormat == "mp4") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
 
-      double aspectRatio=(gwidth * widget.zonedata.widthPercent)/(gheight * widget.zonedata.heightPercent);
-     return CustomVideoPlayer(url: fullUrl);
+      double aspectRatio = (gwidth * widget.zonedata.widthPercent) /
+          (gheight * widget.zonedata.heightPercent);
+      return CustomVideoPlayer(url: fullUrl);
       // return VideoPlayer(url: fullUrl);
-    //  return MyVlcPlayer(aspectratio: aspectRatio, url: fullUrl);
-    // return AndroidVideoPlayer(url: fullUrl);
-    // return AspectRatio(
-    //   aspectRatio: aspectRatio,
-    //   child:AndroidVideoPlayer(url: fullUrl));
+      //  return MyVlcPlayer(aspectratio: aspectRatio, url: fullUrl);
+      // return AndroidVideoPlayer(url: fullUrl);
+      // return AspectRatio(
+      //   aspectRatio: aspectRatio,
+      //   child:AndroidVideoPlayer(url: fullUrl));
     } else if (compositiondata.fileFormat == "pdf") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
       return CustomPdf(fullUrl);

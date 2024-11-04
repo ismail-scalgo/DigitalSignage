@@ -23,6 +23,4 @@ Future<bool> isOffline() async {
   }
 }
 
-
-
-int TOTALPLAYERNO=0;
+int TOTALPLAYERNO = 0;

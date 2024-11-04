@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // import 'package:flutter/material.dart';
 // import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 // import 'package:flutter_vlc_player/flutter_vlc_player.dart';
@@ -20,7 +14,7 @@
 // class _MyVlcPlayerState extends State<MyVlcPlayer> {
 
 //   bool isloading=true;
-  
+
 // late  VlcPlayerController _videoPlayerController;
 
 //   Future<void> initializePlayer() async {
@@ -33,13 +27,10 @@
 //       autoPlay: true,
 //       options: VlcPlayerOptions(),
 //     );
-    
-
-   
 
 //     isloading=false;
 //     setState(() {
-      
+
 //     });
 //   }
 
@@ -52,7 +43,7 @@
 
 //   @override
 //   void dispose() async {
-   
+
 //     await _videoPlayerController.stopRendererScanning();
 //     await _videoPlayerController.dispose();
 
@@ -61,12 +52,12 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return 
+//     return
 //           isloading ? CircularProgressIndicator(): VlcPlayer(
 //             controller: _videoPlayerController,
 //             aspectRatio: widget.aspectratio,
 //             placeholder: Center(child: CircularProgressIndicator()),
 //           );
-        
+
 //   }
 // }

@@ -53,7 +53,6 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   @override
   void initState() {
     super.initState();
-    super.initState();
     checkConnectivity();
     WakelockPlus.enable();
     apiBloc = BlocProvider.of<LayoutblocBloc>(context);
@@ -288,9 +287,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                                 // ),
                                                 Text(
                                                   "BROADCAST in",
-                                                  style: GoogleFonts
-                                                      .playfairDisplay(
-                                                    textStyle: TextStyle(
+                                                  style:TextStyle(
                                                         color: Color.fromARGB(
                                                             255, 218, 46, 15),
                                                         fontSize: width > height
@@ -298,8 +295,9 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                                             : height / 17,
                                                         fontWeight:
                                                             FontWeight.bold,
+                                                            fontFamily: 'MyCustomFont',
                                                         letterSpacing: 0),
-                                                  ),
+                                                  // ),
                                                 ),
                                                 Text(
                                                   formatTime(time.toInt()),
@@ -384,7 +382,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                           // ));
                         }
                         return Container(
-                          color: Colors.black,
+                          color: Colors.blue,
                           child: Center(
                             child: LoadingWidget(height, width),
                             // child: Container(

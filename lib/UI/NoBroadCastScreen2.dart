@@ -27,7 +27,7 @@ class _NoBroadCastScreenState extends State<NoBroadCastScreen> {
     // TODO: implement initState
     // var file = await DefaultCacheManager().getSingleFile(widget.url);
     super.initState();
-    controller = VideoPlayerController.asset('assets/signageVideo1.mp4');
+    controller = VideoPlayerController.asset('assets/BGvideo3.mp4');
     controller.initialize();
     controller.setVolume(0);
     controller.setPlaybackSpeed(0.8);
@@ -73,7 +73,9 @@ class _NoBroadCastScreenState extends State<NoBroadCastScreen> {
           ),
           Container(
             decoration: BoxDecoration(
-                color: Color.fromARGB(255, 44, 43, 43).withOpacity(0.8)),
+                // color: Color.fromARGB(255, 44, 43, 43).withOpacity(0.8)),
+                color: Color.fromARGB(255, 7, 37, 82).withOpacity(0.6)),
+                // color: Color.fromARGB(255, 245, 173, 255).withOpacity(0.5)),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -85,38 +87,45 @@ class _NoBroadCastScreenState extends State<NoBroadCastScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        "NO",
-                        style: GoogleFonts.protestStrike(
-                            textStyle: TextStyle(
-                                color: Color.fromARGB(255, 219, 210, 210),
-                                fontSize: width / 12,
-                                // fontSize: width > height
-                                //     ? width / 12
-                                //     : height / 12,
-                                fontWeight: FontWeight.bold),
-                            height: 0.8),
-                      ),
-                      SizedBox(width: width / 110,),
-                      Text(
-                        "BROADCAST.",
-                        // holtwoodOneSc
-                        // bonaNova
-                        // bodoniModa
-                        // protestStrike
-                        style: GoogleFonts.protestStrike(
+                      "NO",
+                      style: GoogleFonts.protestStrike(
                           textStyle: TextStyle(
-                              color: Color.fromARGB(255, 218, 46, 15),
-                              fontSize: width / 17,
+                              // color: Color.fromARGB(255, 219, 210, 210),
+                              // color: Color.fromARGB(255, 255, 88, 59),
+                              color: Color.fromARGB(255, 255, 255, 255),
+                              fontSize: width / 12,
                               // fontSize: width > height
-                              //     ? width / 17
-                              //     : height / 17,
-                              // fontWeight: FontWeight.bold,
-                              letterSpacing: 0),
-                        ),
+                              //     ? width / 12
+                              //     : height / 12,
+                              fontWeight: FontWeight.bold),
+                          height: 0.8),
+                    ),
+                    SizedBox(
+                      width: width / 110,
+                    ),
+                    Text(
+                      "BROADCAST.",
+                      // holtwoodOneSc
+                      // bonaNova
+                      // bodoniModa
+                      // protestStrike
+                      style: GoogleFonts.protestStrike(
+                        textStyle: TextStyle(
+                            // color: Color.fromARGB(255, 218, 46, 15),
+                            // color: Color.fromARGB(255, 255, 88, 59),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontSize: width / 17,
+                            // fontFamily: 'MyCustomFont',
+                            // fontSize: width > height
+                            //     ? width / 17
+                            //     : height / 17,
+                            // fontWeight: FontWeight.bold,
+                            letterSpacing: 0),
                       ),
+                    ),
                   ],
                 ),
-                // child: 
+                // child:
                 // Container(
                 //   width: width / 2,
                 //   height: height / 2,

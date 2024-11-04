@@ -39,8 +39,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is FetchApi) {
         log("fetch api event called");
         print("fetch api event called");
-        BETTERPLAYERCACHEOBJECTS.forEach((key,value){
-             value.dispose(forceDispose: true);
+        BETTERPLAYERCACHEOBJECTS.forEach((key, value) {
+          value.dispose(forceDispose: true);
         });
 
         BETTERPLAYERCACHEOBJECTS.clear();
@@ -67,19 +67,24 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           LayoutData? layoutdata = broadCastData?.currentBroadCast;
           current_broadcast = layoutdata;
           next_broadcast = broadCastData?.NextBroadCast;
-
-          if (currentBroadcastInString !=
-                  broadCastData?.currentBroadCast?.stringData ||
-              nextBroadcastInString !=
-                  broadCastData!.NextBroadCast?.stringData) {
+          add(TrasnsitionEvent());
+          
+          int startTimeDifference = timeDifference(current_broadcast!.startDateTime!,current_broadcast!.currentDatetime!);
+          if (currentBroadcastInString != broadCastData?.currentBroadCast?.stringData || nextBroadcastInString != broadCastData!.NextBroadCast?.stringData) {
             if (HARDCODEPLATFORM != 'WEB') {
-              add(MediaLoadingEvent());
-              await preloadContents(current_broadcast!);
+              if (startTimeDifference > 0) {
+                preloadContents(current_broadcast!);
+              } else if (startTimeDifference <= 0) {
+                print("enteringggggggg");
+                add(MediaLoadingEvent());
+                await preloadContents(current_broadcast!);
+              }
+              // add(MediaLoadingEvent());
+              // await preloadContents(current_broadcast!);
               if (next_broadcast != null) {
                 preloadContents(next_broadcast!);
               }
             }
-            add(TrasnsitionEvent());
             await Future.delayed(Duration(seconds: 1));
             print("data changingggggggggg");
             RELOAD_FLAG_COUNT++;
@@ -129,10 +134,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is LogoutEvent) {
         print("logoutttttttttttttttttttt");
         log("first3");
+        globalConnection.close();
         clearData();
         currentBroadcastInString = "";
         isFirstLoad = true;
-        globalConnection.close();
         log("first4");
         emit(LogoutState());
       }
@@ -295,11 +300,18 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("cacheiggg");
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
-      var file=  await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
-      FILEPATH[BASEURL+content.fileUrl]=file.path;
-      }
-      ;
-    }
-    ;
+        var file = await DefaultCacheManager()
+            .getSingleFile(BASEURL + content.fileUrl);
+        FILEPATH[BASEURL + content.fileUrl] = file.path;
+      };
+    };
   }
 }
+
+
+
+
+
+
+
+

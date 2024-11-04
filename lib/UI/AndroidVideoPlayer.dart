@@ -1,5 +1,3 @@
-
-
 import 'package:digitalsignange/Costants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -21,20 +19,17 @@ class AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
 
   late VideoPlayerController controller;
 
-
   @override
   void initState() {
     super.initState();
-  loadDevice();
+    loadDevice();
   }
 
   @override
-  void dispose() async{
-
+  void dispose() async {
     await controller.dispose();
 
-     TOTALPLAYERNO =TOTALPLAYERNO-1;
-   
+    TOTALPLAYERNO = TOTALPLAYERNO - 1;
 
     super.dispose();
   }
@@ -56,10 +51,8 @@ class AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
   }
 
   Widget getplayer() {
-    return  VideoPlayer(controller);
+    return VideoPlayer(controller);
   }
-
- 
 
   void loadDevice() async {
     //  var file = await DefaultCacheManager().downloadFile(widget.url);
@@ -68,7 +61,7 @@ class AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
     var file = await DefaultCacheManager().getSingleFile(widget.url);
     controller = VideoPlayerController.file(file,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
-    
+
     controller.initialize();
     controller.setVolume(0);
     controller.setLooping(true);
@@ -78,9 +71,8 @@ class AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
       isLoading = false;
     });
 
+    TOTALPLAYERNO = TOTALPLAYERNO + 1;
 
-    TOTALPLAYERNO =TOTALPLAYERNO+1;
-
-    print("PLAYER TOTAL NO="+TOTALPLAYERNO.toString());
+    print("PLAYER TOTAL NO=" + TOTALPLAYERNO.toString());
   }
 }

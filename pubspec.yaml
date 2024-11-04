@@ -119,6 +119,8 @@ flutter:
     - assets/QR.webp
     - assets/scalgo_logo.png
     - assets/signageVideo1.mp4
+    - assets/BGvideo2.mp4
+    - assets/BGvideo3.mp4
     
     # - images/a_dot_ham.jpeg loginAnim
 
@@ -133,10 +135,13 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: MyCustomFont
+      fonts:
+        # - asset: assets/fonts/nagasaki.ttf
+        # - asset: assets/fonts/Robinson-1.ttf
+        - asset: assets/fonts/Robinson-2.ttf
+        # - asset: assets/fonts/Robinson-3.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
