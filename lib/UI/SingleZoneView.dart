@@ -139,7 +139,7 @@ class _SingleZoneViewState extends State<SingleZoneView> {
                 .toInt()), () async {
       if (!isdisposed) {
         print(!isdisposed);
-        print();
+        // print();
         controller.nextPage();
         isvisible = true;
         setState(() {});
