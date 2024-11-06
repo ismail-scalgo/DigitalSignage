@@ -194,7 +194,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // prefs.remove('NewScreenCode');
     // prefs.remove('isRegistered');
-    await prefs.setString('NewScreenCode', "GBE1TD");
+    // await prefs.setString('NewScreenCode', "GBE1TD");
     String? screenCode = prefs.getString('NewScreenCode');
     bool? isRegistered = prefs.getBool('isRegistered');
     if (isRegistered == null) {
