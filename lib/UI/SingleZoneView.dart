@@ -55,6 +55,7 @@ class _SingleZoneViewState extends State<SingleZoneView> {
 
   @override
   void dispose() {
+    print("zone disposing");
     isdisposed = true;
 
     // TODO: implement dispose
@@ -125,6 +126,7 @@ class _SingleZoneViewState extends State<SingleZoneView> {
   }
 
   void changeController() async {
+    print(isdisposed);
     if (widget.zonedata.compositionModels.length - 1 < currentIndex) {
       currentIndex = 0;
     }
@@ -136,6 +138,8 @@ class _SingleZoneViewState extends State<SingleZoneView> {
                     .zonedata.compositionModels[currentIndex].fileDuration)
                 .toInt()), () async {
       if (!isdisposed) {
+        print(!isdisposed);
+        print();
         controller.nextPage();
         isvisible = true;
         setState(() {});
