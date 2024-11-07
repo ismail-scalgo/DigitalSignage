@@ -94,39 +94,46 @@ Future<String?> detectDevice() async {
   var deviceData = <String, dynamic>{};
   final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   String deviceType;
-  if (kIsWeb) {
-    final webInfo = await deviceInfoPlugin.webBrowserInfo;
-    if (webInfo.userAgent!.contains("Android")) {
-      deviceType = "Mobile";
-      return deviceType;
-    } else if (webInfo.userAgent!.contains("Macintosh")) {
-      deviceType = "Desktop";
-      return deviceType;
-    } else if (webInfo.userAgent!.contains("Linux")) {
-      print("browser info = ${webInfo.userAgent}");
-      deviceType = "Desktop";
-      return deviceType;
-    } else if (webInfo.userAgent!.contains("Windows")) {
-      deviceType = "Desktop";
-      return deviceType;
-    } else if (webInfo.userAgent!.contains("iphone") ||
-        webInfo.userAgent!.contains("ipad")) {
-      deviceType = "iOS";
-    }
-  } else {
-    final PlatformType currentPlatformType = PlatformDetector.platform.type;
-    if (Platform.isAndroid) {
-      final androidInfo = await deviceInfoPlugin.androidInfo;
-      print("typeeeeeeeeeeeeee= ${androidInfo.model.toLowerCase()}");
-      if (androidInfo.systemFeatures.contains('android.software.leanback') ||
-          androidInfo.model.toLowerCase().contains('tv')) {
-        deviceType = "TV";
-      } else {
+
+  try {
+    if (kIsWeb) {
+      final webInfo = await deviceInfoPlugin.webBrowserInfo;
+      if (webInfo.userAgent!.contains("Android")) {
         deviceType = "Mobile";
+        return deviceType;
+      } else if (webInfo.userAgent!.contains("Macintosh")) {
+        deviceType = "Desktop";
+        return deviceType;
+      } else if (webInfo.userAgent!.contains("Linux")) {
+        print("browser info = ${webInfo.userAgent}");
+        deviceType = "Desktop";
+        return deviceType;
+      } else if (webInfo.userAgent!.contains("Windows")) {
+        deviceType = "Desktop";
+        return deviceType;
+      } else if (webInfo.userAgent!.contains("iphone") ||
+          webInfo.userAgent!.contains("ipad")) {
+        deviceType = "iOS";
       }
     } else {
-      deviceType = currentPlatformType.toString().split('.').last;
+      final PlatformType currentPlatformType = PlatformDetector.platform.type;
+      if (Platform.isAndroid) {
+        final androidInfo = await deviceInfoPlugin.androidInfo;
+        print("typeeeeeeeeeeeeee= ${androidInfo.model.toLowerCase()}");
+        if (androidInfo.systemFeatures.contains('android.software.leanback') ||
+            androidInfo.model.toLowerCase().contains('tv')) {
+          deviceType = "TV";
+        } else {
+          deviceType = "Mobile";
+        }
+      } else {
+        deviceType = currentPlatformType.toString().split('.').last;
+      }
+      return deviceType;
     }
+  } catch (e) {
+    print("device type error");
+    deviceType = "Unknown";
     return deviceType;
   }
 }
@@ -172,6 +179,9 @@ Future<String> getPlatform() async {
     // deviceData = <String, dynamic>{
     //   'Error:': 'Failed to get platform version.'
     // };
+  } catch (e) {
+    print("platform error");
+    platform = 'Unknown';
   }
   // if (!mounted) platform = 'Unknown';
   // setState(() {
