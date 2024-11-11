@@ -1,5 +1,3 @@
-
-
 import 'package:digitalsignange/Costants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -9,32 +7,34 @@ import 'package:video_player/video_player.dart';
 
 // import 'package:video_player_media_kit/video_player_media_kit.dart';
 
-class AndroidVideoPlayer extends StatefulWidget {
+class MediaKitWebPlayer extends StatefulWidget {
   String url;
-  AndroidVideoPlayer({required this.url});
+  MediaKitWebPlayer({required this.url});
   @override
-  State<AndroidVideoPlayer> createState() => AndroidVideoPlayerState();
+  State<MediaKitWebPlayer> createState() => MediaKitWebPlayerState();
 }
 
-class AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
+class MediaKitWebPlayerState extends State<MediaKitWebPlayer> {
   bool isLoading = true;
 
-  late VideoPlayerController controller;
 
+
+  late final player = Player(configuration: PlayerConfiguration(muted: true));
+  late final controllerweb = VideoController(
+    player,
+  );
 
   @override
   void initState() {
     super.initState();
-  loadDevice();
+  loadWeb();
   }
 
   @override
-  void dispose() async{
-
-    await controller.dispose();
-
-     TOTALPLAYERNO =TOTALPLAYERNO-1;
-   
+  void dispose() {
+ 
+      controllerweb.player.dispose();
+  
 
     super.dispose();
   }
@@ -56,31 +56,36 @@ class AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
   }
 
   Widget getplayer() {
-    return  VideoPlayer(controller);
+    return 
+        SizedBox(
+            child: Video(
+              fit: BoxFit.fill,
+              controller: controllerweb,
+              controls: (state) {
+                return Center();
+              },
+            ),
+          );
+        
   }
 
- 
-
-  void loadDevice() async {
-    //  var file = await DefaultCacheManager().downloadFile(widget.url);
-    //  int size = await file.file.length();
-    //  print(file.file.dirname);
-    var file = await DefaultCacheManager().getSingleFile(widget.url);
-    controller = VideoPlayerController.file(file,
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
-    
-    controller.initialize();
-    controller.setVolume(0);
-    controller.setLooping(true);
-    controller.play();
-
+  void loadWeb() async {
+    player.open(
+      Media(
+        widget.url,
+      ),
+      play: true,
+    );
+    // player.setVolume(1);
+   
+   await controllerweb.player.setVolume(0);
+  await  controllerweb.player.setPlaylistMode(PlaylistMode.loop);
+     controllerweb.player.play();
     setState(() {
       isLoading = false;
     });
 
 
-    TOTALPLAYERNO =TOTALPLAYERNO+1;
-
-    print("PLAYER TOTAL NO="+TOTALPLAYERNO.toString());
   }
+
 }

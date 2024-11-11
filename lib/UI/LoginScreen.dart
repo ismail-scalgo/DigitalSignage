@@ -6,7 +6,7 @@ import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/UI/RegisterScreen3.dart';
-import 'package:digitalsignange/UI/map.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';

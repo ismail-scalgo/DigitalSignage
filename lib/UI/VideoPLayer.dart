@@ -302,7 +302,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
   @override
   void initState() {
     super.initState();
-    HARDCODEPLATFORM != "WEB" ? loadWeb() : loadDevice();
+    HARDCODEPLATFORM == "WEB" ? loadWeb() : loadDevice();
   }
 
   @override
@@ -348,7 +348,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
   void loadWeb() async {
     player.open(
-      Media(
+      Media( 
         widget.url,
       ),
       play: true,
