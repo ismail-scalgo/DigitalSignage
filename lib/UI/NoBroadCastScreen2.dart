@@ -55,8 +55,53 @@ class _NoBroadCastScreenState extends State<NoBroadCastScreen> {
       height: height,
       child: Container(
         color: Colors.black,
-        child:
-            isLoad ? noBroadCast(height, width) : LoadingWidget(height, width),
+        // child:
+        //     isLoad ? noBroadCast(height, width) : LoadingWidget(height, width),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "NO",
+                style: GoogleFonts.protestStrike(
+                    textStyle: TextStyle(
+                        // color: Color.fromARGB(255, 219, 210, 210),
+                        // color: Color.fromARGB(255, 255, 88, 59),
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        fontSize: width / 12,
+                        // fontSize: width > height
+                        //     ? width / 12
+                        //     : height / 12,
+                        fontWeight: FontWeight.bold),
+                    height: 0.8),
+              ),
+              SizedBox(
+                width: width / 110,
+              ),
+              Text(
+                "BROADCAST.",
+                // holtwoodOneSc
+                // bonaNova
+                // bodoniModa
+                // protestStrike
+                style: GoogleFonts.protestStrike(
+                  textStyle: TextStyle(
+                      // color: Color.fromARGB(255, 218, 46, 15),
+                      // color: Color.fromARGB(255, 255, 88, 59),
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      fontSize: width / 17,
+                      // fontFamily: 'MyCustomFont',
+                      // fontSize: width > height
+                      //     ? width / 17
+                      //     : height / 17,
+                      // fontWeight: FontWeight.bold,
+                      letterSpacing: 0),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -75,7 +120,7 @@ class _NoBroadCastScreenState extends State<NoBroadCastScreen> {
             decoration: BoxDecoration(
                 // color: Color.fromARGB(255, 44, 43, 43).withOpacity(0.8)),
                 color: Color.fromARGB(255, 7, 37, 82).withOpacity(0.6)),
-                // color: Color.fromARGB(255, 245, 173, 255).withOpacity(0.5)),
+            // color: Color.fromARGB(255, 245, 173, 255).withOpacity(0.5)),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,

@@ -76,16 +76,16 @@ class _SingleZoneViewState extends State<SingleZoneView> {
                 viewportFraction: 1,
                 // scrollDirection: Axis.vertical,
               )),
-          isvisible
-              ? Container(
-                  child: Lottie.asset(
-                    'assets/loading.json',
-                    fit: BoxFit.fill,
-                    height: (gheight * widget.zonedata.heightPercent) / 100,
-                    width: (gwidth * widget.zonedata.widthPercent) / 100,
-                  ),
-                )
-              : Center()
+          // isvisible
+          //     ? Container(
+          //         child: Lottie.asset(
+          //           'assets/loading.json',
+          //           fit: BoxFit.fill,
+          //           height: (gheight * widget.zonedata.heightPercent) / 100,
+          //           width: (gwidth * widget.zonedata.widthPercent) / 100,
+          //         ),
+          //       )
+          //     : Center()
         ],
       ),
     );
@@ -145,12 +145,12 @@ class _SingleZoneViewState extends State<SingleZoneView> {
         setState(() {});
       }
 
-      Future.delayed(Duration(milliseconds: 400), () {
-        if (!isdisposed) {
-          isvisible = false;
-          setState(() {});
-        }
-      });
+      // Future.delayed(Duration(milliseconds: 400), () {
+      //   if (!isdisposed) {
+      //     isvisible = false;
+      //     setState(() {});
+      //   }
+      // });
       if (!isdisposed) {
         currentIndex++;
         changeController();

@@ -12,6 +12,7 @@ import 'package:digitalsignange/REPOSITORIES/XcompositionRepository.dart';
 import 'package:digitalsignange/UI/BetterPLayerCacheObject.dart';
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
@@ -37,7 +38,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("bloc created");
     on<LayoutblocEvent>((event, emit) async {
       if (event is FetchApi) {
-        log("fetch api event called");
         print("fetch api event called");
         BETTERPLAYERCACHEOBJECTS.forEach((key, value) {
           value.dispose(forceDispose: true);
@@ -52,10 +52,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         BroadCastModel? broadCastData =
             await LayoutRepository().newFetchData(event.screenCode);
         print("data = ${broadCastData}");
-        log("first");
         log("message = ${broadCastData?.message}");
         if (broadCastData?.message == "Screen Code doesn't exist") {
-          log("first2");
           add(LogoutEvent());
         }
         if (broadCastData?.currentBroadCast == null) {
@@ -68,19 +66,49 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           current_broadcast = layoutdata;
           next_broadcast = broadCastData?.NextBroadCast;
           add(TrasnsitionEvent());
-          
-          int startTimeDifference = timeDifference(current_broadcast!.startDateTime!,current_broadcast!.currentDatetime!);
-          if (currentBroadcastInString != broadCastData?.currentBroadCast?.stringData || nextBroadcastInString != broadCastData!.NextBroadCast?.stringData) {
+          String currentTime = getFormattedCurrentDateTime();
+          // int startTimeDifference = timeDifference(current_broadcast!.startDateTime!, current_broadcast!.currentDatetime!);
+          // int endTimeDifference = timeDifference(current_broadcast!.endDateTime!, current_broadcast!.currentDatetime!);
+          int startTimeDifference =
+              timeDifference(current_broadcast!.startDateTime!, currentTime);
+          int endTimeDifference =
+              timeDifference(current_broadcast!.endDateTime!, currentTime);
+          if (currentBroadcastInString !=
+                  broadCastData?.currentBroadCast?.stringData ||
+              nextBroadcastInString !=
+                  broadCastData!.NextBroadCast?.stringData) {
             if (HARDCODEPLATFORM != 'WEB') {
               if (startTimeDifference > 0) {
                 preloadContents(current_broadcast!);
               } else if (startTimeDifference <= 0) {
                 print("enteringggggggg");
-                add(MediaLoadingEvent());
-                await preloadContents(current_broadcast!);
+                bool isCached = await allCached(current_broadcast!);
+                if(!isCached) {
+                  add(MediaLoadingEvent());
+                }
+                // String isCached = await getCachedUrl(newUrl);
+                // loadContents(endTimeDifference, event.screenCode);
+                try {
+                  await preloadContents(current_broadcast!)
+                      .timeout(Duration(seconds: endTimeDifference));
+                } on TimeoutException {
+                  log("Preloading timed out!");
+                  add(FetchApi(screenCode: event.screenCode));
+                }
+                // loadContents(endTimeDifference, event.screenCode);
+                // Future.delayed(Duration(seconds: endTimeDifference), () async {
+                //   log("Broadcast ends");
+                //   if (next_broadcast == null) {
+                //     log("no broadcast");
+                //     add(NoBroadCastEvent());
+                //   } else {
+                //     log("next broadcast");
+                //     next_broadcast!.currentDatetime =
+                //         current_broadcast!.endDateTime;
+                //     manageBroadcast(next_broadcast!);
+                //   }
+                // });
               }
-              // add(MediaLoadingEvent());
-              // await preloadContents(current_broadcast!);
               if (next_broadcast != null) {
                 preloadContents(next_broadcast!);
               }
@@ -97,6 +125,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           }
         }
       }
+
       if (event is MediaLoadingEvent) {
         if (HARDCODEPLATFORM != "WEB") {
           emit(MediaLoadingState());
@@ -112,20 +141,32 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         emit(DisplayButton(isvisible: event.isvisible));
       }
 
+      // if (event is CountDownEvent) {
+      //   if (event.countdown <= 3) {
+      //     emit(TrasitionState());
+      //   } else if (event.countdown > 5) {
+      //     emit(TrasitionState());
+      //     await Future.delayed(Duration(seconds: 2));
+      //     int countDown = event.countdown - 2;
+      //     emit(DefaultScreen(countdown: countDown));
+      //   } else {
+      //     emit(DefaultScreen(countdown: event.countdown));
+      //   }
+      //   // emit(DefaultScreen(countdown: event.countdown));
+      // }
       if (event is CountDownEvent) {
         if (event.countdown <= 3) {
           emit(TrasitionState());
-        } else if (event.countdown > 5) {
+        } else {
           emit(TrasitionState());
           await Future.delayed(Duration(seconds: 2));
           int countDown = event.countdown - 2;
           emit(DefaultScreen(countdown: countDown));
-        } else {
-          emit(DefaultScreen(countdown: event.countdown));
         }
-        // emit(DefaultScreen(countdown: event.countdown));
       }
       if (event is NoBroadCastEvent) {
+        emit(TrasitionState());
+        await Future.delayed(Duration(seconds: 1));
         emit(NoBroadcastState());
       }
       if (event is DisplayBroadcastEvent) {
@@ -150,9 +191,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
       if (event is currentBroadCastEnds) {
         print("CURRENT BROADCAST ENDS");
+        log("CURRENT BROADCAST ENDS");
         if (next_broadcast == null) {
+          log("no broadcast");
           add(NoBroadCastEvent());
         } else {
+          log("next broadcast");
           next_broadcast!.currentDatetime = event.current_datetime;
           manageBroadcast(next_broadcast!);
         }
@@ -182,16 +226,31 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     });
   }
 
+  void loadContents(int endTime, String screenCode) async {
+    try {
+      await preloadContents(current_broadcast!)
+          .timeout(Duration(seconds: endTime));
+    } on TimeoutException {
+      log("Preloading timed out!");
+      add(FetchApi(screenCode: screenCode));
+    }
+  }
+
   void manageBroadcast(LayoutData layoutdata) async {
     print("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
     log("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
 
+    String currentTime = getFormattedCurrentDateTime();
+    log("old current time = ${layoutdata.currentDatetime}");
+    log("current time = $currentTime");
+
+    // int start_difference = timeDifference(layoutdata.startDateTime!, layoutdata.currentDatetime!);
     int start_difference =
-        timeDifference(layoutdata.startDateTime!, layoutdata.currentDatetime!);
+        timeDifference(layoutdata.startDateTime!, currentTime);
     int end_difference = 0;
     if (start_difference < 0) {
-      end_difference =
-          timeDifference(layoutdata.endDateTime!, layoutdata.currentDatetime!);
+      // end_difference = timeDifference(layoutdata.endDateTime!, layoutdata.currentDatetime!);
+      end_difference = timeDifference(layoutdata.endDateTime!, currentTime);
     } else {
       end_difference =
           timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!);
@@ -288,6 +347,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     return difference.inSeconds;
   }
 
+  String getFormattedCurrentDateTime() {
+    final now = DateTime.now();
+    final formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    return formatter.format(now);
+  }
+
   // void preloadContents(LayoutData broadcastData) async {
   //   print("cacheiggg");
   //   broadcastData.zoneData!.forEach((zonedata) {
@@ -296,6 +361,36 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   //     });
   //   });
   // }
+  Future<bool> allCached(LayoutData broadcastData) async {
+    print("check cachinggg");
+    bool isAllCached = true;
+    var cachedFile;
+    final cacheManager = DefaultCacheManager();
+    for (var zoneData in broadcastData.zoneData!) {
+      for (var content in zoneData.compositionModels) {
+        // var file = await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
+        cachedFile = await cacheManager.getFileFromCache(BASEURL + content.fileUrl);
+        if (cachedFile == null) {
+          isAllCached = false;
+          break;
+        }
+      }
+      if (!isAllCached) {
+          break;
+      }
+    }
+    return isAllCached;
+
+    // final cachedFile = await cacheManager.getFileFromCache(newUrl);
+    // return cachedFile.toString();
+
+    // if (cachedFile != null) {
+    //     print("File is cached: ${cachedFile.file.path}");
+    //  } else {
+    //   print("File is not cached: $newUrl");
+    // }
+  }
+
   Future preloadContents(LayoutData broadcastData) async {
     print("cacheiggg");
     for (var zoneData in broadcastData.zoneData!) {
@@ -303,15 +398,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         var file = await DefaultCacheManager()
             .getSingleFile(BASEURL + content.fileUrl);
         FILEPATH[BASEURL + content.fileUrl] = file.path;
-      };
-    };
+      }
+      ;
+    }
+    ;
   }
 }
-
-
-
-
-
-
-
-

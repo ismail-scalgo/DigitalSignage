@@ -273,9 +273,12 @@
 //   }
 // }
 
+import 'dart:developer';
+
 import 'package:digitalsignange/Costants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:lottie/lottie.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:video_player/video_player.dart';
@@ -310,6 +313,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
     if (HARDCODEPLATFORM == "WEB") {
       controllerweb.player.dispose();
     } else {
+      log("disposinggg");
       controller.dispose();
     }
 
@@ -318,18 +322,10 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     return Center(
-        child: isLoading
-            ? Container(
-                color: Colors.black,
-                child: Center(
-                  child: Text(
-                    "Loading ..",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              )
-            : getplayer());
+        child: isLoading ? LoadingWidget(height, width) : getplayer());
   }
 
   Widget getplayer() {
@@ -382,5 +378,13 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  Widget LoadingWidget(double height, double width) {
+    return Center(
+        child: Container(
+            width: width / 10,
+            height: width / 10,
+            child: Lottie.asset('assets/loading3.json')));
   }
 }

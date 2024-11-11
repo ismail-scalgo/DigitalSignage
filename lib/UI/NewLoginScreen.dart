@@ -180,7 +180,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
             return NoInternetScreen();
           }
           return Container(
-            color: const Color.fromARGB(255, 128, 128, 128),
+            color: Color.fromARGB(255, 0, 0, 0),
             width: width,
             height: height,
             child: LoadingWidget(height, width),
@@ -194,7 +194,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // prefs.remove('NewScreenCode');
     // prefs.remove('isRegistered');
-    // await prefs.setString('NewScreenCode', "GFB9UC");
+    await prefs.setString('NewScreenCode', "TI21SX");
     String? screenCode = prefs.getString('NewScreenCode');
     bool? isRegistered = prefs.getBool('isRegistered');
     if (isRegistered == null) {

@@ -216,22 +216,23 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                           );
                         }
                         if (state is DefaultScreen) {
-                          loadPlayer();
+                          // loadPlayer();
                           return Container(
                             width: width,
                             height: height,
+                            color: Colors.black,
                             child: Stack(
                               children: [
-                                Container(
-                                  child: VideoPlayer(controller),
-                                ),
-                                Container(
-                                  color: Color.fromARGB(255, 44, 43, 43)
-                                      .withOpacity(0.8),
-                                  // decoration: BoxDecoration(
-                                  //     color: Color.fromARGB(255, 44, 43, 43)
-                                  //         .withOpacity(0.8)),
-                                ),
+                                // Container(
+                                //   child: VideoPlayer(controller),
+                                // ),
+                                // Container(
+                                //   color: Color.fromARGB(255, 44, 43, 43)
+                                //       .withOpacity(0.8),
+                                //   // decoration: BoxDecoration(
+                                //   //     color: Color.fromARGB(255, 44, 43, 43)
+                                //   //         .withOpacity(0.8)),
+                                // ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -287,16 +288,17 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                                 // ),
                                                 Text(
                                                   "BROADCAST in",
-                                                  style:TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 218, 46, 15),
-                                                        fontSize: width > height
-                                                            ? width / 17
-                                                            : height / 17,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                            fontFamily: 'MyCustomFont',
-                                                        letterSpacing: 0),
+                                                  style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 255, 255, 255),
+                                                      fontSize: width > height
+                                                          ? width / 17
+                                                          : height / 17,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily:
+                                                          'MyCustomFont',
+                                                      letterSpacing: 0),
                                                   // ),
                                                 ),
                                                 Text(
@@ -305,7 +307,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                                       .playfairDisplay(
                                                     textStyle: TextStyle(
                                                         color: Color.fromARGB(
-                                                            255, 255, 255, 255),
+                                                            255, 255, 254, 254),
                                                         fontSize: 25,
                                                         fontWeight:
                                                             FontWeight.w100,
@@ -382,7 +384,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                           // ));
                         }
                         return Container(
-                          color: Colors.blue,
+                          // color: Colors.blue,
+                          color: const Color.fromARGB(255, 0, 0, 0),
                           child: Center(
                             child: LoadingWidget(height, width),
                             // child: Container(
