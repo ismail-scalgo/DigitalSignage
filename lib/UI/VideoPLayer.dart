@@ -344,7 +344,7 @@ class CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
   void loadWeb() async {
     player.open(
-      Media(
+      Media( 
         widget.url,
       ),
       play: true,
