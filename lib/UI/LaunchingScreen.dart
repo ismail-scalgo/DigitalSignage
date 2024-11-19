@@ -6,19 +6,19 @@ import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
-import 'package:digitalsignange/UI/ImageScreen.dart';
+import 'package:digitalsignange/UI/ELEMENTS/COMMON/ImageView.dart';
 import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 import 'package:digitalsignange/REPOSITORIES/LayoutRepo.dart';
 import 'package:digitalsignange/MODELS/MediaDetailModel.dart';
 import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
 import 'package:digitalsignange/MODELS/ZoneModel.dart';
-import 'package:digitalsignange/UI/LoginScreen.dart';
-import 'package:digitalsignange/UI/NewLoginScreen.dart';
-import 'package:digitalsignange/UI/NoBroadCastScreen2.dart';
-import 'package:digitalsignange/UI/NoBroadcastScreen.dart';
+
+import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
+import 'package:digitalsignange/UI/NoBroadCastScreen.dart';
+
 import 'package:digitalsignange/UI/NoInternetScreen.dart';
 
-import 'package:digitalsignange/UI/Singlezoneview2.dart';
+import 'package:digitalsignange/UI/SingleZoneController.dart';
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -26,11 +26,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:panara_dialogs/panara_dialogs.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 import 'package:toastification/toastification.dart';
-import 'package:video_player/video_player.dart';
+
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class LaunchingScreen extends StatefulWidget {
@@ -48,7 +48,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   bool isButtonVisible = true;
   bool isShrink = false;
   Connectivity connectivity = Connectivity();
-  late VideoPlayerController controller;
+
   late LayoutblocBloc apiBloc;
 
   @override
@@ -65,7 +65,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   @override
   void dispose() {
     WakelockPlus.disable();
-    controller.dispose();
+
     super.dispose();
   }
 
@@ -480,7 +480,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
       StaggeredGridTile tile = StaggeredGridTile.count(
         crossAxisCellCount: zonedata.widthPercent,
         mainAxisCellCount: zonedata.heightPercent / factor,
-        child: SingleZoneView2(zonedata: zonedata),
+        child: SingleZoneController(zonedata: zonedata),
       );
 
       staggeredList.add(tile);
@@ -548,18 +548,6 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     int seconds = totalSeconds % 60;
 
     return '${days.toString().padLeft(2, '0')} : ${hours.toString().padLeft(2, '0')} : ${minutes.toString().padLeft(2, '0')} : ${seconds.toString().padLeft(2, '0')}';
-  }
-
-  void loadPlayer() async {
-    // controller = VideoPlayerController.asset('assets/signageVideo1.mp4');
-    // controller.initialize();
-    // controller.setVolume(0);
-    controller = VideoPlayerController.asset('assets/signageVideo1.mp4');
-    controller.initialize();
-    controller.setVolume(0);
-    controller.setPlaybackSpeed(0.8);
-    controller.setLooping(true);
-    controller.play();
   }
 
   Widget LoadingWidget(double height, double width) {

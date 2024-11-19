@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/file.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:lottie/lottie.dart';
@@ -10,8 +9,6 @@ import 'package:lottie/lottie.dart';
 class ImageScreen extends StatefulWidget {
   String url;
 
-  // double width;
-  // double height;
   ImageScreen({required this.url});
 
   @override
@@ -40,7 +37,6 @@ class _ImageScreenState extends State<ImageScreen> {
                     height: width / 10,
                     child: Lottie.asset('assets/loading3.json'))))
         : Container(child: Image.network(widget.url, fit: BoxFit.fill));
-    // : Container(child: Image(image: CachedNetworkImageProvider(widget.url)),);
   }
 
   void load() async {

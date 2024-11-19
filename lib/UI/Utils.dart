@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
+
 import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';

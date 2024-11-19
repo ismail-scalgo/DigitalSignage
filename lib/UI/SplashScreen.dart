@@ -1,11 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:digitalsignange/UI/ControllerWidget.dart';
-import 'package:digitalsignange/UI/LoginScreen.dart';
-import 'package:digitalsignange/UI/NewLoginScreen.dart';
+import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:flutter_glow/flutter_glow.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -112,7 +109,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Route createRoute() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => LoginScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          ScreenCodeScreen(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;

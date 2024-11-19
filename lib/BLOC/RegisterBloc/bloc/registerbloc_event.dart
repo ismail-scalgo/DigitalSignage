@@ -15,13 +15,8 @@ class LoginUser extends RegisterblocEvent {
   LoginUser({required this.screenCode});
 }
 
-class ShowSignIn extends RegisterblocEvent {}
-
-class ShowRegister extends RegisterblocEvent {}
-
 class GetScreenCode extends RegisterblocEvent {
-  RequestModel request;
-  GetScreenCode({required this.request});
+  GetScreenCode();
 }
 
 class DisplayScreenCode extends RegisterblocEvent {
@@ -40,3 +35,7 @@ class ConnectSocket extends RegisterblocEvent {
 }
 
 class OfflineEvent extends RegisterblocEvent {}
+
+class CheckDeviceStatusEvent extends RegisterblocEvent {}
+
+class InterNetStatusEvent extends RegisterblocEvent {}

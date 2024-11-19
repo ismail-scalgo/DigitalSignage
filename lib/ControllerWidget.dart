@@ -1,6 +1,6 @@
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
-import 'package:digitalsignange/UI/LoginScreen.dart';
-import 'package:flutter/foundation.dart';
+import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +30,7 @@ class _ControllerWidgetState extends State<ControllerWidget> {
         ? Center(child: Lottie.asset('assets/Shoes.json'))
         : (screenCode != null
             ? LaunchingScreen(screenCode: screenCode!)
-            : LoginScreen());
+            : ScreenCodeScreen());
   }
 
   void getScreenCode() async {

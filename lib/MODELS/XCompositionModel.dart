@@ -2,22 +2,34 @@ import 'dart:convert';
 
 class CompositionModel {
   final String fileUrl;
+  String localstoragepath;
   final String fileFormat;
   final String fileDuration;
 
   CompositionModel({
     required this.fileUrl,
     required this.fileFormat,
+    required this.localstoragepath,
     required this.fileDuration,
   });
 
   // Convert JSON to CompositionModel
   factory CompositionModel.fromJson(Map<String, dynamic> json) {
     return CompositionModel(
-      fileUrl: json['file_upload'] as String,
-      fileFormat: json['file_format'] as String,
-      fileDuration: json['duration'] as String,
+      fileUrl : json['file_upload'] as String,
+      fileFormat : json['file_format'] as String,
+      localstoragepath : json['localstoragepath'] == null ? '' : json['localstoragepath'],
+      fileDuration : json['duration'] as String,
     );
+  }
+
+  Map toJson() {
+    return {
+      "file_upload" : fileUrl,
+      "file_format" : fileFormat,
+      "duration" : fileDuration,
+      "localstoragepath" : localstoragepath
+    };
   }
 }
 
@@ -47,14 +59,26 @@ class ZoneData {
         CompositionModelsJson.map((i) => CompositionModel.fromJson(i)).toList();
 
     return ZoneData(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      widthPercent: json['widthPercent'] as int,
-      heightPercent: json['heightPercent'] as int,
-      xPercent: json['xPercent'] as int,
-      yPercent: json['yPercent'] as int,
-      compositionModels: compositionModelsList,
+      id : json['id'] as int,
+      name : json['name'] as String,
+      widthPercent : json['widthPercent'] as int,
+      heightPercent : json['heightPercent'] as int,
+      xPercent : json['xPercent'] as int,
+      yPercent : json['yPercent'] as int,
+      compositionModels : compositionModelsList,
     );
+  }
+
+  Map toJson() {
+    return {
+      "id" : id,
+      "name" : name,
+      "widthPercent" : widthPercent,
+      "heightPercent" : heightPercent,
+      "xPercent" : xPercent,
+      "yPercent" : yPercent,
+      "contents" : compositionModels.map((model) => model.toJson()).toList(),
+    };
   }
 }
 
@@ -95,16 +119,39 @@ class LayoutData {
         zoneDataJson.map((i) => ZoneData.fromJson(i)).toList();
 
     return LayoutData(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        message: json['message'] as String,
-        currentDatetime: json['current_datetime'] as String,
-        startDateTime: json['start_datetime'] as String,
-        endDateTime: json['end_datetime'] as String,
-        zoneCount: json['zone_count'] as int,
-        zoneData: zoneDataList,
-        lastUpdatedAt: json['updated_datetime'],
-        oreintationAngle: json['orientation_angle'] as int,
-        stringData: jsonEncode(jsonCopy));
+        id : json['id'] as int,
+        name : json['name'] as String,
+        message:  json['message'] as String,
+        currentDatetime : json['current_datetime'] as String,
+        startDateTime : json['start_datetime'] as String,
+        endDateTime : json['end_datetime'] as String,
+        zoneCount : json['zone_count'] as int,
+        zoneData : zoneDataList,
+        lastUpdatedAt : json['updated_datetime'],
+        oreintationAngle : json['orientation_angle'] as int,
+        stringData : jsonEncode(jsonCopy));
+  }
+
+  Map toJson() {
+    print("LAYOUT DATA TO JSON CALLED");
+
+    print(message);
+
+    if (message == "Live Broadcast") {
+      return {
+        "id": id,
+        "name": name,
+        "message": message,
+        "current_datetime": currentDatetime,
+        "updated_datetime": lastUpdatedAt,
+        "start_datetime": startDateTime,
+        "end_datetime": endDateTime,
+        "orientation_angle": oreintationAngle,
+        "zone_count": zoneCount,
+        "zone_data": zoneData?.map((zone) => zone.toJson()).toList(),
+      };
+    } else {
+      return {"message": "No other broadcast"};
+    }
   }
 }

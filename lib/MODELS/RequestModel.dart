@@ -1,31 +1,31 @@
 class RequestModel {
-  String? agentId;
-  String? name;
-  String? browser;
-  String? browserVersion;
-  String? location;
-  String? latitude;
-  String? longitude;
-  String? orientation;
-  String? platform;
-  String? osVersion;
-  String? height;
-  String? width;
-  String? type;
+  String agentId;
+  String name;
+  String browser;
+  String browserVersion;
+  String location;
+  String latitude;
+  String longitude;
+  String orientation;
+  String platform;
+  String osVersion;
+  String height;
+  String width;
+  String type;
   RequestModel({
-    this.agentId,
-    this.name,
-    this.browser,
-    this.browserVersion,
-    this.location,
-    this.latitude,
-    this.longitude,
-    this.orientation,
-    this.platform,
-    this.osVersion,
-    this.height,
-    this.width,
-    this.type,
+    required this.agentId,
+    required this.name,
+    required this.browser,
+    required this.browserVersion,
+    required this.location,
+    required this.latitude,
+    required this.longitude,
+    required this.orientation,
+    required this.platform,
+    required this.osVersion,
+    required this.height,
+    required this.width,
+    required this.type,
   });
 
   // factory Request.fromJson(Map<String, dynamic> json) {

@@ -9,11 +9,13 @@ import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/BroadCastModel.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/REPOSITORIES/XcompositionRepository.dart';
+import 'package:digitalsignange/UI/NoInternetScreen.dart';
 
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:intl/intl.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
 part 'layoutbloc_event.dart';
@@ -35,93 +37,78 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   int RELOAD_FLAG_COUNT = 0;
 
   LayoutblocBloc() : super(LayoutblocInitial()) {
-    print("bloc created");
+    print("LAYOUT BLOC CALLEDDDDDDDDD");
+
     on<LayoutblocEvent>((event, emit) async {
+      print("LAYOU BLOCK EVENT");
+      print(event);
       if (event is FetchApi) {
+        log("fetch api event called");
         print("fetch api event called");
 
         if (isFirstLoad) {
-          isFirstLoad = false;
           connect(event.screenCode);
         }
-        screen_code = event.screenCode;
-        BroadCastModel? broadCastData =
-            await LayoutRepository().newFetchData(event.screenCode);
-        print("data = ${broadCastData}");
-        log("message = ${broadCastData?.message}");
-        if (broadCastData?.message == "Screen Code doesn't exist") {
-          add(LogoutEvent());
-        }
-        if (broadCastData?.currentBroadCast == null) {
-          RELOAD_FLAG_COUNT++;
-          print("no dataaaaaaaaa");
-          emit(NoBroadcastState());
-        } else {
-          print("there is data");
-          LayoutData? layoutdata = broadCastData?.currentBroadCast;
-          current_broadcast = layoutdata;
-          next_broadcast = broadCastData?.NextBroadCast;
-          add(TrasnsitionEvent());
-          String currentTime = getFormattedCurrentDateTime();
-          // int startTimeDifference = timeDifference(current_broadcast!.startDateTime!, current_broadcast!.currentDatetime!);
-          // int endTimeDifference = timeDifference(current_broadcast!.endDateTime!, current_broadcast!.currentDatetime!);
-          int startTimeDifference =
-              timeDifference(current_broadcast!.startDateTime!, currentTime);
-          int endTimeDifference =
-              timeDifference(current_broadcast!.endDateTime!, currentTime);
-          if (currentBroadcastInString !=
-                  broadCastData?.currentBroadCast?.stringData ||
-              nextBroadcastInString !=
-                  broadCastData!.NextBroadCast?.stringData) {
-            if (HARDCODEPLATFORM != 'WEB') {
-              if (startTimeDifference > 0) {
-                preloadContents(current_broadcast!);
-              } else if (startTimeDifference <= 0) {
-                print("enteringggggggg");
-                bool isCached = await allCached(current_broadcast!);
-                if(!isCached) {
-                  add(MediaLoadingEvent());
-                }
-                // String isCached = await getCachedUrl(newUrl);
-                // loadContents(endTimeDifference, event.screenCode);
-                try {
-                  await preloadContents(current_broadcast!)
-                      .timeout(Duration(seconds: endTimeDifference));
-                } on TimeoutException {
-                  log("Preloading timed out!");
-                  add(FetchApi(screenCode: event.screenCode));
-                }
-                // loadContents(endTimeDifference, event.screenCode);
-                // Future.delayed(Duration(seconds: endTimeDifference), () async {
-                //   log("Broadcast ends");
-                //   if (next_broadcast == null) {
-                //     log("no broadcast");
-                //     add(NoBroadCastEvent());
-                //   } else {
-                //     log("next broadcast");
-                //     next_broadcast!.currentDatetime =
-                //         current_broadcast!.endDateTime;
-                //     manageBroadcast(next_broadcast!);
-                //   }
-                // });
-              }
-              if (next_broadcast != null) {
-                preloadContents(next_broadcast!);
-              }
-            }
-            await Future.delayed(Duration(seconds: 1));
-            print("data changingggggggggg");
-            RELOAD_FLAG_COUNT++;
-            currentBroadcastInString =
-                broadCastData!.currentBroadCast?.stringData!;
-            nextBroadcastInString = broadCastData.NextBroadCast?.stringData!;
-            print("update = ${layoutdata!.lastUpdatedAt}");
-            lastUpdateTime = layoutdata.lastUpdatedAt!;
-            manageBroadcast(current_broadcast!);
-          }
-        }
-      }
+        bool result = await InternetConnection().hasInternetAccess;
 
+        if (result) {
+          screen_code = event.screenCode;
+          BroadCastModel? broadCastData =
+              await LayoutRepository().newFetchData(event.screenCode);
+
+
+          if (broadCastData?.message == "Screen Code doesn't exist") {
+
+            add(LogoutEvent());
+          }
+          if (broadCastData?.currentBroadCast == null) {
+            RELOAD_FLAG_COUNT++;
+
+            emit(NoBroadcastState());
+          } else {
+            print("there is data");
+            LayoutData? layoutdata = broadCastData?.currentBroadCast;
+            current_broadcast = layoutdata;
+            next_broadcast = broadCastData?.NextBroadCast;
+
+            if (currentBroadcastInString !=
+                    broadCastData?.currentBroadCast?.stringData ||
+                nextBroadcastInString !=
+                    broadCastData!.NextBroadCast?.stringData) {
+              if (HARDCODEPLATFORM != 'WEB') {
+                add(MediaLoadingEvent());
+                int end_difference = timeDifference(
+                    current_broadcast!.endDateTime!,
+                    current_broadcast!.currentDatetime!);
+                await preloadContents(current_broadcast!)
+                    .timeout(Duration(seconds: end_difference));
+
+                String stringResponce =
+                    jsonEncode(broadCastData!.toJsonBroadCastModel());
+                saveResponce(stringResponce);
+
+                if (next_broadcast != null) {
+                  preloadContents(next_broadcast!);
+                }
+              }
+              add(TrasnsitionEvent());
+              await Future.delayed(Duration(seconds: 1));
+              print("data changingggggggggg");
+              RELOAD_FLAG_COUNT++;
+              currentBroadcastInString =
+                  broadCastData!.currentBroadCast?.stringData!;
+              nextBroadcastInString = broadCastData.NextBroadCast?.stringData!;
+              print("update = ${layoutdata!.lastUpdatedAt}");
+              lastUpdateTime = layoutdata.lastUpdatedAt!;
+              manageBroadcast(current_broadcast!);
+            }
+          }
+        } else if (!result && isFirstLoad) {
+          handlestatewithoutInternet(event.screenCode);
+        }
+
+        isFirstLoad = false;
+      }
       if (event is MediaLoadingEvent) {
         if (HARDCODEPLATFORM != "WEB") {
           emit(MediaLoadingState());
@@ -137,32 +124,20 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         emit(DisplayButton(isvisible: event.isvisible));
       }
 
-      // if (event is CountDownEvent) {
-      //   if (event.countdown <= 3) {
-      //     emit(TrasitionState());
-      //   } else if (event.countdown > 5) {
-      //     emit(TrasitionState());
-      //     await Future.delayed(Duration(seconds: 2));
-      //     int countDown = event.countdown - 2;
-      //     emit(DefaultScreen(countdown: countDown));
-      //   } else {
-      //     emit(DefaultScreen(countdown: event.countdown));
-      //   }
-      //   // emit(DefaultScreen(countdown: event.countdown));
-      // }
       if (event is CountDownEvent) {
         if (event.countdown <= 3) {
           emit(TrasitionState());
-        } else {
+        } else if (event.countdown > 5) {
           emit(TrasitionState());
           await Future.delayed(Duration(seconds: 2));
           int countDown = event.countdown - 2;
           emit(DefaultScreen(countdown: countDown));
+        } else {
+          emit(DefaultScreen(countdown: event.countdown));
         }
+        // emit(DefaultScreen(countdown: event.countdown));
       }
       if (event is NoBroadCastEvent) {
-        emit(TrasitionState());
-        await Future.delayed(Duration(seconds: 1));
         emit(NoBroadcastState());
       }
       if (event is DisplayBroadcastEvent) {
@@ -171,10 +146,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is LogoutEvent) {
         print("logoutttttttttttttttttttt");
         log("first3");
-        globalConnection.close();
         clearData();
         currentBroadcastInString = "";
         isFirstLoad = true;
+        globalConnection.close();
         log("first4");
         emit(LogoutState());
       }
@@ -187,12 +162,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
       if (event is currentBroadCastEnds) {
         print("CURRENT BROADCAST ENDS");
-        log("CURRENT BROADCAST ENDS");
         if (next_broadcast == null) {
-          log("no broadcast");
           add(NoBroadCastEvent());
         } else {
-          log("next broadcast");
           next_broadcast!.currentDatetime = event.current_datetime;
           manageBroadcast(next_broadcast!);
         }
@@ -222,13 +194,58 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     });
   }
 
-  void loadContents(int endTime, String screenCode) async {
-    try {
-      await preloadContents(current_broadcast!)
-          .timeout(Duration(seconds: endTime));
-    } on TimeoutException {
-      log("Preloading timed out!");
-      add(FetchApi(screenCode: screenCode));
+  void saveResponce(String responce) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('cached_responce', responce);
+  }
+
+  void handlestatewithoutInternet(String screencode) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String? cache_responce = prefs.getString('cached_responce');
+
+    if (cache_responce == null) {
+      add(OfflineEvent());
+    } else {
+      print("CACHE   SAVED MESSAGE");
+      print(cache_responce);
+      BroadCastModel? broadCastData =
+          await LayoutRepository().fetchDataFromStorage(cache_responce);
+
+      if (broadCastData?.currentBroadCast == null) {
+        RELOAD_FLAG_COUNT++;
+        print("no dataaaaaaaaa");
+        add(NoBroadCastEvent());
+      } else {
+        print("there is data");
+        LayoutData? layoutdata = broadCastData?.currentBroadCast;
+        current_broadcast = layoutdata;
+        next_broadcast = broadCastData?.NextBroadCast;
+
+        if (currentBroadcastInString !=
+                broadCastData?.currentBroadCast?.stringData ||
+            nextBroadcastInString != broadCastData!.NextBroadCast?.stringData) {
+          if (HARDCODEPLATFORM != 'WEB') {
+            add(MediaLoadingEvent());
+            int end_difference = timeDifference(current_broadcast!.endDateTime!,
+                current_broadcast!.currentDatetime!);
+
+            if (next_broadcast != null) {
+              preloadContents(next_broadcast!);
+            }
+          }
+          add(TrasnsitionEvent());
+          await Future.delayed(Duration(seconds: 1));
+
+          RELOAD_FLAG_COUNT++;
+          currentBroadcastInString =
+              broadCastData!.currentBroadCast?.stringData!;
+          nextBroadcastInString = broadCastData.NextBroadCast?.stringData!;
+
+          lastUpdateTime = layoutdata!.lastUpdatedAt!;
+          manageBroadcast(current_broadcast!);
+        }
+      }
     }
   }
 
@@ -236,17 +253,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
     log("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
 
-    String currentTime = getFormattedCurrentDateTime();
-    log("old current time = ${layoutdata.currentDatetime}");
-    log("current time = $currentTime");
-
-    // int start_difference = timeDifference(layoutdata.startDateTime!, layoutdata.currentDatetime!);
     int start_difference =
-        timeDifference(layoutdata.startDateTime!, currentTime);
+        timeDifference(layoutdata.startDateTime!, layoutdata.currentDatetime!);
     int end_difference = 0;
     if (start_difference < 0) {
-      // end_difference = timeDifference(layoutdata.endDateTime!, layoutdata.currentDatetime!);
-      end_difference = timeDifference(layoutdata.endDateTime!, currentTime);
+      end_difference =
+          timeDifference(layoutdata.endDateTime!, layoutdata.currentDatetime!);
     } else {
       end_difference =
           timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!);
@@ -343,12 +355,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     return difference.inSeconds;
   }
 
-  String getFormattedCurrentDateTime() {
-    final now = DateTime.now();
-    final formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    return formatter.format(now);
-  }
-
   // void preloadContents(LayoutData broadcastData) async {
   //   print("cacheiggg");
   //   broadcastData.zoneData!.forEach((zonedata) {
@@ -357,42 +363,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   //     });
   //   });
   // }
-  Future<bool> allCached(LayoutData broadcastData) async {
-    print("check cachinggg");
-    bool isAllCached = true;
-    var cachedFile;
-    final cacheManager = DefaultCacheManager();
-    for (var zoneData in broadcastData.zoneData!) {
-      for (var content in zoneData.compositionModels) {
-        // var file = await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
-        cachedFile = await cacheManager.getFileFromCache(BASEURL + content.fileUrl);
-        if (cachedFile == null) {
-          isAllCached = false;
-          break;
-        }
-      }
-      if (!isAllCached) {
-          break;
-      }
-    }
-    return isAllCached;
-
-    // final cachedFile = await cacheManager.getFileFromCache(newUrl);
-    // return cachedFile.toString();
-
-    // if (cachedFile != null) {
-    //     print("File is cached: ${cachedFile.file.path}");
-    //  } else {
-    //   print("File is not cached: $newUrl");
-    // }
-  }
-
   Future preloadContents(LayoutData broadcastData) async {
     print("cacheiggg");
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
-      var file=  await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
-    
+        var file = await DefaultCacheManager()
+            .getSingleFile(BASEURL + content.fileUrl);
+        content.localstoragepath = file.path;
       }
       ;
     }

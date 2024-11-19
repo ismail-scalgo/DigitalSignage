@@ -1,1 +1,1 @@
-bool ISVIDEOLOCKED=false;
+bool ISVIDEOLOCKED = false;

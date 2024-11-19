@@ -5,5 +5,24 @@ class BroadCastModel {
   String? message;
   LayoutData? currentBroadCast;
   LayoutData? NextBroadCast;
-  BroadCastModel({this.currentBroadCast, this.NextBroadCast, this.message});
+  String? layoutrespInString;
+  BroadCastModel(
+      {this.currentBroadCast,
+      this.NextBroadCast,
+      this.message,
+      this.layoutrespInString});
+
+  Map toJsonBroadCastModel() {
+    return {
+      "data": {
+        "first_broadcast_data": currentBroadCast == null
+            ? {"message": "No other broadcast"}
+            : currentBroadCast?.toJson(),
+        "second_broadcast_data": NextBroadCast == null
+            ? {"message": "No other broadcast"}
+            : NextBroadCast?.toJson(),
+        "message": message
+      }
+    };
+  }
 }
