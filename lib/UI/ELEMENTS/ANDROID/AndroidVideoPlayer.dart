@@ -63,6 +63,7 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
   }
 
   Future<void> _loadVideoSource() async {
+    print("url2 = ${widget.url}");
     final videoSource = await _createVideoSource();
     await _controller?.loadVideoSource(videoSource);
   }

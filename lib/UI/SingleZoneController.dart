@@ -61,10 +61,17 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
           (gheight * widget.zonedata.heightPercent);
       // return CustomVideoPlayer(url: fullUrl);
       // return MediaKitWebPlayer(url: fullUrl);
+      print("url1 = ${fullUrl}");
+      print("file path = ${compositiondata.localstoragepath}");
       return AndroidVideoPlayer(
         url: fullUrl,
         filepath: compositiondata.localstoragepath,
       );
+
+//        url2 = https://web-dev-sgdsignage.scalgo.net/media/uploads/4.%20Sooraj/ForBiggerEscapes_pHCKvHE.mp4
+//        I/flutter (27480): FILE PATH OF VIDEOOOOOOOOOOO
+//        I/flutter (27480): /data/user/0/com.example.digitalsignange/cache/libCachedImageData/e31063c0-a727-11ef-8641-cd3ad725e104.mp4
+//        D/VRI[]   (27480): vri.reportDrawFinished
       // return Mymediakitvideoplayer(url: fullUrl);
       // return FlutterVideoPlayer(url: fullUrl);
       // return VideoPlayer(url: fullUrl);

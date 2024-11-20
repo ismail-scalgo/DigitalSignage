@@ -14,6 +14,7 @@ import 'package:digitalsignange/UI/NoInternetScreen.dart';
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_client/web_socket_client.dart';
@@ -56,9 +57,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           BroadCastModel? broadCastData =
               await LayoutRepository().newFetchData(event.screenCode);
 
-
           if (broadCastData?.message == "Screen Code doesn't exist") {
-
             add(LogoutEvent());
           }
           if (broadCastData?.currentBroadCast == null) {
@@ -70,6 +69,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             LayoutData? layoutdata = broadCastData?.currentBroadCast;
             current_broadcast = layoutdata;
             next_broadcast = broadCastData?.NextBroadCast;
+            String currentTime = getFormattedCurrentDateTime();
+            int startTimeDifference =
+                timeDifference(current_broadcast!.startDateTime!, currentTime);
+            int endTimeDifference =
+                timeDifference(current_broadcast!.endDateTime!, currentTime);
 
             if (currentBroadcastInString !=
                     broadCastData?.currentBroadCast?.stringData ||
@@ -77,11 +81,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                     broadCastData!.NextBroadCast?.stringData) {
               if (HARDCODEPLATFORM != 'WEB') {
                 add(MediaLoadingEvent());
-                int end_difference = timeDifference(
-                    current_broadcast!.endDateTime!,
-                    current_broadcast!.currentDatetime!);
                 await preloadContents(current_broadcast!)
-                    .timeout(Duration(seconds: end_difference));
+                    .timeout(Duration(seconds: endTimeDifference));
 
                 String stringResponce =
                     jsonEncode(broadCastData!.toJsonBroadCastModel());
@@ -91,6 +92,30 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                   preloadContents(next_broadcast!);
                 }
               }
+              // if (HARDCODEPLATFORM != 'WEB') {
+              //   if (startTimeDifference > 0) {
+              //     preloadContents(current_broadcast!);
+              //   } else if (startTimeDifference <= 0) {
+              //     // add(MediaLoadingEvent());
+              //     // await preloadContents(current_broadcast!)
+              //     //     .timeout(Duration(seconds: endTimeDifference));
+              //     try {
+              //       emit(MediaLoadingState());
+              //       await preloadContents(current_broadcast!)
+              //           .timeout(Duration(seconds: endTimeDifference));
+              //     } on TimeoutException {
+              //       log("Preloading timed out!");
+              //       add(FetchApi(screenCode: event.screenCode));
+              //     }
+              //   }
+              //   String stringResponce =
+              //       jsonEncode(broadCastData!.toJsonBroadCastModel());
+              //   saveResponce(stringResponce);
+
+              //   if (next_broadcast != null) {
+              //     preloadContents(next_broadcast!);
+              //   }
+              // }
               add(TrasnsitionEvent());
               await Future.delayed(Duration(seconds: 1));
               print("data changingggggggggg");
@@ -104,6 +129,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             }
           }
         } else if (!result && isFirstLoad) {
+          // screen_code = event.screenCode;
           handlestatewithoutInternet(event.screenCode);
         }
 
@@ -125,17 +151,29 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
 
       if (event is CountDownEvent) {
+        // if (event.countdown <= 3) {
+        //   emit(TrasitionState());
+        // } else if (event.countdown > 5) {
+        //   emit(TrasitionState());
+        //   await Future.delayed(Duration(seconds: 2));
+        //   int countDown = event.countdown - 2;
+        //   emit(DefaultScreen(countdown: countDown));
+        // } else {
+        //   emit(DefaultScreen(countdown: event.countdown));
+        // }
+        // emit(DefaultScreen(countdown: event.countdown));
+        if (event.countdown > 604800) {
+          emit(NoBroadcastState());
+          return;
+        }
         if (event.countdown <= 3) {
           emit(TrasitionState());
-        } else if (event.countdown > 5) {
+        } else {
           emit(TrasitionState());
           await Future.delayed(Duration(seconds: 2));
           int countDown = event.countdown - 2;
           emit(DefaultScreen(countdown: countDown));
-        } else {
-          emit(DefaultScreen(countdown: event.countdown));
         }
-        // emit(DefaultScreen(countdown: event.countdown));
       }
       if (event is NoBroadCastEvent) {
         emit(NoBroadcastState());
@@ -199,6 +237,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     await prefs.setString('cached_responce', responce);
   }
 
+  String getFormattedCurrentDateTime() {
+    final now = DateTime.now();
+    final formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    return formatter.format(now);
+  }
+
   void handlestatewithoutInternet(String screencode) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -221,6 +265,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         LayoutData? layoutdata = broadCastData?.currentBroadCast;
         current_broadcast = layoutdata;
         next_broadcast = broadCastData?.NextBroadCast;
+        String currentTime = getFormattedCurrentDateTime();
 
         if (currentBroadcastInString !=
                 broadCastData?.currentBroadCast?.stringData ||
@@ -228,8 +273,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           if (HARDCODEPLATFORM != 'WEB') {
             add(MediaLoadingEvent());
             int end_difference = timeDifference(current_broadcast!.endDateTime!,
-                current_broadcast!.currentDatetime!);
-
+                currentTime);
             if (next_broadcast != null) {
               preloadContents(next_broadcast!);
             }
@@ -253,12 +297,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
     log("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
 
+    String currentTime = getFormattedCurrentDateTime();
     int start_difference =
-        timeDifference(layoutdata.startDateTime!, layoutdata.currentDatetime!);
+        timeDifference(layoutdata.startDateTime!, currentTime);
     int end_difference = 0;
     if (start_difference < 0) {
       end_difference =
-          timeDifference(layoutdata.endDateTime!, layoutdata.currentDatetime!);
+          timeDifference(layoutdata.endDateTime!, currentTime);
     } else {
       end_difference =
           timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!);
@@ -295,6 +340,28 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     } else if (end_difference <= 0) {
       add(NoBroadCastEvent());
     }
+  }
+
+  Future<bool> allCached(LayoutData broadcastData) async {
+    print("check cachinggg");
+    bool isAllCached = true;
+    var cachedFile;
+    final cacheManager = DefaultCacheManager();
+    for (var zoneData in broadcastData.zoneData!) {
+      for (var content in zoneData.compositionModels) {
+        // var file = await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
+        cachedFile =
+            await cacheManager.getFileFromCache(BASEURL + content.fileUrl);
+        if (cachedFile == null) {
+          isAllCached = false;
+          break;
+        }
+      }
+      if (!isAllCached) {
+        break;
+      }
+    }
+    return isAllCached;
   }
 
   void connect(String screencode) async {
