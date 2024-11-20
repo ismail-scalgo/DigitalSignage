@@ -1,3 +1,4 @@
+import 'package:digitalsignange/UI/VIDEOLOCK.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:native_video_player/native_video_player.dart';
@@ -22,8 +23,38 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
   void didUpdateWidget(AndroidVideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.url != widget.url) {
-      _loadVideoSource();
+      print("URL CHANGEDDDDDDDDDDDDDDD");
+       checklockandchange();
+
     }
+  }
+
+    Future checklockandchange() async
+    {
+        if(ISVIDEOLOCKED)
+        {
+             await Future.delayed(Duration(milliseconds: 500));
+              checklockandchange();
+        }
+        else
+        {
+          ISVIDEOLOCKED=true;
+        await  changevideo();
+        ISVIDEOLOCKED=false;
+        }
+
+    }
+
+
+  Future changevideo() async
+  {
+      
+   await _controller!.pause();
+    
+
+     
+     await Future.delayed(Duration(seconds: 1));
+     _loadVideoSource();
   }
 
   @override

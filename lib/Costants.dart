@@ -2,7 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
-String BASEURL = "https://web-test-sgdsignage.scalgo.net";
+String BASEURL = "https://web-dev-sgdsignage.scalgo.net";
 //String BASEURL = "http://192.168.0.98:8000";
 List<String> mediaTypes = ["jpeg", "mp4"];
 String PLATFORM = 'WEB';
