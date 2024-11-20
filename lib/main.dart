@@ -18,7 +18,7 @@ import 'package:media_kit/media_kit.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
+  // MediaKit.ensureInitialized();
 
   FullScreenWindow.setFullScreen(true);
   runApp(MultiBlocProvider(providers: [

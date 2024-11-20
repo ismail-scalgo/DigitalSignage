@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names, avoid_print, prefer_interpolation_to_compose_strings, prefer_const_constructors, unused_import
+ // ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names, avoid_print, prefer_interpolation_to_compose_strings, prefer_const_constructors, unused_import
 
 import 'dart:async';
 import 'dart:convert';
@@ -57,6 +57,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           BroadCastModel? broadCastData =
               await LayoutRepository().newFetchData(event.screenCode);
 
+              
+
+
           if (broadCastData?.message == "Screen Code doesn't exist") {
             add(LogoutEvent());
           }
@@ -66,6 +69,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             emit(NoBroadcastState());
           } else {
             print("there is data");
+            if(broadCastData?.currentBroadCast != null)
+            {
+             saveTimedifference((broadCastData?.currentBroadCast!.currentDatetime)!);
+            }
             LayoutData? layoutdata = broadCastData?.currentBroadCast;
             current_broadcast = layoutdata;
             next_broadcast = broadCastData?.NextBroadCast;
@@ -200,13 +207,20 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
       if (event is currentBroadCastEnds) {
         print("CURRENT BROADCAST ENDS");
+
+
+
         if (next_broadcast == null) {
           add(NoBroadCastEvent());
         } else {
           next_broadcast!.currentDatetime = event.current_datetime;
           manageBroadcast(next_broadcast!);
         }
-        await Future.delayed(Duration(seconds: 2));
+        bool connectionresult = await InternetConnection().hasInternetAccess;
+
+        if(connectionresult)
+        {
+          await Future.delayed(Duration(seconds: 2));
         BroadCastModel? broadCastData =
             await LayoutRepository().newFetchData(screen_code!);
         LayoutData? layoutdata = broadCastData?.currentBroadCast;
@@ -228,9 +242,36 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         } else {
           nextBroadcastInString = broadCastData.NextBroadCast!.stringData!;
         }
+
+        }
+        
       }
     });
   }
+
+void saveTimedifference(String servertime) async {
+
+  DateTime now = DateTime.now();
+  DateTime serverDateTime = DateTime.parse(servertime);
+ 
+  Duration difference = now.difference(serverDateTime);
+
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+ 
+  await prefs.setInt('time_difference', difference.inSeconds);
+
+  // To demonstrate, we'll print the difference
+  print("R: ${difference.inSeconds}");
+}
+
+Future<int> gettimedifference() async
+{
+     final SharedPreferences prefs = await SharedPreferences.getInstance();
+      return  (await prefs.getInt('time_difference') ?? 0);
+}
+
 
   void saveResponce(String responce) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -255,6 +296,15 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       print(cache_responce);
       BroadCastModel? broadCastData =
           await LayoutRepository().fetchDataFromStorage(cache_responce);
+
+          int difference=await gettimedifference();
+
+          DateTime now = DateTime.now();
+          now.subtract(Duration(seconds: difference));
+
+          broadCastData!.currentBroadCast!.currentDatetime=now.toString();
+
+      
 
       if (broadCastData?.currentBroadCast == null) {
         RELOAD_FLAG_COUNT++;
