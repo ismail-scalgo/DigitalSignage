@@ -76,13 +76,48 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     print("width = $width");
     print("height = $height");
     factor = width / height;
+    final GlobalKey<ScaffoldState> drawerKey = GlobalKey<ScaffoldState>();
     return Scaffold(
+      key: drawerKey,
+      endDrawer: Drawer(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        child: ListView(
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 0, 0, 0),
+              ),
+              curve: Curves.fastOutSlowIn,
+              child: Center(
+                child: Text(
+                  "${widget.screenCode}",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            ListTile(
+              title: Center(
+                  child: Text(
+                'Logout',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 0, 0, 0)),
+              )),
+              onTap: () {
+                showMyDialog(context);
+              },
+            ),
+          ],
+        ),
+      ),
       body: GestureDetector(
         onLongPress: () {
-          apiBloc.add(visibleButton(isvisible: true));
-          Future.delayed(Duration(seconds: 3), () {
-            apiBloc.add(visibleButton(isvisible: false));
-          });
+          drawerKey.currentState?.openEndDrawer();
+          // apiBloc.add(visibleButton(isvisible: true));
+          // Future.delayed(Duration(seconds: 3), () {
+          //   apiBloc.add(visibleButton(isvisible: false));
+          // });
         },
         child: Container(
           color: Colors.transparent,
@@ -303,7 +338,12 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                                   // ),
                                                 ),
                                                 Text(
-                                                  formatTime(time.toInt()),
+                                                  state.countdown > 86400
+                                                      ? formatDaysTime(
+                                                          time.toInt())
+                                                      : formatHoursTime(
+                                                          time.toInt()),
+                                                  // formatHoursTime(time.toInt()),
                                                   style: GoogleFonts
                                                       .playfairDisplay(
                                                     textStyle: TextStyle(
@@ -508,15 +548,24 @@ class _LyoutScreenState extends State<LaunchingScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  child: Text('No'),
+                  child: Text(
+                    'No',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
                   onPressed: () {
+                    Navigator.of(context).pop();
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Yes'),
+                  child: Text(
+                    'Yes',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
                   onPressed: () {
-                    print("button presseed");
+                    print("logout presseed");
                     apiBloc.add(LogoutEvent());
                     // clearData();
                     // Navigator.pushAndRemoveUntil(
@@ -534,6 +583,34 @@ class _LyoutScreenState extends State<LaunchingScreen> {
         );
       },
     );
+  }
+
+  String formatDaysTime(int totalSeconds) {
+    // Calculate the number of days, hours, minutes, and seconds
+    int days = totalSeconds ~/ (24 * 3600);
+    totalSeconds %= (24 * 3600);
+
+    int hours = totalSeconds ~/ 3600;
+    totalSeconds %= 3600;
+
+    int minutes = totalSeconds ~/ 60;
+    int seconds = totalSeconds % 60;
+
+    return '${days.toString().padLeft(2, '0')} : ${hours.toString().padLeft(2, '0')} : ${minutes.toString().padLeft(2, '0')} : ${seconds.toString().padLeft(2, '0')}';
+  }
+
+  String formatHoursTime(int totalSeconds) {
+    // Calculate the number of days, hours, minutes, and seconds
+    int days = totalSeconds ~/ (24 * 3600);
+    totalSeconds %= (24 * 3600);
+
+    int hours = totalSeconds ~/ 3600;
+    totalSeconds %= 3600;
+
+    int minutes = totalSeconds ~/ 60;
+    int seconds = totalSeconds % 60;
+
+    return '${hours.toString().padLeft(2, '0')} : ${minutes.toString().padLeft(2, '0')} : ${seconds.toString().padLeft(2, '0')}';
   }
 
   String formatTime(int totalSeconds) {

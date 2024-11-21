@@ -1,4 +1,4 @@
- // ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names, avoid_print, prefer_interpolation_to_compose_strings, prefer_const_constructors, unused_import
+// ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names, avoid_print, prefer_interpolation_to_compose_strings, prefer_const_constructors, unused_import
 
 import 'dart:async';
 import 'dart:convert';
@@ -39,7 +39,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
   LayoutblocBloc() : super(LayoutblocInitial()) {
     print("LAYOUT BLOC CALLEDDDDDDDDD");
-
     on<LayoutblocEvent>((event, emit) async {
       print("LAYOU BLOCK EVENT");
       print(event);
@@ -57,9 +56,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           BroadCastModel? broadCastData =
               await LayoutRepository().newFetchData(event.screenCode);
 
-              
-
-
           if (broadCastData?.message == "Screen Code doesn't exist") {
             add(LogoutEvent());
           }
@@ -69,9 +65,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             emit(NoBroadcastState());
           } else {
             print("there is data");
-            if(broadCastData?.currentBroadCast != null)
-            {
-             saveTimedifference((broadCastData?.currentBroadCast!.currentDatetime)!);
+            if (broadCastData?.currentBroadCast != null) {
+              saveTimedifference(
+                  (broadCastData?.currentBroadCast!.currentDatetime)!);
             }
             LayoutData? layoutdata = broadCastData?.currentBroadCast;
             current_broadcast = layoutdata;
@@ -87,9 +83,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 nextBroadcastInString !=
                     broadCastData!.NextBroadCast?.stringData) {
               if (HARDCODEPLATFORM != 'WEB') {
-                add(MediaLoadingEvent());
-                await preloadContents(current_broadcast!)
-                    .timeout(Duration(seconds: endTimeDifference));
+                // add(MediaLoadingEvent());
+                // await preloadContents(current_broadcast!)
+                //     .timeout(Duration(seconds: endTimeDifference));
+                try {
+                  add(MediaLoadingEvent());
+                  await preloadContents(current_broadcast!)
+                      .timeout(Duration(seconds: endTimeDifference));
+                } on TimeoutException {
+                  log("Preloading timed out!");
+                  add(FetchApi(screenCode: event.screenCode));
+                }
 
                 String stringResponce =
                     jsonEncode(broadCastData!.toJsonBroadCastModel());
@@ -99,6 +103,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                   preloadContents(next_broadcast!);
                 }
               }
+
               // if (HARDCODEPLATFORM != 'WEB') {
               //   if (startTimeDifference > 0) {
               //     preloadContents(current_broadcast!);
@@ -207,9 +212,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
       if (event is currentBroadCastEnds) {
         print("CURRENT BROADCAST ENDS");
-
-
-
         if (next_broadcast == null) {
           add(NoBroadCastEvent());
         } else {
@@ -217,61 +219,52 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           manageBroadcast(next_broadcast!);
         }
         bool connectionresult = await InternetConnection().hasInternetAccess;
-
-        if(connectionresult)
-        {
+        if (connectionresult) {
           await Future.delayed(Duration(seconds: 2));
-        BroadCastModel? broadCastData =
-            await LayoutRepository().newFetchData(screen_code!);
-        LayoutData? layoutdata = broadCastData?.currentBroadCast;
-        current_broadcast = layoutdata;
-        next_broadcast = broadCastData?.NextBroadCast;
-        if (HARDCODEPLATFORM != 'WEB') {
-          if (next_broadcast != null) {
-            preloadContents(next_broadcast!);
+          BroadCastModel? broadCastData =
+              await LayoutRepository().newFetchData(screen_code!);
+          LayoutData? layoutdata = broadCastData?.currentBroadCast;
+          current_broadcast = layoutdata;
+          next_broadcast = broadCastData?.NextBroadCast;
+          if (HARDCODEPLATFORM != 'WEB') {
+            if (next_broadcast != null) {
+              preloadContents(next_broadcast!);
+            }
+          }
+          if (current_broadcast == null) {
+            currentBroadcastInString = '';
+          } else {
+            currentBroadcastInString =
+                broadCastData!.currentBroadCast!.stringData!;
+          }
+          if (broadCastData!.NextBroadCast == null) {
+            nextBroadcastInString = '';
+          } else {
+            nextBroadcastInString = broadCastData.NextBroadCast!.stringData!;
           }
         }
-        if (current_broadcast == null) {
-          currentBroadcastInString = '';
-        } else {
-          currentBroadcastInString =
-              broadCastData!.currentBroadCast!.stringData!;
-        }
-        if (broadCastData!.NextBroadCast == null) {
-          nextBroadcastInString = '';
-        } else {
-          nextBroadcastInString = broadCastData.NextBroadCast!.stringData!;
-        }
-
-        }
-        
       }
     });
   }
 
-void saveTimedifference(String servertime) async {
+  void saveTimedifference(String servertime) async {
+    DateTime now = DateTime.now();
+    DateTime serverDateTime = DateTime.parse(servertime);
 
-  DateTime now = DateTime.now();
-  DateTime serverDateTime = DateTime.parse(servertime);
- 
-  Duration difference = now.difference(serverDateTime);
+    Duration difference = now.difference(serverDateTime);
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('time_difference', difference.inSeconds);
 
- 
-  await prefs.setInt('time_difference', difference.inSeconds);
+    // To demonstrate, we'll print the difference
+    print("R: ${difference.inSeconds}");
+  }
 
-  // To demonstrate, we'll print the difference
-  print("R: ${difference.inSeconds}");
-}
-
-Future<int> gettimedifference() async
-{
-     final SharedPreferences prefs = await SharedPreferences.getInstance();
-      return  (await prefs.getInt('time_difference') ?? 0);
-}
-
+  Future<int> gettimedifference() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return (await prefs.getInt('time_difference') ?? 0);
+  }
 
   void saveResponce(String responce) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -297,14 +290,12 @@ Future<int> gettimedifference() async
       BroadCastModel? broadCastData =
           await LayoutRepository().fetchDataFromStorage(cache_responce);
 
-          int difference=await gettimedifference();
+      int difference = await gettimedifference();
 
-          DateTime now = DateTime.now();
-          now.subtract(Duration(seconds: difference));
+      DateTime now = DateTime.now();
+      now.subtract(Duration(seconds: difference));
 
-          broadCastData!.currentBroadCast!.currentDatetime=now.toString();
-
-      
+      broadCastData!.currentBroadCast!.currentDatetime = now.toString();
 
       if (broadCastData?.currentBroadCast == null) {
         RELOAD_FLAG_COUNT++;
@@ -322,8 +313,8 @@ Future<int> gettimedifference() async
             nextBroadcastInString != broadCastData!.NextBroadCast?.stringData) {
           if (HARDCODEPLATFORM != 'WEB') {
             add(MediaLoadingEvent());
-            int end_difference = timeDifference(current_broadcast!.endDateTime!,
-                currentTime);
+            int end_difference =
+                timeDifference(current_broadcast!.endDateTime!, currentTime);
             if (next_broadcast != null) {
               preloadContents(next_broadcast!);
             }
@@ -343,21 +334,51 @@ Future<int> gettimedifference() async
     }
   }
 
+  Future<bool> havePath(LayoutData layoutdata) async {
+    bool path = true;
+    for (var zoneData in layoutdata.zoneData!) {
+      for (var content in zoneData.compositionModels) {
+        print("path = ${content.localstoragepath}");
+        if (content.localstoragepath == null ||
+            content.localstoragepath.isEmpty) {
+          // add(NoBroadCastEvent());
+          path = false;
+          break;
+        }
+      }
+      if (!path) {
+        break;
+      }
+    }
+    return path;
+  }
+
   void manageBroadcast(LayoutData layoutdata) async {
     print("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
     log("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
+
+    bool online = await InternetConnection().hasInternetAccess;
+    if (!online) {
+      bool path = await havePath(layoutdata);
+      if (!path) {
+        print("there is no pathhhhhhhhhhhhhhhh");
+        add(NoBroadCastEvent());
+        return;
+      }
+    }
 
     String currentTime = getFormattedCurrentDateTime();
     int start_difference =
         timeDifference(layoutdata.startDateTime!, currentTime);
     int end_difference = 0;
     if (start_difference < 0) {
-      end_difference =
-          timeDifference(layoutdata.endDateTime!, currentTime);
+      end_difference = timeDifference(layoutdata.endDateTime!, currentTime);
     } else {
       end_difference =
           timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!);
     }
+    print("END TIME =  ${layoutdata.startDateTime}");
+    print("END TIME =  ${layoutdata.endDateTime}");
     print("START TIME DIFFERENCEEEEEEEEEEEEEE  $start_difference");
     print("END TIME DIFFERENCEEEEEEEEEEEEEE  $end_difference");
 
@@ -374,6 +395,7 @@ Future<int> gettimedifference() async
       });
 
       await Future.delayed(Duration(seconds: end_difference), () {
+        print("broadcast ended");
         if (current_reload_flag_count == RELOAD_FLAG_COUNT) {
           print("new event added1");
           add(currentBroadCastEnds(current_datetime: layoutdata.endDateTime!));

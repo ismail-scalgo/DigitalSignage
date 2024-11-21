@@ -24,37 +24,26 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.url != widget.url) {
       print("URL CHANGEDDDDDDDDDDDDDDD");
-       checklockandchange();
-
+      checklockandchange();
     }
   }
 
-    Future checklockandchange() async
-    {
-        if(ISVIDEOLOCKED)
-        {
-             await Future.delayed(Duration(milliseconds: 500));
-              checklockandchange();
-        }
-        else
-        {
-          ISVIDEOLOCKED=true;
-        await  changevideo();
-        ISVIDEOLOCKED=false;
-        }
-
+  Future checklockandchange() async {
+    if (ISVIDEOLOCKED) {
+      await Future.delayed(Duration(milliseconds: 500));
+      checklockandchange();
+    } else {
+      ISVIDEOLOCKED = true;
+      await changevideo();
+      ISVIDEOLOCKED = false;
     }
+  }
 
+  Future changevideo() async {
+    await _controller!.pause();
 
-  Future changevideo() async
-  {
-      
-   await _controller!.pause();
-    
-
-     
-     await Future.delayed(Duration(seconds: 1));
-     _loadVideoSource();
+    await Future.delayed(Duration(seconds: 1));
+    _loadVideoSource();
   }
 
   @override
@@ -102,7 +91,6 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
   Future<VideoSource> _createVideoSource() async {
     print("FILE PATH OF VIDEOOOOOOOOOOO");
     print(widget.filepath);
-
     // var file1 = await DefaultCacheManager().downloadFile(widget.url);
     return VideoSource.init(
       path: widget.filepath,
