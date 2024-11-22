@@ -195,12 +195,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       if (event is LogoutEvent) {
         print("logoutttttttttttttttttttt");
-        log("first3");
         clearData();
         currentBroadcastInString = "";
         isFirstLoad = true;
         globalConnection.close();
-        log("first4");
         emit(LogoutState());
       }
       if (event is TrasnsitionEvent) {

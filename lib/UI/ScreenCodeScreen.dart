@@ -24,6 +24,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
   @override
   void initState() {
     super.initState();
+    print("screen code screeeeeeeeeeeeen");
 
     registerBloc = BlocProvider.of<RegisterblocBloc>(context);
     registerBloc.add(InterNetStatusEvent());
