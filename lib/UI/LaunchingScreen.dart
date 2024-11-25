@@ -47,14 +47,16 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   bool isLoad = true;
   bool isButtonVisible = true;
   bool isShrink = false;
-  Connectivity connectivity = Connectivity();
-
   late LayoutblocBloc apiBloc;
 
   @override
   void initState() {
     super.initState();
     checkConnectivity();
+    // print(Theme.of(context).platform);
+    // if (Theme.of(context).platform == TargetPlatform.android) {
+    //       print(Theme.of(context).platform);
+    //     }
     WakelockPlus.enable();
     apiBloc = BlocProvider.of<LayoutblocBloc>(context);
     loadLayout();
@@ -71,443 +73,431 @@ class _LyoutScreenState extends State<LaunchingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
+    if (Theme.of(context).platform == TargetPlatform.android) {
+      print(Theme.of(context).platform);
+    }
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     print("width = $width");
     print("height = $height");
     factor = width / height;
     final GlobalKey<ScaffoldState> drawerKey = GlobalKey<ScaffoldState>();
-    return Scaffold(
-      key: drawerKey,
-      endDrawer: Drawer(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        child: ListView(
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 0, 0, 0),
-              ),
-              curve: Curves.fastOutSlowIn,
-              child: Center(
-                child: Text(
-                  "${widget.screenCode}",
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            ListTile(
-              title: Center(
-                  child: Text(
-                'Logout',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: const Color.fromARGB(255, 0, 0, 0)),
-              )),
-              onTap: () {
-                showMyDialog(context);
-              },
-            ),
-          ],
-        ),
-      ),
-      body: GestureDetector(
-        onLongPress: () {
-          drawerKey.currentState?.openEndDrawer();
-          // apiBloc.add(visibleButton(isvisible: true));
-          // Future.delayed(Duration(seconds: 3), () {
-          //   apiBloc.add(visibleButton(isvisible: false));
-          // });
-        },
-        child: Container(
-          color: Colors.transparent,
-          width: width,
-          height: height,
-          child: Stack(
+    return PopScope(
+      // onPopInvokedWithResult: (didPop, result) {
+      //   _onWillPop(context);
+      //   print("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
+      // },
+      // onPopInvoked: (didPop) {
+      //   print("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
+      // },
+      child: Scaffold(
+        key: drawerKey,
+        endDrawer: Drawer(
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          child: ListView(
             children: [
-              Center(
-                child: SizedBox(
-                  width: isShrink ? width * 0.9 : width,
-                  height: isShrink ? height * 0.7 : height,
-                  child: Center(
-                    child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
-                      buildWhen: (previous, current) {
-                        return current is! DisplayButton;
-                      },
-                      listener: (context, state) async {
-                        if (state is LogoutState) {
-                          // LoadingWidget(height, width);
-                          // await Future.delayed(Duration(seconds: 2));
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ScreenCodeScreen()),
-                              (route) => false);
-                        }
-                      },
-                      builder: (context, state) {
-                        print("Builder called in UI");
-                        if (state is NoBroadcastState) {
-                          // return Center(child: Text("no broad"));
-                          return NoBroadCastScreen();
-                        }
-                        if (state is OfflineState) {
-                          return NoInternetScreen();
-                        }
-                        if (state is MediaLoadingState) {
-                          return Container(
-                            color: Colors.black,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    LoadingWidget(height, width),
-                                    Text(
-                                      "FILES DOWNLOADING",
-                                      style: GoogleFonts.playfairDisplay(
-                                        textStyle: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            // fontWeight: FontWeight.bold,
-                                            letterSpacing: 0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                // Text(
-                                //   "FILES DOWNLOADING",
-                                //   style: GoogleFonts.playfairDisplay(
-                                //     textStyle: TextStyle(
-                                //         color: Colors.white,
-                                //         fontSize: 18,
-                                //         // fontWeight: FontWeight.bold,
-                                //         letterSpacing: 0),
-                                //   ),
-                                // ),
-                                // LoadingWidget(height, width),
-                              ],
-                            ),
-                          );
-                        }
-                        print("state is $state");
-                        if (state is DisplayLayout) {
-                          if (state.layoutdata.oreintationAngle == 0 ||
-                              state.layoutdata.oreintationAngle == 180) {
-                            gwidth = width;
-                            gheight = height;
-                          } else {
-                            gwidth = height;
-                            gheight = width;
-                          }
-                          factor = gwidth / gheight;
-
-                          int quarterTurns = 0;
-
-                          if (state.layoutdata.oreintationAngle >= 0 &&
-                              state.layoutdata.oreintationAngle < 90) {
-                            gwidth = width;
-                            gheight = height;
-
-                            quarterTurns = 0;
-                          }
-
-                          if (state.layoutdata.oreintationAngle >= 90 &&
-                              state.layoutdata.oreintationAngle < 180) {
-                            gwidth = height;
-                            gheight = width;
-                            quarterTurns = 1;
-                          }
-
-                          if (state.layoutdata.oreintationAngle >= 180 &&
-                              state.layoutdata.oreintationAngle < 270) {
-                            gwidth = width;
-                            gheight = height;
-                            quarterTurns = 2;
-                          }
-
-                          if (state.layoutdata.oreintationAngle >= 270 &&
-                              state.layoutdata.oreintationAngle < 360) {
-                            gwidth = height;
-                            gheight = width;
-                            quarterTurns = 3;
-                          }
-                          factor = gwidth / gheight;
-
-                          return RotatedBox(
-                            quarterTurns: quarterTurns,
-                            child: StaggeredGrid.count(
-                                crossAxisCount: 100,
-                                children: buildGrids(state.layoutdata)),
-                          );
-                        }
-                        if (state is TrasitionState) {
-                          return Container(
-                            color: Colors.black,
-                            child: Center(
-                              child: LoadingWidget(height, width),
-                            ),
-                          );
-                        }
-                        if (state is DefaultScreen) {
-                          // loadPlayer();
-                          return Container(
-                            width: width,
-                            height: height,
-                            color: Colors.black,
-                            child: Stack(
-                              children: [
-                                // Container(
-                                //   child: VideoPlayer(controller),
-                                // ),
-                                // Container(
-                                //   color: Color.fromARGB(255, 44, 43, 43)
-                                //       .withOpacity(0.8),
-                                //   // decoration: BoxDecoration(
-                                //   //     color: Color.fromARGB(255, 44, 43, 43)
-                                //   //         .withOpacity(0.8)),
-                                // ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Center(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          // Text(
-                                          //   "NO",
-                                          //   style: GoogleFonts.protestStrike(
-                                          //       textStyle: TextStyle(
-                                          //           // color: Color.fromARGB(255, 65, 51, 51),
-                                          //           color: Color.fromARGB(
-                                          //               255, 216, 213, 213),
-                                          //           fontSize: width > height
-                                          //               ? width / 12
-                                          //               : height / 12,
-                                          //           fontWeight:
-                                          //               FontWeight.w500),
-                                          //       height: 0.8),
-                                          // ),
-                                          // Text(
-                                          //   "BROADCAST.",
-                                          //   style: GoogleFonts.protestStrike(
-                                          //     textStyle: TextStyle(
-                                          //         color: Color.fromARGB(
-                                          //             255, 218, 46, 15),
-                                          //         fontSize: width > height
-                                          //             ? width / 17
-                                          //             : height / 17,
-                                          //         fontWeight: FontWeight.bold,
-                                          //         letterSpacing: 0),
-                                          //   ),
-                                          // ),
-                                          Countdown(
-                                            // controller: _controller,
-                                            seconds: state.countdown,
-                                            build: (_, double time) => Column(
-                                              children: [
-                                                // Text(
-                                                //   "NEXT IN",
-                                                //   style: TextStyle(
-                                                //       letterSpacing: 18,
-                                                //       fontSize: 18,
-                                                //       fontWeight:
-                                                //           FontWeight.bold,
-                                                //       color: Color.fromARGB(
-                                                //           255, 255, 217, 0)),
-                                                // ),
-                                                Text(
-                                                  "BROADCAST in",
-                                                  style: TextStyle(
-                                                      color: Color.fromARGB(
-                                                          255, 255, 255, 255),
-                                                      fontSize: width > height
-                                                          ? width / 17
-                                                          : height / 17,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontFamily:
-                                                          'MyCustomFont',
-                                                      letterSpacing: 0),
-                                                  // ),
-                                                ),
-                                                Text(
-                                                  state.countdown > 86400
-                                                      ? formatDaysTime(
-                                                          time.toInt())
-                                                      : formatHoursTime(
-                                                          time.toInt()),
-                                                  // formatHoursTime(time.toInt()),
-                                                  style: GoogleFonts
-                                                      .playfairDisplay(
-                                                    textStyle: TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 255, 254, 254),
-                                                        fontSize: 25,
-                                                        fontWeight:
-                                                            FontWeight.w100,
-                                                        letterSpacing: 5),
-                                                  ),
-                                                  // style: TextStyle(
-                                                  //     fontSize: 25,
-                                                  //     fontWeight:
-                                                  //         FontWeight.bold,
-                                                  //     color: const Color.fromARGB(255, 255, 255, 255)),
-                                                ),
-                                              ],
-                                            ),
-                                            interval: Duration(seconds: 1),
-                                            onFinished: () {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content:
-                                                      Text('BROADCAST LIVE'),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                          // return Center(
-                          //     child: Column(
-                          //   mainAxisAlignment: MainAxisAlignment.center,
-                          // children: [
-                          //   Container(
-                          //       height: height / 3,
-                          //       width: width / 3.5,
-                          //       child: Lottie.asset('assets/Shoes.json')),
-                          //   Countdown(
-                          //     // controller: _controller,
-                          //     seconds: state.countdown,
-                          //     build: (_, double time) => Column(
-                          //       children: [
-                          //         Text(
-                          //           "NEXT IN",
-                          //           style: TextStyle(
-                          //               letterSpacing: 18,
-                          //               fontSize: 18,
-                          //               fontWeight: FontWeight.bold,
-                          //               color:
-                          //                   Color.fromARGB(255, 255, 217, 0)),
-                          //         ),
-                          //         Text(
-                          //           formatTime(time.toInt()),
-                          //           style: TextStyle(
-                          //               fontSize: 25,
-                          //               fontWeight: FontWeight.bold,
-                          //               color: Colors.blue),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //     interval: Duration(seconds: 1),
-                          //     onFinished: () {
-                          //       ScaffoldMessenger.of(context).showSnackBar(
-                          //         SnackBar(
-                          //           content: Text('BROADCAST LIVE'),
-                          //         ),
-                          //       );
-                          //     },
-                          //   ),
-                          // ],
-                          // ));
-                        }
-                        return Container(
-                          // color: Colors.blue,
-                          color: const Color.fromARGB(255, 0, 0, 0),
-                          child: Center(
-                            child: LoadingWidget(height, width),
-                            // child: Container(
-                            //     height: height / 3,
-                            //     width: width / 3.5,
-                            //     child: Lottie.asset('assets/Shoes.json')),
-                          ),
-                        );
-                      },
-                    ),
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 0, 0, 0),
+                ),
+                curve: Curves.fastOutSlowIn,
+                child: Center(
+                  child: Text(
+                    "${widget.screenCode}",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              BlocConsumer<LayoutblocBloc, LayoutblocState>(
-                listener: (context, state) {},
-                builder: (context, state) {
-                  if (state is DisplayButton) {
-                    return Visibility(
-                      visible: state.isvisible,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 50),
-                        child: Align(
-                          child: InkWell(
-                            child: Container(
-                              height: 35,
-                              width: width / 6.5,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: const Color.fromARGB(255, 65, 51, 51)),
-                              child: Center(
-                                  child: Text(
-                                "Logout",
-                                style: TextStyle(color: Colors.white),
-                              )),
-                            ),
-                            onTap: () {
-                              showMyDialog(context);
-                            },
-                          ),
-                          // child: ElevatedButton(
-                          //     onPressed: () {
-                          //       showMyDialog(context);
-                          //     },
-                          //     child: Text("Logout")),
-                          alignment: Alignment.bottomCenter,
-                        ),
-                      ),
-                    );
-                  }
-                  return Center();
+              ListTile(
+                title: Center(
+                    child: Text(
+                  'Logout',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 0, 0, 0)),
+                )),
+                onTap: () {
+                  showMyDialog(context);
                 },
               ),
-              // if (isShrink)
-              //   Positioned(
-              //     // right: 10,
-              //     left: width,
-              //     // right: width,
-              //     width: width,
-              //     bottom: height * 0.1,
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //       children: [
-              //         ElevatedButton(
-              //           onPressed: () {
-              //             setState(() {
-              //               isShrink = false;
-              //             });
-              //           },
-              //           child: Text('Button 1'),
-              //         ),
-              //         SizedBox(height: 10),
-              //         ElevatedButton(
-              //           onPressed: () {
-              //             // Handle button 2 press
-              //           },
-              //           child: Text('Button 2'),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
             ],
+          ),
+        ),
+        body: GestureDetector(
+          onLongPress: () {
+            drawerKey.currentState?.openEndDrawer();
+            // apiBloc.add(visibleButton(isvisible: true));
+            // Future.delayed(Duration(seconds: 3), () {
+            //   apiBloc.add(visibleButton(isvisible: false));
+            // });
+          },
+          child: Container(
+            color: Colors.transparent,
+            width: width,
+            height: height,
+            child: Stack(
+              children: [
+                Center(
+                  child: SizedBox(
+                    width: isShrink ? width * 0.9 : width,
+                    height: isShrink ? height * 0.7 : height,
+                    child: Center(
+                      child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
+                        buildWhen: (previous, current) {
+                          return current is! DisplayButton;
+                        },
+                        listener: (context, state) async {
+                          if (state is LogoutState) {
+                            // LoadingWidget(height, width);
+                            // await Future.delayed(Duration(seconds: 2));
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ScreenCodeScreen()),
+                                (route) => false);
+                          }
+                          // if (state is MediaLoadingState) {
+                          //   MaterialPageRoute(
+                          //           builder: (context) => MediaDownloadingScreen());
+                          // }
+                        },
+                        builder: (context, state) {
+                          print("Builder called in UI");
+                          if (state is NoBroadcastState) {
+                            // return Center(child: Text("no broad"));
+                            return NoBroadCastScreen();
+                          }
+                          if (state is OfflineState) {
+                            return NoInternetScreen();
+                          }
+                          if (state is MediaLoadingState) {
+                            return MediaDownloadingScreen();
+                          }
+                          print("state is $state");
+                          if (state is DisplayLayout) {
+                            // connectivitySubscription.cancel();
+                            if (state.layoutdata.oreintationAngle == 0 ||
+                                state.layoutdata.oreintationAngle == 180) {
+                              gwidth = width;
+                              gheight = height;
+                            } else {
+                              gwidth = height;
+                              gheight = width;
+                            }
+                            factor = gwidth / gheight;
+
+                            int quarterTurns = 0;
+
+                            if (state.layoutdata.oreintationAngle >= 0 &&
+                                state.layoutdata.oreintationAngle < 90) {
+                              gwidth = width;
+                              gheight = height;
+
+                              quarterTurns = 0;
+                            }
+
+                            if (state.layoutdata.oreintationAngle >= 90 &&
+                                state.layoutdata.oreintationAngle < 180) {
+                              gwidth = height;
+                              gheight = width;
+                              quarterTurns = 1;
+                            }
+
+                            if (state.layoutdata.oreintationAngle >= 180 &&
+                                state.layoutdata.oreintationAngle < 270) {
+                              gwidth = width;
+                              gheight = height;
+                              quarterTurns = 2;
+                            }
+
+                            if (state.layoutdata.oreintationAngle >= 270 &&
+                                state.layoutdata.oreintationAngle < 360) {
+                              gwidth = height;
+                              gheight = width;
+                              quarterTurns = 3;
+                            }
+                            factor = gwidth / gheight;
+
+                            return RotatedBox(
+                              quarterTurns: quarterTurns,
+                              child: StaggeredGrid.count(
+                                  crossAxisCount: 100,
+                                  children: buildGrids(state.layoutdata)),
+                            );
+                          }
+                          if (state is TrasitionState) {
+                            return Container(
+                              color: Colors.black,
+                              child: Center(
+                                child: LoadingWidget(height, width),
+                              ),
+                            );
+                          }
+                          if (state is DefaultScreen) {
+                            // loadPlayer();
+                            return Container(
+                              width: width,
+                              height: height,
+                              color: Colors.black,
+                              child: Stack(
+                                children: [
+                                  // Container(
+                                  //   child: VideoPlayer(controller),
+                                  // ),
+                                  // Container(
+                                  //   color: Color.fromARGB(255, 44, 43, 43)
+                                  //       .withOpacity(0.8),
+                                  //   // decoration: BoxDecoration(
+                                  //   //     color: Color.fromARGB(255, 44, 43, 43)
+                                  //   //         .withOpacity(0.8)),
+                                  // ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // Text(
+                                            //   "NO",
+                                            //   style: GoogleFonts.protestStrike(
+                                            //       textStyle: TextStyle(
+                                            //           // color: Color.fromARGB(255, 65, 51, 51),
+                                            //           color: Color.fromARGB(
+                                            //               255, 216, 213, 213),
+                                            //           fontSize: width > height
+                                            //               ? width / 12
+                                            //               : height / 12,
+                                            //           fontWeight:
+                                            //               FontWeight.w500),
+                                            //       height: 0.8),
+                                            // ),
+                                            // Text(
+                                            //   "BROADCAST.",
+                                            //   style: GoogleFonts.protestStrike(
+                                            //     textStyle: TextStyle(
+                                            //         color: Color.fromARGB(
+                                            //             255, 218, 46, 15),
+                                            //         fontSize: width > height
+                                            //             ? width / 17
+                                            //             : height / 17,
+                                            //         fontWeight: FontWeight.bold,
+                                            //         letterSpacing: 0),
+                                            //   ),
+                                            // ),
+                                            Countdown(
+                                              // controller: _controller,
+                                              seconds: state.countdown,
+                                              build: (_, double time) => Column(
+                                                children: [
+                                                  // Text(
+                                                  //   "NEXT IN",
+                                                  //   style: TextStyle(
+                                                  //       letterSpacing: 18,
+                                                  //       fontSize: 18,
+                                                  //       fontWeight:
+                                                  //           FontWeight.bold,
+                                                  //       color: Color.fromARGB(
+                                                  //           255, 255, 217, 0)),
+                                                  // ),
+                                                  Text(
+                                                    "BROADCAST in",
+                                                    style: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 255, 255, 255),
+                                                        fontSize: width > height
+                                                            ? width / 17
+                                                            : height / 17,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily:
+                                                            'MyCustomFont',
+                                                        letterSpacing: 0),
+                                                    // ),
+                                                  ),
+                                                  Text(
+                                                    state.countdown > 86400
+                                                        ? formatDaysTime(
+                                                            time.toInt())
+                                                        : formatHoursTime(
+                                                            time.toInt()),
+                                                    // formatHoursTime(time.toInt()),
+                                                    style: GoogleFonts
+                                                        .playfairDisplay(
+                                                      textStyle: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              255,
+                                                              254,
+                                                              254),
+                                                          fontSize: 25,
+                                                          fontWeight:
+                                                              FontWeight.w100,
+                                                          letterSpacing: 5),
+                                                    ),
+                                                    // style: TextStyle(
+                                                    //     fontSize: 25,
+                                                    //     fontWeight:
+                                                    //         FontWeight.bold,
+                                                    //     color: const Color.fromARGB(255, 255, 255, 255)),
+                                                  ),
+                                                ],
+                                              ),
+                                              interval: Duration(seconds: 1),
+                                              onFinished: () {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content:
+                                                        Text('BROADCAST LIVE'),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                            // return Center(
+                            //     child: Column(
+                            //   mainAxisAlignment: MainAxisAlignment.center,
+                            // children: [
+                            //   Container(
+                            //       height: height / 3,
+                            //       width: width / 3.5,
+                            //       child: Lottie.asset('assets/Shoes.json')),
+                            //   Countdown(
+                            //     // controller: _controller,
+                            //     seconds: state.countdown,
+                            //     build: (_, double time) => Column(
+                            //       children: [
+                            //         Text(
+                            //           "NEXT IN",
+                            //           style: TextStyle(
+                            //               letterSpacing: 18,
+                            //               fontSize: 18,
+                            //               fontWeight: FontWeight.bold,
+                            //               color:
+                            //                   Color.fromARGB(255, 255, 217, 0)),
+                            //         ),
+                            //         Text(
+                            //           formatTime(time.toInt()),
+                            //           style: TextStyle(
+                            //               fontSize: 25,
+                            //               fontWeight: FontWeight.bold,
+                            //               color: Colors.blue),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //     interval: Duration(seconds: 1),
+                            //     onFinished: () {
+                            //       ScaffoldMessenger.of(context).showSnackBar(
+                            //         SnackBar(
+                            //           content: Text('BROADCAST LIVE'),
+                            //         ),
+                            //       );
+                            //     },
+                            //   ),
+                            // ],
+                            // ));
+                          }
+                          return Container(
+                            // color: Colors.blue,
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            child: Center(
+                              child: LoadingWidget(height, width),
+                              // child: Container(
+                              //     height: height / 3,
+                              //     width: width / 3.5,
+                              //     child: Lottie.asset('assets/Shoes.json')),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                BlocConsumer<LayoutblocBloc, LayoutblocState>(
+                  listener: (context, state) {},
+                  builder: (context, state) {
+                    if (state is DisplayButton) {
+                      return Visibility(
+                        visible: state.isvisible,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 50),
+                          child: Align(
+                            child: InkWell(
+                              child: Container(
+                                height: 35,
+                                width: width / 6.5,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color:
+                                        const Color.fromARGB(255, 65, 51, 51)),
+                                child: Center(
+                                    child: Text(
+                                  "Logout",
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                              ),
+                              onTap: () {
+                                showMyDialog(context);
+                              },
+                            ),
+                            // child: ElevatedButton(
+                            //     onPressed: () {
+                            //       showMyDialog(context);
+                            //     },
+                            //     child: Text("Logout")),
+                            alignment: Alignment.bottomCenter,
+                          ),
+                        ),
+                      );
+                    }
+                    return Center();
+                  },
+                ),
+                // if (isShrink)
+                //   Positioned(
+                //     // right: 10,
+                //     left: width,
+                //     // right: width,
+                //     width: width,
+                //     bottom: height * 0.1,
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //       children: [
+                //         ElevatedButton(
+                //           onPressed: () {
+                //             setState(() {
+                //               isShrink = false;
+                //             });
+                //           },
+                //           child: Text('Button 1'),
+                //         ),
+                //         SizedBox(height: 10),
+                //         ElevatedButton(
+                //           onPressed: () {
+                //             // Handle button 2 press
+                //           },
+                //           child: Text('Button 2'),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+              ],
+            ),
           ),
         ),
       ),
@@ -583,6 +573,29 @@ class _LyoutScreenState extends State<LaunchingScreen> {
         );
       },
     );
+  }
+
+  Future<bool> _onWillPop(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Confirm Exit'),
+              content: Text('Do you really want to exit the app?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('No'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text('Yes'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Return false if dialog returns null
   }
 
   String formatDaysTime(int totalSeconds) {
@@ -662,14 +675,5 @@ class _LyoutScreenState extends State<LaunchingScreen> {
       alignment: Alignment.topRight,
       autoCloseDuration: const Duration(seconds: 4),
     );
-  }
-
-  void updateConnectionStatus(List<ConnectivityResult> result) async {
-    print("listeninggg");
-    print(result);
-    checkConnectivity();
-    if (!await isOffline()) {
-      apiBloc.add(FetchApi(screenCode: widget.screenCode));
-    }
   }
 }
