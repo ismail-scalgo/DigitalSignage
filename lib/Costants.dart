@@ -10,7 +10,7 @@ String HARDCODEPLATFORM = 'ANDROIDTV';
 double gheight = 0;
 double gwidth = 0;
 String SOCKET_ADDRESS = 'ws://web-dev-sgdsignage.scalgo.net/ws/';
-//String SOCKET_ADDRESS = 'ws://192.168.0.98:8765';
+// String SOCKET_ADDRESS = 'ws://192.168.0.98:8765';
 // String SOCKET_ADDRESS = 'ws://192.168.0.84:8765';
 
 Future<bool> isOffline() async {

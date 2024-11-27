@@ -29,13 +29,22 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
   late WebSocket globalConnection;
   late StreamSubscription internetlistener;
 
+  bool isfirsttime = true;
+
   RegisterblocBloc() : super(RegisterblocInitial()) {
     on<RegisterblocEvent>((event, emit) async {
       print("BLOC CALLED WITH EVENT");
       print(event);
 
-      if (event is InterNetStatusEvent) {
+      if ((event is InterNetStatusEvent) && isfirsttime) {
+        isfirsttime = false;
         interNetConnectionManger();
+      } else if ((event is InterNetStatusEvent) && !isfirsttime) {
+        if (await InternetConnection().hasInternetAccess) {
+          add(CheckDeviceStatusEvent());
+        } else {
+          add(OfflineEvent());
+        }
       }
 
       if (event is CheckDeviceStatusEvent) {
@@ -257,7 +266,6 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           break;
         case InternetStatus.disconnected:
           add(OfflineEvent());
-
           break;
       }
     });
