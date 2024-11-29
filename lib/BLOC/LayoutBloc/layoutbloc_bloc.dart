@@ -86,14 +86,29 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 // add(MediaLoadingEvent());
                 // await preloadContents(current_broadcast!)
                 //     .timeout(Duration(seconds: endTimeDifference));
-                try {
-                  add(MediaLoadingEvent());
-                  await preloadContents(current_broadcast!)
-                      .timeout(Duration(seconds: endTimeDifference));
-                } on TimeoutException {
-                  log("Preloading timed out!");
-                  add(FetchApi(screenCode: event.screenCode));
+                bool isCached = await allCached(current_broadcast!);
+                print("cachdeeeeeeeeeeeeed = $isCached");
+
+                if (isCached) {
+                  preloadContents(current_broadcast!);
+                } else {
+                  try {
+                    add(MediaLoadingEvent());
+                    await preloadContents(current_broadcast!)
+                        .timeout(Duration(seconds: endTimeDifference));
+                  } on TimeoutException {
+                    log("Preloading timed out!");
+                    add(FetchApi(screenCode: event.screenCode));
+                  }
                 }
+                // try {
+                //   add(MediaLoadingEvent());
+                //   await preloadContents(current_broadcast!)
+                //       .timeout(Duration(seconds: endTimeDifference));
+                // } on TimeoutException {
+                //   log("Preloading timed out!");
+                //   add(FetchApi(screenCode: event.screenCode));
+                // }
 
                 String stringResponce =
                     jsonEncode(broadCastData!.toJsonBroadCastModel());

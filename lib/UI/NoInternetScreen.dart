@@ -53,7 +53,6 @@ class _MediaDownloadingScreenState extends State<MediaDownloadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("onlineeeeeeeeeeeeeeeeeeee  = $isOnline");
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return isOnline

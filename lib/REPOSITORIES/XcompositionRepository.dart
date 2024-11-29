@@ -43,7 +43,6 @@ class LayoutRepository {
           currentBroadCast: currentBroadcastData,
           NextBroadCast: nextBroadcastData,
           layoutrespInString: response.body);
-
       // layoutdata.zoneData!.forEach((element) {
       //   element.compositionModels
       //       .removeWhere((content) => content.fileDuration == '0.0');

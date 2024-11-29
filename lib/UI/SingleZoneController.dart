@@ -94,7 +94,9 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
     if (widget.zonedata.compositionModels.length - 1 < currentIndex) {
       currentIndex = 0;
     }
-
+    
+  print("durrrrrrrrrrrrrrrrr = ${widget
+                    .zonedata.compositionModels[currentIndex].fileDuration}");
     Future.delayed(
         Duration(
             seconds: double.parse(widget
