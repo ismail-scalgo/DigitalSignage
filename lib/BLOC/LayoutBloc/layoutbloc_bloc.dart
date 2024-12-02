@@ -298,7 +298,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     if (cache_responce == null) {
       add(OfflineEvent());
     } else {
-      print("CACHE   SAVED MESSAGE");
+      print("CACHE SAVED MESSAGE");
       print(cache_responce);
       BroadCastModel? broadCastData =
           await LayoutRepository().fetchDataFromStorage(cache_responce);

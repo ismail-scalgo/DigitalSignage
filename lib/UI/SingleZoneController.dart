@@ -90,11 +90,10 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
   }
 
   void changeController() async {
-    print(isdisposed);
     if (widget.zonedata.compositionModels.length - 1 < currentIndex) {
       currentIndex = 0;
     }
-    
+
   print("durrrrrrrrrrrrrrrrr = ${widget
                     .zonedata.compositionModels[currentIndex].fileDuration}");
     Future.delayed(
