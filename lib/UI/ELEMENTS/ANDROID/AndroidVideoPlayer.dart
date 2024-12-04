@@ -23,8 +23,8 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
   void didUpdateWidget(AndroidVideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     // if (oldWidget.url != widget.url) {
-      print("URL CHANGEDDDDDDDDDDDDDDD");
-      checklockandchange();
+    print("URL CHANGEDDDDDDDDDDDDDDD");
+    checklockandchange();
     // }
   }
 

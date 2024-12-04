@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/Costants.dart';
+import 'package:digitalsignange/LOGS.dart';
 import 'package:digitalsignange/MODELS/BroadCastModel.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/REPOSITORIES/XcompositionRepository.dart';
@@ -39,6 +40,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
   LayoutblocBloc() : super(LayoutblocInitial()) {
     print("LAYOUT BLOC CALLEDDDDDDDDD");
+    log_of_start_stop();
     on<LayoutblocEvent>((event, emit) async {
       print("LAYOU BLOCK EVENT");
       print(event);
@@ -404,6 +406,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       await Future.delayed(Duration(seconds: start_difference), () {
         if (current_reload_flag_count == RELOAD_FLAG_COUNT) {
           add(DisplayBroadcastEvent(layoutData: layoutdata));
+          log_start_broadcast(layoutdata.id!);
         }
       });
 
@@ -412,14 +415,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         if (current_reload_flag_count == RELOAD_FLAG_COUNT) {
           print("new event added1");
           add(currentBroadCastEnds(current_datetime: layoutdata.endDateTime!));
+          log_end_broadcast(layoutdata.id!);
         }
       });
     } else if (start_difference <= 0 && end_difference > 0) {
       print("new event added2");
       add(DisplayBroadcastEvent(layoutData: layoutdata));
+      log_start_broadcast(layoutdata.id!);
       await Future.delayed(Duration(seconds: end_difference), () {
         if (current_reload_flag_count == RELOAD_FLAG_COUNT) {
           add(currentBroadCastEnds(current_datetime: layoutdata.endDateTime!));
+          log_end_broadcast(layoutdata.id!);
         }
       });
     } else if (end_difference <= 0) {
@@ -493,6 +499,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           print('{"screen_code" : $formattedScreenCode}');
           socket.send(
               '{"screen_code" : $formattedScreenCode, "client_type" : "device"}');
+          sync_data_to_server_when_online();
           add(FetchApi(screenCode: screencode));
         }
         print(connectionState.toString());

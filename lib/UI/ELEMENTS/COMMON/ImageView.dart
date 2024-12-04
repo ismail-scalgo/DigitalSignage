@@ -36,11 +36,11 @@ class _ImageScreenState extends State<ImageScreen> {
                     width: width / 10,
                     height: width / 10,
                     child: Lottie.asset('assets/loading3.json'))))
-        : Container(child: Image.network(widget.url, fit: BoxFit.fill));
+        : Container(child: Image.file(imageFile, fit: BoxFit.fill));
   }
 
   void load() async {
-    // imageFile = await DefaultCacheManager().getSingleFile(widget.url);
+    imageFile = await DefaultCacheManager().getSingleFile(widget.url);
     isLoad = false;
     setState(() {});
   }

@@ -14,10 +14,14 @@ import 'package:digitalsignange/test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fullscreen_window/fullscreen_window.dart';
+import 'package:hive/hive.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final dir = await getApplicationDocumentsDirectory();
+  Hive.init(dir.path);
   // MediaKit.ensureInitialized();
 
   FullScreenWindow.setFullScreen(true);
