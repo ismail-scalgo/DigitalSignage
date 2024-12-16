@@ -1,3 +1,4 @@
+import 'package:digitalsignange/CONTENTLOG.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/UI/ELEMENTS/ANDROID/AndroidVideoPlayer.dart';
@@ -7,7 +8,8 @@ import 'package:flutter/material.dart';
 
 class SingleZoneController extends StatefulWidget {
   ZoneData zonedata;
-  SingleZoneController({required this.zonedata});
+  String broadcast_id;
+  SingleZoneController({required this.zonedata,required this.broadcast_id});
   @override
   State<SingleZoneController> createState() => _SingleZoneControllerState();
 }
@@ -41,10 +43,28 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
 
   @override
   Widget build(BuildContext context) {
+
+    Map content_start_data={
+      'event':"content_add_event",
+      'broadcast_id':widget.broadcast_id,
+      'content_name':widget.zonedata.compositionModels[currentIndex].filename,
+      'content_duration':widget.zonedata.compositionModels[currentIndex].fileDuration,
+      'content_zone':widget.zonedata.id
+    };
+    
+
+
+      controller.add(content_start_data);
+
+
     return getWidget(widget.zonedata.compositionModels[currentIndex]);
   }
 
   Widget getWidget(CompositionModel compositiondata) {
+
+
+
+
     if (compositiondata.fileFormat == "jpeg" ||
         compositiondata.fileFormat == "jpg" ||
         compositiondata.fileFormat == "png") {

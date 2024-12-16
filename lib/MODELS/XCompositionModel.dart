@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class CompositionModel {
   final String fileUrl;
+  String filename;
   String localstoragepath;
   final String fileFormat;
   final String fileDuration;
@@ -11,6 +12,7 @@ class CompositionModel {
     required this.fileFormat,
     required this.localstoragepath,
     required this.fileDuration,
+    required this.filename
   });
 
   // Convert JSON to CompositionModel
@@ -21,6 +23,7 @@ class CompositionModel {
       localstoragepath:
           json['localstoragepath'] == null ? '' : json['localstoragepath'],
       fileDuration: json['duration'] as String,
+      filename: json['content_name']
     );
   }
 

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
+import 'package:digitalsignange/CONTENTLOG.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/LOGS.dart';
 import 'package:digitalsignange/MODELS/BroadCastModel.dart';
@@ -41,6 +42,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   LayoutblocBloc() : super(LayoutblocInitial()) {
     print("LAYOUT BLOC CALLEDDDDDDDDD");
     log_of_start_stop();
+  
     on<LayoutblocEvent>((event, emit) async {
       print("LAYOU BLOCK EVENT");
       print(event);
@@ -49,6 +51,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         print("fetch api event called");
 
         if (isFirstLoad) {
+           await init();
           connect(event.screenCode);
         }
         bool result = await InternetConnection().hasInternetAccess;
@@ -485,7 +488,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           String formattedScreenCode = '"' + screencode + '"';
           print('{"screen_code" : $formattedScreenCode}');
           socket.send(
-              '{"screen_code" : $formattedScreenCode, "client_type" : "device"}');
+              '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}');
         }
         if (connectionState is Disconnected) {
           print("DISCONNECTED");
@@ -498,7 +501,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           String formattedScreenCode = '"' + screencode + '"';
           print('{"screen_code" : $formattedScreenCode}');
           socket.send(
-              '{"screen_code" : $formattedScreenCode, "client_type" : "device"}');
+              '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}');
           sync_data_to_server_when_online();
           add(FetchApi(screenCode: screencode));
         }

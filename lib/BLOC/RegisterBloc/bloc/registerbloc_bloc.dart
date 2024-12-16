@@ -222,7 +222,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           print('{"screen_code" : $formattedScreenCode}');
           socket.send(
               // '{"screen_code" : $formattedScreenCode, "client_type" : "device"}'
-              '{"client_type":"device","screen_code":$formattedScreenCode}');
+              '{"client_type":"device","screen_code":$formattedScreenCode,"is_registered":"false"}');
           print("sended");
         }
         if (connectionState is Disconnected) {
@@ -236,7 +236,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           String formattedScreenCode = '"' + screencode + '"';
           print('{"screen_code" : $formattedScreenCode}');
           socket.send(
-              '{"screen_code" : $formattedScreenCode, "client_type" : "device"}');
+              '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"false"}');
           add(DisplayScreenCode(screenCode: screencode));
         }
         print("connection state ${connectionState.toString()}");

@@ -1,3 +1,4 @@
+import 'package:digitalsignange/CONTENTLOG.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
@@ -22,6 +23,9 @@ class _NoBroadCastScreenState extends State<NoBroadCastScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    controller.add({'event':"broadcast_end_event"});
+
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return SizedBox(

@@ -510,7 +510,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
       StaggeredGridTile tile = StaggeredGridTile.count(
         crossAxisCellCount: zonedata.widthPercent,
         mainAxisCellCount: zonedata.heightPercent / factor,
-        child: SingleZoneController(zonedata: zonedata),
+        child: SingleZoneController(zonedata: zonedata,broadcast_id:layoutdata.id.toString(),),
       );
 
       staggeredList.add(tile);
