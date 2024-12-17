@@ -18,6 +18,7 @@ StreamController controller = StreamController();
 Stream stream = controller.stream;
 String CONTENT_NAME_KEY = "content_name";
 String CONTENT_DURATION_KEY = "content_duration";
+String CONTENT_COUNT_KEY="content_count";
 String START_TIME_KEY = "start_time";
 String IS_COMPLETED_KEY = "is_completed";
 String BROADCAST_START_TIME_KEY ="broadcast_start_datetime";
@@ -52,6 +53,8 @@ Future init() async {
     if (eventValue['event'] == "broadcast_end_event") {
       addtoRecordFromBufferOnEnd();
     }
+
+
   });
 
 
@@ -153,7 +156,7 @@ Future addtoRecordOnNormalCondition(
     String broadcast_start_time=buffer_box.get(broadcast_id)[BROADCAST_START_TIME_KEY].toString();
 
    await recorded_box
-        .put(broadcast_id, {content_name: current_duration, BROADCAST_START_TIME_KEY:broadcast_start_time,IS_COMPLETED_KEY: false});
+        .put(broadcast_id, {content_name: {CONTENT_DURATION_KEY:current_duration,CONTENT_COUNT_KEY:0}, BROADCAST_START_TIME_KEY:broadcast_start_time,IS_COMPLETED_KEY: false});
 
   }
   //ALREADY BROADCAST ADDED BUT THE CONTENT KEY IS FOR FIRST TIME
@@ -163,16 +166,18 @@ Future addtoRecordOnNormalCondition(
         (buffer_box.get(broadcast_id))[zone][CONTENT_NAME_KEY];
     double current_duration =
         (buffer_box.get(broadcast_id))[zone][CONTENT_DURATION_KEY];
-    recorded_data[content_name] = current_duration;
+    recorded_data[content_name] = {CONTENT_DURATION_KEY:current_duration,CONTENT_COUNT_KEY:0};
    await recorded_box.put(broadcast_id, recorded_data);
   }
   //ALREADY BROADCAST ADDED ALSO CONTENT ADDED
   else if (recorded_data.containsKey(content_name)) {
     print("ALREADY BROADCAST ADDED ALSO CONTENT ADDED");
-    double past_duration = (recorded_data[content_name]).toDouble();
+    double past_duration = (recorded_data[content_name][CONTENT_DURATION_KEY]).toDouble();
     double current_duration = (buffer_box.get(broadcast_id))[zone][CONTENT_DURATION_KEY];
     double updated_duration = past_duration + current_duration;
-    recorded_data[content_name] = updated_duration;
+
+    int past_count=(recorded_data[content_name][CONTENT_COUNT_KEY]);
+    recorded_data[content_name] ={CONTENT_DURATION_KEY:updated_duration,CONTENT_COUNT_KEY:past_count+1};
    await recorded_box.put(broadcast_id, recorded_data);
   }
 }
@@ -209,24 +214,25 @@ Future addtoRecordFromBufferOnEnd() async {
             //RECORD BOX DOESNT CONTAIN BROADCAST ID
           if (!recorded_box.containsKey(broadcast_id)) {
           print("recoreded box doesnt contain broadcast id");
-            recorded_box.put(broadcast_id, {content_name: current_duration });
+            recorded_box.put(broadcast_id, {content_name: {CONTENT_DURATION_KEY : current_duration,CONTENT_COUNT_KEY : 0} });
           }
           //ALREADY BROADCAST ADDED BUT THE CONTENT KEY IS FOR FIRST TIME
           else if (!recorded_data!.containsKey(content_name)) {
           print("ALREADY BROADCAST ADDED BUT THE CONTENT KEY IS FOR FIRST TIME");
             String content_name = value[CONTENT_NAME_KEY];
             int duration = dateTimeNow.difference(start_time).inSeconds;
-            recorded_data[content_name] = duration;
+            recorded_data[content_name] = {CONTENT_DURATION_KEY : duration,CONTENT_COUNT_KEY : 0};
            
             recorded_box.put(broadcast_id, recorded_data);
           }
           //ALREADY BROADCAST ADDED ALSO CONTENT ADDED
           else if (recorded_data.containsKey(content_name)) {
           print("ALREADY BROADCAST ADDED ALSO CONTENT ADDED");
-            double past_duration = recorded_data[content_name];
+            double past_duration = recorded_data[content_name][CONTENT_DURATION_KEY];
+            int past_count=recorded_data[content_name][CONTENT_COUNT_KEY];
             int current_duration = dateTimeNow.difference(start_time).inSeconds;
             double updated_duration = past_duration + current_duration;
-            recorded_data[content_name] = updated_duration;
+            recorded_data[content_name] = {CONTENT_DURATION_KEY : updated_duration,CONTENT_COUNT_KEY : past_count};
 
             recorded_box.put(broadcast_id, recorded_data);
           }
@@ -282,7 +288,8 @@ void addToServer() async {
             Map content_data = {};
 
             content_data["content_name"] = key;
-            content_data["content_duration"] = value;
+            content_data["content_duration"] = value[CONTENT_DURATION_KEY];
+            content_data["content_count"] = value[CONTENT_COUNT_KEY];
             content_history.add(content_data);
           }
         });
@@ -356,7 +363,7 @@ void printValues() {
 // IS_COMPLETED_KEY:true
 
 
-//     CONTENT_NAME_KEY: contentDuration
+//     CONTENT_NAME_KEY: {"duration":contentDuration,"count":1}
 
 //   }
 // }

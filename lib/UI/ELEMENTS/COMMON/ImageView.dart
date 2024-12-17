@@ -26,6 +26,13 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   @override
+  void didUpdateWidget(covariant ImageScreen oldWidget) {
+    load();
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
