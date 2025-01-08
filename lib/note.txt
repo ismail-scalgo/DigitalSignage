@@ -4,3 +4,61 @@
       final int orientation=0; hard coded inthe model class
 
       date = 14/10/2
+
+
+
+
+
+
+
+sample data api
+
+{
+    "data": {
+        "first_broadcast_data": {
+            "id": 25,
+            "name": "test",
+            "message": "Live Broadcast",
+            "current_datetime": "2025-01-01T12:26:35",
+            "updated_datetime": "2025-01-01T12:26:01",
+            "start_datetime": "2025-01-01T09:00:01",
+            "end_datetime": "2025-01-01T18:00:00",
+            "orientation_angle": 0,
+            "zone_count": 1,
+            "zone_data": [
+                {
+                    "id": 1,
+                    "name": "Zone 1",
+                    "widthPercent": 100,
+                    "heightPercent": 100,
+                    "xPercent": 0,
+                    "yPercent": 0,
+                    "contents": [
+                        {
+                            "content_id": 168,
+                            "content_name": "ForBiggerEscapes",
+                            "file_upload": "/media/uploads/12/files/ForBiggerEscapes.mp4",
+                            "file_format": "mp4",
+                            "duration": "15.0",
+                            "sort_order": 1
+                        },
+
+                        
+                        {
+                            "content_id": 169,
+                            "content_name": "ForBiggerMeltdowns",
+                            "file_upload": "/media/uploads/12/files/ForBiggerMeltdowns.mp4",
+                            "file_format": "mp4",
+                            "duration": "15.0",
+                            "sort_order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        "second_broadcast_data": {
+            "message": "No other broadcast"
+        }
+    },
+    "message": "Screen is registered"
+}

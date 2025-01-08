@@ -68,7 +68,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             RELOAD_FLAG_COUNT++;
 
             emit(NoBroadcastState());
-          } else {
+          } else { 
             print("there is data");
             if (broadCastData?.currentBroadCast != null) {
               saveTimedifference(
@@ -219,6 +219,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         currentBroadcastInString = "";
         isFirstLoad = true;
         globalConnection.close();
+        await streamSubscription.cancel();
         emit(LogoutState());
       }
       if (event is TrasnsitionEvent) {
@@ -504,6 +505,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
               '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}');
           sync_data_to_server_when_online();
           add(FetchApi(screenCode: screencode));
+          addToServer();
         }
         print(connectionState.toString());
       },

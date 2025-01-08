@@ -14,8 +14,10 @@ late Box recorded_box;
 late Box last_saved_time_box;
 late SharedPreferences prefs;
 String? screenCode = prefs.getString('NewScreenCode');
-StreamController controller = StreamController();
+StreamController controller = StreamController.broadcast();
 Stream stream = controller.stream;
+
+late StreamSubscription streamSubscription;
 String CONTENT_NAME_KEY = "content_name";
 String CONTENT_DURATION_KEY = "content_duration";
 String CONTENT_COUNT_KEY="content_count";
@@ -38,7 +40,7 @@ Future init() async {
 
   last_saved_time_box=await Hive.openBox("last_saved_time");
 
-  stream.listen((value) async {
+ streamSubscription= stream.listen((value) async {
 
     print("NEW STREAM ADDEDDDDDDDDDDDD");
     Map eventValue = value;
@@ -156,9 +158,10 @@ Future addtoRecordOnNormalCondition(
     String broadcast_start_time=buffer_box.get(broadcast_id)[BROADCAST_START_TIME_KEY].toString();
 
    await recorded_box
-        .put(broadcast_id, {content_name: {CONTENT_DURATION_KEY:current_duration,CONTENT_COUNT_KEY:0}, BROADCAST_START_TIME_KEY:broadcast_start_time,IS_COMPLETED_KEY: false});
+        .put(broadcast_id, {content_name: { CONTENT_DURATION_KEY:current_duration,CONTENT_COUNT_KEY:1 }, BROADCAST_START_TIME_KEY:broadcast_start_time,IS_COMPLETED_KEY: false});
 
   }
+
   //ALREADY BROADCAST ADDED BUT THE CONTENT KEY IS FOR FIRST TIME
   else if (!recorded_data!.containsKey(content_name)) {
     print("ALREADY BROADCAST ADDED BUT THE CONTENT KEY IS FOR FIRST TIME");
@@ -166,7 +169,7 @@ Future addtoRecordOnNormalCondition(
         (buffer_box.get(broadcast_id))[zone][CONTENT_NAME_KEY];
     double current_duration =
         (buffer_box.get(broadcast_id))[zone][CONTENT_DURATION_KEY];
-    recorded_data[content_name] = {CONTENT_DURATION_KEY:current_duration,CONTENT_COUNT_KEY:0};
+    recorded_data[content_name] = {CONTENT_DURATION_KEY:current_duration,CONTENT_COUNT_KEY:1};
    await recorded_box.put(broadcast_id, recorded_data);
   }
   //ALREADY BROADCAST ADDED ALSO CONTENT ADDED
@@ -271,6 +274,7 @@ void addToServer() async {
 
 
       if (recorded_data[IS_COMPLETED_KEY]) {
+        
         final prefs = await SharedPreferences.getInstance();
         String? screenCode = prefs.getString("NewScreenCode");
         Map jsonData = {};
@@ -308,11 +312,13 @@ void addToServer() async {
          ContentLogsRepository().sendContentLogs(jsonData);
 
        await  buffer_box.delete(element);
+       await recorded_box.delete(element);
+
       }
     },
   );
 
-  print("***** ADD TO SERVER CALLEDDDDDDDDDDD  *********");
+  print("***** DATAS ADDED TO SERVER *********");
   print(recorded_box.keys);
   print(recorded_box.values);
 }
