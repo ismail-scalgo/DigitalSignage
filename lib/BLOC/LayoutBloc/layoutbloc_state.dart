@@ -6,8 +6,33 @@ sealed class LayoutblocState {}
 final class LayoutblocInitial extends LayoutblocState {}
 
 class DisplayLayout extends LayoutblocState {
-  Map<int, MediaDetails> mediaMap;
-  DisplayLayout({required this.mediaMap});
+  LayoutData layoutdata;
+  DisplayLayout({required this.layoutdata});
 }
 
-class DefaultScreen extends LayoutblocState {}
+class DefaultScreen extends LayoutblocState {
+  int countdown;
+  DefaultScreen({required this.countdown});
+}
+
+class DisplayButton extends LayoutblocState {
+  bool isvisible;
+  DisplayButton({required this.isvisible});
+}
+
+class Minimizescreen extends LayoutblocState {
+  bool isvisible;
+  Minimizescreen({required this.isvisible});
+}
+
+class NoBroadcastState extends LayoutblocState {}
+
+class TrasitionState extends LayoutblocState {}
+
+class OfflineState extends LayoutblocState {}
+
+class MediaLoadingState extends LayoutblocState {}
+
+class ProgressState extends LayoutblocState {}
+
+class LogoutState extends LayoutblocState {}

@@ -4,8 +4,10 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
+  firebase_core
+  flutter_webrtc
+  fullscreen_window
   geolocator_windows
-  media_kit_libs_windows_video
   media_kit_video
   pdfx
   screen_brightness_windows

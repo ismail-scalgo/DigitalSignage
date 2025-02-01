@@ -11,14 +11,15 @@ class LoginRepository {
   Future<String?> fetchLogin(String screenCode) async {
     String status;
     var responseData;
-    final apiUrl =
-        'https://web-dev-sgdsignage.scalgo.net/api/launch-signage-screen/?code=$screenCode';
+    final apiUrl = '$BASEURL/api/launch-signage-screen/?code=$screenCode';
+    // final apiUrl = 'https://web-dev-sgdsignage.scalgo.net/api/launch-signage-screen/?code=$screenCode';
     var response = await http.get(Uri.parse(apiUrl));
-    print("response data = ${response.statusCode}");
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
-      print("response body  = ${jsonData}");
       status = "success";
+      return status;
+    } else if (response.statusCode == 500) {
+      status = "NoData";
       return status;
     } else {
       final jsonData = json.decode(response.body);

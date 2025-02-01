@@ -15,6 +15,27 @@ class LoginUser extends RegisterblocEvent {
   LoginUser({required this.screenCode});
 }
 
-class ShowSignIn extends RegisterblocEvent {}
+class GetScreenCode extends RegisterblocEvent {
+  GetScreenCode();
+}
 
-class ShowRegister extends RegisterblocEvent {}
+class DisplayScreenCode extends RegisterblocEvent {
+  String screenCode;
+  DisplayScreenCode({required this.screenCode});
+}
+
+class LaunchSignage extends RegisterblocEvent {
+  String screenCode;
+  LaunchSignage({required this.screenCode});
+}
+
+class ConnectSocket extends RegisterblocEvent {
+  String screenCode;
+  ConnectSocket({required this.screenCode});
+}
+
+class OfflineEvent extends RegisterblocEvent {}
+
+class CheckDeviceStatusEvent extends RegisterblocEvent {}
+
+class InterNetStatusEvent extends RegisterblocEvent {}

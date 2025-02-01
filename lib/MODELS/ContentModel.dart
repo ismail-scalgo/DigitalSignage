@@ -12,3 +12,18 @@ class Contents {
     );
   }
 }
+
+class ScreenCodeModel {
+  bool? isRegistered;
+  String? message;
+  String? agentId;
+  ScreenCodeModel({this.isRegistered, this.message, this.agentId});
+
+  factory ScreenCodeModel.fromJson(Map<String, dynamic> json) {
+    return ScreenCodeModel(
+      isRegistered: json['is_registered'],
+      message: json['message'],
+      agentId: json['agent_id'],
+    );
+  }
+}
