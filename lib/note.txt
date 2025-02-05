@@ -51,7 +51,86 @@ sample data api
                             "file_format": "mp4",
                             "duration": "15.0",
                             "sort_order": 2
+                        },
+
+
+                        {
+                            "content_id": 170,
+                            "content_name": "ForBiggerMeltdowns",
+                            "text_content": "HAII MY NAME",
+                            "file_format": "scroll_text",
+                            "font_color":7948348,
+                            "background_color":   ,
+                            "speed":12 ,
+                            "direction" : ,
+                        },
+
+                        
+                        {
+                            "app_details": [
+                                {
+                                    "speed": 5,
+                                    "app_id": 169,
+                                    "direction": "RIGHT_TO_LEFT",
+                                    "font_color": "#FFFFF",
+                                    "content_name": "Sample scoll Text",
+                                    "text_content": "To Display the Scroll Text",
+                                    "background_color": "#00000"
+                                }
+                            ],
+                            "file_format": "scrolltext",
+                            "duration": "10.0",
+                            "sort_order": 4
                         }
+                    ]
+                }
+            ]
+        },
+        "second_broadcast_data": {
+            "message": "No other broadcast"
+        }
+    },
+    "message": "Screen is registered"
+}
+
+
+
+
+sampleeee
+
+
+
+{
+    "data": {
+        "first_broadcast_data": {
+            "id": 25,
+            "name": "test",
+            "message": "Live Broadcast",
+            "current_datetime": "2025-01-09T12:54:58",
+            "updated_datetime": "2025-01-09T12:54:54",
+            "start_datetime": "2025-01-08T09:00:01",
+            "end_datetime": "2025-01-24T18:00:00",
+            "orientation_angle": 0,
+            "zone_count": 1,
+            "zone_data": [
+                {
+                    "id": 1,
+                    "name": "Zone 1",
+                    "widthPercent": 100,
+                    "heightPercent": 100,
+                    "xPercent": 0,
+                    "yPercent": 0,
+                    "contents": [
+                       {
+                            "content_id": 170,
+                            "content_name": "ForBiggerMeltdowns",
+                            "text_content": "HAII MY NAME",
+                            "file_format": "scroll_text",
+                            "font_color":"0xFF4CAF50",
+                            "background_color":"0xFFFFC107",
+                            "speed":"12" ,
+                            "direction" : "left",
+                        },
                     ]
                 }
             ]

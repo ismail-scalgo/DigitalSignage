@@ -65,6 +65,8 @@ dependencies:
   hive: ^2.2.3
   stream_video_push_notification: ^0.4.1
   stream_video: ^0.4.1
+  youtube_player_flutter: ^9.0.4
+  webview_flutter: ^4.10.0
 
   
   

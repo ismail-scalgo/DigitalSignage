@@ -6,29 +6,45 @@ class CompositionModel {
   String localstoragepath;
   final String fileFormat;
   final String fileDuration;
+  Map appdata;
+  String appType;
+  String contentType;
 
   CompositionModel({
     required this.fileUrl,
     required this.fileFormat,
     required this.localstoragepath,
     required this.fileDuration,
-    required this.filename
+    required this.filename,
+    required this.appType,
+    required this.appdata,
+    required this.contentType
   });
 
   // Convert JSON to CompositionModel
   factory CompositionModel.fromJson(Map<String, dynamic> json) {
+
+
+
     return CompositionModel(
       fileUrl: json['file_upload'] as String,
       fileFormat: json['file_format'] as String,
       localstoragepath:
           json['localstoragepath'] == null ? '' : json['localstoragepath'],
       fileDuration: json['duration'] as String,
-      filename: json['content_name']
+      filename: json['content_name'],
+      appType: json["app_type"],
+      appdata: json['appdata'] == null ? {} : json['appdata'],
+      contentType: json['content_type'] 
     );
   }
 
   Map toJson() {
     return {
+      "app_type":appType,
+      "appdata":appdata,
+      "content_type":contentType,
+      "content_name" :filename,
       "file_upload": fileUrl,
       "file_format": fileFormat,
       "duration": fileDuration,
@@ -59,8 +75,55 @@ class ZoneData {
   // Convert JSON to ZoneData
   factory ZoneData.fromJson(Map<String, dynamic> json) {
     var CompositionModelsJson = json['contents'] as List;
-    List<CompositionModel> compositionModelsList =
-        CompositionModelsJson.map((i) => CompositionModel.fromJson(i)).toList();
+    // List<CompositionModel> compositionModelsList =
+    //     CompositionModelsJson.map((i) => CompositionModel.fromJson(i)).toList();
+
+        List<CompositionModel> compositionModelsList=[];
+        CompositionModelsJson.forEach((element){
+
+              if(element['file_format']=="app")
+              {
+
+                print("FILE TYPE IS HTML");
+
+
+                  Map<String,dynamic> formatteddata={};
+
+                  formatteddata['file_upload']='';
+                  formatteddata['file_format']=element['file_format'];
+                  formatteddata['localstoragepath']=null;
+                  formatteddata['duration']=element["duration"];
+                  formatteddata['content_name'] = element['content_name'];
+
+              
+                compositionModelsList.add(CompositionModel.fromJson(formatteddata));
+
+
+
+
+
+
+
+   
+     
+      // localstoragepath:
+      //     json['localstoragepath'] == null ? '' : json['localstoragepath'],
+
+    //  filename: json['content_name'],
+    //  appdata: json['appdata'] == null ? {} : json['appdata']
+
+
+              }
+
+              else{
+
+                    print("FILE TYPE IS NORMAL DATA TYPE");
+                       compositionModelsList.add(CompositionModel.fromJson(element));
+              }
+
+           
+
+        });
 
     return ZoneData(
       id: json['id'] as int,

@@ -117,6 +117,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
                 String stringResponce =
                     jsonEncode(broadCastData!.toJsonBroadCastModel());
+
+
+               print("STRING RESPONCE FOR CACHING IS >>>>>>>>>>"+stringResponce);     
+
+                    // FOR OFFLINE ACCESSIBILITY 
                 saveResponce(stringResponce);
 
                 if (next_broadcast != null) {
@@ -285,6 +290,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     return (await prefs.getInt('time_difference') ?? 0);
   }
 
+
+//FOR OFFLINE ACCESSIBILITY //
   void saveResponce(String responce) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('cached_responce', responce);
@@ -361,8 +368,15 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         if (content.localstoragepath == null ||
             content.localstoragepath.isEmpty) {
           // add(NoBroadCastEvent());
-          path = false;
-          break;
+            if(content.contentType!='app')
+            {
+                        // if it does contain any content that is not able to play
+                        path = false;
+                        break;
+
+            }
+
+
         }
       }
       if (!path) {
@@ -531,9 +545,16 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("cacheiggg");
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
-        var file = await DefaultCacheManager()
+            if(content.fileUrl!='' && content.contentType=='media')
+            {
+                      var file = await DefaultCacheManager()
             .getSingleFile(BASEURL + content.fileUrl);
         content.localstoragepath = file.path;
+
+            }
+
+
+
       }
       ;
     }
