@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:digitalsignange/ControllerWidget.dart';
+import 'package:digitalsignange/UI/ControllerScreen.dart';
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
 import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 
@@ -36,10 +37,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("MAIN METHOD CALLEDDD");
     return MaterialApp(
         home: AnimatedSplashScreen(
       splash: SplashScreen(),
-      nextScreen: ScreenCodeScreen(),
+      // nextScreen: ScreenCodeScreen(),
+      nextScreen: Controllerscreen(),
       backgroundColor: Colors.black,
       duration: 3000,
       splashTransition: SplashTransition.fadeTransition,

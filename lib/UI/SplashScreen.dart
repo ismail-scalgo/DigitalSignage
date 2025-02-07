@@ -1,8 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:digitalsignange/UI/AutoStartPermissionScreen.dart';
 import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -87,58 +89,53 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void nextScreen() async {
     await Future.delayed(Duration(seconds: 4));
-    FlutterNativeSplash.remove();
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => ControllerWidget()),
-    // );
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            ScreenCodeScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        },
-        transitionDuration: Duration(seconds: 2),
-      ),
-    );
-  }
+    print("TIME PERIOD COMPLETED");
 
-  Route createRoute() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          ScreenCodeScreen(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
+   
 
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
+    if (await Permission.systemAlertWindow.isGranted) {
 
-        return SlideTransition(
-          position: offsetAnimation,
-          child: child,
-        );
-      },
-    );
-  }
-}
+        FlutterNativeSplash.remove();
 
-class FadeRoute extends PageRouteBuilder {
-  final Widget page;
-  FadeRoute({required this.page})
-      : super(
-          pageBuilder: (context, animation, secondaryAnimation) => page,
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              AutoStartPermissionScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,
               child: child,
             );
           },
-        );
+          transitionDuration: Duration(seconds: 2),
+        ),
+      );
+
+
+     
+    } else {
+
+       FlutterNativeSplash.remove();
+
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              ScreenCodeScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          transitionDuration: Duration(seconds: 2),
+        ),
+      );
+      
+    }
+
+  }
+
+  
 }
+
+
