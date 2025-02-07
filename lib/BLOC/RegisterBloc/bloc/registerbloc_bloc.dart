@@ -2,265 +2,272 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform;
 
 import 'package:bloc/bloc.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+
 import 'package:digitalsignange/Costants.dart';
+import 'package:digitalsignange/MODELS/ContentModel.dart';
 import 'package:digitalsignange/MODELS/RequestModel.dart';
 import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
-import 'package:digitalsignange/REPOSITORIES/LoginRepository.dart';
+
 import 'package:digitalsignange/REPOSITORIES/RegisterRepo.dart';
+import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
+
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:meta/meta.dart';
-import 'package:platform_detector/enums.dart';
-import 'package:platform_detector/platform_detector.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_client/web_socket_client.dart';
 
 part 'registerbloc_event.dart';
 part 'registerbloc_state.dart';
 
 class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
-  late String platform;
+  late WebSocket globalConnection;
+  late StreamSubscription internetlistener;
+
+  bool isfirsttime = true;
+
   RegisterblocBloc() : super(RegisterblocInitial()) {
     on<RegisterblocEvent>((event, emit) async {
-      if (event is LoginUser) {
-        print("login event callinggg...");
-        var loginRes;
-        try {
-          final LoginRepository apiRepo = LoginRepository();
-          // loginRes = await apiRepo.fetchLogin(event.screenCode);
-          String? stat = await apiRepo.fetchLogin(event.screenCode);
-          print("login reponse = $loginRes");
-          emit(LaunchScreen());
-        } catch (e) {
-          String errorMessage =
-              e.toString().replaceAll('Exception:', '').trim();
-          // print(e);
-          emit(loginFailureState(message: errorMessage));
+      print("BLOC CALLED WITH EVENT");
+      print(event);
+
+      if ((event is InterNetStatusEvent) && isfirsttime) {
+        isfirsttime = false;
+        interNetConnectionManger();
+      } else if ((event is InterNetStatusEvent) && !isfirsttime) {
+        if (await InternetConnection().hasInternetAccess) {
+          add(CheckDeviceStatusEvent());
+        } else {
+          add(OfflineEvent());
         }
       }
-      if (event is ShowSignIn) {
-        emit(SignInScreen());
+
+      if (event is CheckDeviceStatusEvent) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        String? screenCode = prefs.getString('NewScreenCode');
+        bool? isRegistered = prefs.getBool('isRegistered');
+        if (isRegistered == null) {
+          isRegistered = false;
+        }
+
+        if (screenCode == null) {
+          add(GetScreenCode());
+        } else if (!isRegistered) {
+          add(DisplayScreenCode(screenCode: screenCode));
+        } else {
+          print("got it");
+          updateScreenCodeStatus(screenCode);
+          add(LaunchSignage(screenCode: screenCode));
+        }
       }
-      if (event is ShowRegister) {
-        emit(DisplayRegistration());
+
+      if (event is GetScreenCode) {
+        if (await isOffline()) {
+          add(OfflineEvent());
+        } else {
+          String agentId = "Unknown";
+          String name = "Unknown";
+          String browser = "Unknown";
+          String browserVersion = "Unknown";
+          String latitude = "0.0";
+          String longitude = "0.0";
+          String location = "Unknown";
+          String orientation = "0";
+          String osversion = "Unknown";
+          String height = "0";
+          String width = "0";
+          String type = "Unknown";
+          String osVersion = "Unknown";
+          String platform = "Unknown";
+
+          if (HARDCODEPLATFORM == "WEB") {
+            PlatformData? platformInfo = await initPlatformState();
+            String browser = platformInfo!.browser;
+            String browserVersion = platformInfo.browserVersion;
+            Position position = await determinePosition();
+            latitude = position.latitude.toString();
+            longitude = position.longitude.toString();
+            location =
+                await fetchLocation(position.latitude, position.longitude);
+          }
+          if (HARDCODEPLATFORM == "ANDROID") {
+            Position position = await determinePosition();
+            latitude = position.latitude.toString();
+            longitude = position.longitude.toString();
+            location =
+                await fetchLocation(position.latitude, position.longitude);
+            type = (await detectDevice()) ?? "Unknown";
+          }
+
+          RequestModel requestModel = RequestModel(
+              agentId: agentId,
+              name: name,
+              browser: browser,
+              browserVersion: browserVersion,
+              location: location,
+              latitude: latitude,
+              longitude: longitude,
+              orientation: orientation,
+              platform: platform,
+              osVersion: osVersion,
+              height: height,
+              width: width,
+              type: type);
+          try {
+            String? screenCode =
+                await RegisterRepository().fetchScreenCode(requestModel);
+            screenCode != null ? saveNewScreenCode(screenCode) : print('');
+
+            connect(screenCode!);
+            emit(DisplayScreenCodeState(screenCode: screenCode));
+          } catch (e) {
+            print(e);
+          }
+        }
       }
-      if (event is RegisterUser) {
-        print("Register event callinggg...");
-        final Data? responseData;
-        final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+      if (event is DisplayScreenCode) {
+        if (await isOffline()) {
+          add(OfflineEvent());
+        } else {
+          connect(event.screenCode);
+          // print("emitting old");
+          // emit(DisplayOldScreenCode(screenCode: event.screenCode));
+          // connect(event.screenCode);
+          try {
+            final RegisterRepository registerRepo = RegisterRepository();
+            print("requestinggg");
+            ScreenCodeModel? data =
+                await registerRepo.checkScreenCode(event.screenCode);
+            print("data = ${data?.agentId}");
+            print("data = ${data?.isRegistered}");
+            print("data = ${data?.message}");
+            if (!data!.isRegistered!) {
+              print("emitting old");
+              emit(DisplayScreenCodeState(screenCode: event.screenCode));
+            }
+            if (data.isRegistered!) {
+              final SharedPreferences prefs =
+                  await SharedPreferences.getInstance();
+              prefs.setBool('isRegistered', true);
+              closeConnection();
+              await internetlistener.cancel();
+              emit(LaunchScreen(code: event.screenCode));
+            }
+          } catch (e) {}
+        }
+      }
+      if (event is ConnectSocket) {
+        connect(event.screenCode);
+      }
+      if (event is OfflineEvent) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-        String? agentIdErr;
-        String? nameErr;
-        if (event.request.agentId.trim().isEmpty) {
-          agentIdErr = "AgentId is required";
-        }
-        if (event.request.name.trim().isEmpty) {
-          nameErr = "Screen Name is required";
-        }
-        if (agentIdErr != null || nameErr != null) {
-          emit(RegisterblocState(agentIdErr: agentIdErr, nameErr: nameErr));
-          return;
-        }
-
-        try {
-          var location = await _determinePosition();
-          var address =
-              await fetchLocation(location.latitude, location.longitude);
-          event.request.latitude = location.latitude.toString();
-          event.request.longitude = location.longitude.toString();
-          event.request.location = address;
-        } catch (e) {
-          print(e);
-          final PlatformType currentPlatformName =
-              PlatformDetector.platform.type;
-          emit(PermissionDenied());
-          return;
-        }
-        Future setVersions() async {
-          print("entered");
-          PlatformData? platformInfo = await initPlatformState();
-          event.request.browser = platformInfo?.browser;
-          event.request.browserVersion = platformInfo?.browserVersion;
-          event.request.osVersion = platformInfo?.osVersion;
-          // event.request.type = PlatformDetector.platform.type.toString();
-          // String platformType = PlatformDetector.platform.type.toString();
-          // String result = platformType.split('.').last;
-          // print("type = $result");
-          // event.request.type = platformInfo?.type;
+        String? screenCode = prefs.getString('NewScreenCode');
+        bool? isRegistered = prefs.getBool('isRegistered');
+        if (isRegistered == null) {
+          isRegistered = false;
         }
 
-        print("start");
-        await setVersions();
-        event.request.orientation = "landscape";
-        event.request.type = await detectDevice();
-        print("info = ${event.request.browser}");
-        print("info = ${event.request.browserVersion}");
-        print("info = ${event.request.osVersion}");
-        print("info = ${event.request.type}");
-        try {
-          final RegisterRepository apiRepo = RegisterRepository();
-          String? Stat = await apiRepo.registerScreen(event.request);
-          print(Stat);
-          emit(SuccessState());
-        } catch (e) {
-          print(e);
-          String errorMessage =
-              e.toString().replaceAll('Exception:', '').trim();
-          // print(e);
-          emit(FailureState(message: errorMessage));
+        if (screenCode != null && isRegistered) {
+          add(LaunchSignage(screenCode: screenCode));
+        } else {
+          emit(OfflineState());
         }
+      }
+      if (event is LaunchSignage) {
+        emit(LaunchScreen(code: event.screenCode));
       }
     });
   }
 
-  // if (!mounted) return;
-  // setState(() {
-  //   _deviceData = deviceData;
-  // });
-  // }
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    return await Geolocator.getCurrentPosition();
+  void saveNewScreenCode(String screenCode) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('NewScreenCode', screenCode);
+    await prefs.setBool('isRegistered', false);
   }
 
-  Future<String> fetchLocation(double lat, double long) async {
-    print(
-        'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$long&format=json&addressdetails=1');
-    var response = await http.get(Uri.parse(
-        'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$long&format=json&addressdetails=1'));
-    print("response = $response");
-    var data = json.decode(response.body);
-    var address = data["display_name"];
-    return address;
+  void updateScreenCodeStatus(String screenCode) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('NewScreenCode', screenCode);
+    await prefs.setBool('isRegistered', true);
   }
 
-  Future<PlatformData?> initPlatformState() async {
-    print("entered 1");
-    var deviceData = <String, dynamic>{};
-    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-    String deviceType;
-    try {
-      if (kIsWeb) {
-        print("entered 2");
-        final webInfo = await deviceInfoPlugin.webBrowserInfo;
-        return PlatformData(webInfo.browserName.toString(),
-            webInfo.appVersion.toString(), webInfo.userAgent.toString());
-      }
-      switch (defaultTargetPlatform) {
-        case TargetPlatform.android:
-          print("entered 3");
-          deviceData = readAndroidBuildData(await deviceInfoPlugin.androidInfo);
-          final androidInfo = await deviceInfoPlugin.androidInfo;
-          print("info = $deviceData");
-          print("info = ${androidInfo.version.baseOS.toString()}");
-          return PlatformData(
-              "Unknown", "Unknown", androidInfo.fingerprint.toString());
-        case TargetPlatform.iOS:
-          final iosInfo = await deviceInfoPlugin.iosInfo;
-          return PlatformData(
-              "Unknown", "Unknown", iosInfo.systemVersion.toString());
-        case TargetPlatform.windows:
-          final windowsInfo = await deviceInfoPlugin.windowsInfo;
-          return PlatformData("Unknown", windowsInfo.csdVersion.toString(),
-              windowsInfo.majorVersion.toString());
-        case TargetPlatform.linux:
-          final linuxInfo = await deviceInfoPlugin.linuxInfo;
-          return PlatformData(
-              "Unknown", "Unknown", linuxInfo.version.toString());
-        case TargetPlatform.macOS:
-          final macOSInfo = await deviceInfoPlugin.macOsInfo;
-          return PlatformData(
-              "Unknown", "Unknown", macOSInfo.majorVersion.toString());
-        default:
-          return PlatformData("Unknown", "Unknown", "Unknown");
-      }
-    } on PlatformException {
-      print("'Error:': 'Failed to get platform version.'");
-      return PlatformData("Unknown", "Unknown", "Unknown");
-    }
+  void connect(String screencode) async {
+    final socket = WebSocket(Uri.parse(SOCKET_ADDRESS));
+    globalConnection = socket;
+    socket.messages.listen((message) async {
+      print("socket message = $message");
+      var jsonresponce = jsonDecode(message);
+      print("socket response = $jsonresponce");
+      add(DisplayScreenCode(screenCode: screencode));
+    }, onError: (error) {
+      print("Error receiving message: $error");
+    });
+
+    socket.send('ping');
+    socket.connection.listen(
+      (connectionState) {
+        if (connectionState is Connecting) {
+          print("CONNECTING");
+        }
+        if (connectionState is Connected) {
+          print("CONNECTED");
+          String formattedScreenCode = '"' + screencode + '"';
+          print('{"screen_code" : $formattedScreenCode}');
+          socket.send(
+              // '{"screen_code" : $formattedScreenCode, "client_type" : "device"}'
+              '{"client_type":"device","screen_code":$formattedScreenCode,"is_registered":"false"}');
+          print("sended");
+        }
+        if (connectionState is Disconnected) {
+          print("DISCONNECTED");
+        }
+        if (connectionState is Reconnecting) {
+          print("RECONNECTING");
+        }
+        if (connectionState is Reconnected) {
+          print("RECONNECTED");
+          String formattedScreenCode = '"' + screencode + '"';
+          print('{"screen_code" : $formattedScreenCode}');
+          socket.send(
+              '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"false"}');
+          add(DisplayScreenCode(screenCode: screencode));
+        }
+        print("connection state ${connectionState.toString()}");
+      },
+    );
   }
 
-  Future<String?> detectDevice() async {
-    var deviceData = <String, dynamic>{};
-    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-    String deviceType;
-    if (kIsWeb) {
-      final webInfo = await deviceInfoPlugin.webBrowserInfo;
-      if (webInfo.userAgent!.contains("Android")) {
-        deviceType = "Mobile";
-        return deviceType;
-      } else if (webInfo.userAgent!.contains("Macintosh")) {
-        deviceType = "IOS";
-        return deviceType;
-      } else if (webInfo.userAgent!.contains("Linux")) {
-        deviceType = "Linux";
-        return deviceType;
-      } else if (webInfo.userAgent!.contains("Windows")) {
-        deviceType = "Windows";
-        return deviceType;
-      } else {
-        deviceType = "Unknown";
-        return deviceType;
+  void closeConnection() {
+    if (globalConnection != null) {
+      try {
+        globalConnection.close();
+        print("WebSocket connection closed.");
+      } catch (e) {
+        print("Error while closing WebSocket: $e");
       }
     } else {
-      final PlatformType currentPlatformType = PlatformDetector.platform.type;
-      deviceType = currentPlatformType.toString().split('.').last;
-      return deviceType;
+      print("WebSocket is not initialized or already closed.");
     }
   }
-}
 
-Map<String, dynamic> readAndroidBuildData(AndroidDeviceInfo build) {
-  return <String, dynamic>{
-    'version.securityPatch': build.version.securityPatch,
-    'version.sdkInt': build.version.sdkInt,
-    'version.release': build.version.release,
-    'version.previewSdkInt': build.version.previewSdkInt,
-    'version.incremental': build.version.incremental,
-    'version.codename': build.version.codename,
-    'version.baseOS': build.version.baseOS,
-    'board': build.board,
-    'bootloader': build.bootloader,
-    'brand': build.brand,
-    'device': build.device,
-    'display': build.display,
-    'fingerprint': build.fingerprint,
-    'hardware': build.hardware,
-    'host': build.host,
-    'id': build.id,
-    'manufacturer': build.manufacturer,
-    'model': build.model,
-    'product': build.product,
-    'supported32BitAbis': build.supported32BitAbis,
-    'supported64BitAbis': build.supported64BitAbis,
-    'supportedAbis': build.supportedAbis,
-    'tags': build.tags,
-    'type': build.type,
-    'isPhysicalDevice': build.isPhysicalDevice,
-    'systemFeatures': build.systemFeatures,
-    'serialNumber': build.serialNumber,
-  };
+  void interNetConnectionManger() {
+    internetlistener =
+        InternetConnection().onStatusChange.listen((InternetStatus status) {
+      switch (status) {
+        case InternetStatus.connected:
+          add(CheckDeviceStatusEvent());
+          break;
+        case InternetStatus.disconnected:
+          add(OfflineEvent());
+          break;
+      }
+    });
+  }
 }

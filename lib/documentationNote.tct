@@ -1,0 +1,5 @@
+------------- OFFLINE SUPPORT ----------------------
+
+* on layout bloc there is method called havePath.it is used to know any content that is not able to play in offline.
+    when it comes to javascript apps,browser provide its own caching so we need to handle that case also we dont restrict to No broadcast only because of 
+    no path in localpath of caching
