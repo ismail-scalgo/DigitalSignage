@@ -82,7 +82,7 @@ class _AutoStartPermissionScreenState extends State<AutoStartPermissionScreen>
       //   ),
       // ),
 
-      body: pairDeviceWidget(),
+      body: permissionScreen(),
     );
   }
 
@@ -96,7 +96,7 @@ class _AutoStartPermissionScreenState extends State<AutoStartPermissionScreen>
     }
   }
 
-  Widget pairDeviceWidget() {
+  Widget permissionScreen() {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
