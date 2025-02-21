@@ -7,7 +7,7 @@ import 'package:pdfx/pdfx.dart';
 
 class CustomPdf extends StatefulWidget {
   String url;
-  CustomPdf(this.url);
+  CustomPdf({required this.url,required super.key});
 
   @override
   State<CustomPdf> createState() => _CustomPdfState();

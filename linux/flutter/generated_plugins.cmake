@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  display_metrics_linux
   media_kit_video
 )
 

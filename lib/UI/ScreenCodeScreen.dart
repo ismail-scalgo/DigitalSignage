@@ -2,11 +2,30 @@ import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 
 import 'package:digitalsignange/UI/LaunchingScreen.dart';
 import 'package:digitalsignange/UI/NoInternetScreen.dart';
+import 'package:display_metrics/display_metrics.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+
+class PreScreenCodeScreen extends StatefulWidget {
+  const PreScreenCodeScreen({super.key});
+
+  @override
+  State<PreScreenCodeScreen> createState() => _PreScreenCodeScreenState();
+}
+
+class _PreScreenCodeScreenState extends State<PreScreenCodeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: DisplayMetricsWidget(
+        child: ScreenCodeScreen(),
+      ),
+    );
+  }
+}
 
 class ScreenCodeScreen extends StatefulWidget {
   const ScreenCodeScreen({super.key});
@@ -27,6 +46,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
     print("screen code screeeeeeeeeeeeen");
 
     registerBloc = BlocProvider.of<RegisterblocBloc>(context);
+    registerBloc.add(AddContext(context: context));
     registerBloc.add(InterNetStatusEvent());
   }
 

@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 class SingleZoneController extends StatefulWidget {
   ZoneData zonedata;
   String broadcast_id;
-  SingleZoneController({required this.zonedata,required this.broadcast_id});
+  SingleZoneController({required this.zonedata, required this.broadcast_id});
   @override
   State<SingleZoneController> createState() => _SingleZoneControllerState();
 }
@@ -45,28 +45,21 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
 
   @override
   Widget build(BuildContext context) {
-
-    Map content_start_data={
-      'event':"content_add_event",
-      'broadcast_id':widget.broadcast_id,
-      'content_name':widget.zonedata.compositionModels[currentIndex].filename,
-      'content_duration':widget.zonedata.compositionModels[currentIndex].fileDuration,
-      'content_zone':widget.zonedata.id
+    Map content_start_data = {
+      'event': "content_add_event",
+      'broadcast_id': widget.broadcast_id,
+      'content_name': widget.zonedata.compositionModels[currentIndex].filename,
+      'content_duration':
+          widget.zonedata.compositionModels[currentIndex].fileDuration,
+      'content_zone': widget.zonedata.id
     };
-    
 
-
-      controller.add(content_start_data);
-
+    controller.add(content_start_data);
 
     return getWidget(widget.zonedata.compositionModels[currentIndex]);
   }
 
   Widget getWidget(CompositionModel compositiondata) {
-
-
-
-
     if (compositiondata.fileFormat == ".jpeg" ||
         compositiondata.fileFormat == ".jpg" ||
         compositiondata.fileFormat == ".png") {
@@ -104,12 +97,9 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       //   child:AndroidVideoPlayer(url: fullUrl));
     } else if (compositiondata.fileFormat == ".pdf") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
-      return CustomPdf(fullUrl);
-    }
-
-    else if(compositiondata.fileFormat == ".html")
-    {
-
+      return CustomPdf(url: fullUrl,key: Key(fullUrl),);
+    } else if (compositiondata.fileFormat == ".html") {
+      print("HTML APP CALLED  URL ${compositiondata.fileUrl}");
 
       //  {
       //                       "content_id": 170,
@@ -122,10 +112,9 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       //                       "direction" : ,
       //                   },
 
-
-      return HtmlApps(htmlUrl:BASEURL +compositiondata.fileUrl,);
-
-
+      return HtmlApps(
+        htmlUrl: BASEURL + compositiondata.fileUrl,key:Key(compositiondata.fileUrl),
+      );
     }
     return Center(
       child: Text("Unknown media format"),

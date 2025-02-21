@@ -3,7 +3,8 @@ part of 'registerbloc_bloc.dart';
 @immutable
 class RegisterblocState {}
 
-final class RegisterblocInitial extends RegisterblocState {}
+final class RegisterblocInitial extends RegisterblocState {
+}
 
 class LaunchScreen extends RegisterblocState {
   String code;

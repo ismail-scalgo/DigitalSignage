@@ -177,6 +177,70 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
+  display_metrics:
+    dependency: "direct main"
+    description:
+      name: display_metrics
+      sha256: "9a3974768881c667430527161ea09cf3a150c2f6b9b2e5cc9e86a130bd83a542"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  display_metrics_android:
+    dependency: transitive
+    description:
+      name: display_metrics_android
+      sha256: "8aaa390d452bed94aba14f1394cdc094b0d223cafb09368c6f75d978ca1dbf04"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
+  display_metrics_ios:
+    dependency: transitive
+    description:
+      name: display_metrics_ios
+      sha256: "1a19faee59f830862438b3918f7b94c7cb515ca7f9c3d174701d865f9a1e6a77"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
+  display_metrics_linux:
+    dependency: transitive
+    description:
+      name: display_metrics_linux
+      sha256: "8623ab9fb7e8acd0fcd3809de88977e3a65690be1aee544ac0c99dba675b9791"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  display_metrics_macos:
+    dependency: transitive
+    description:
+      name: display_metrics_macos
+      sha256: "13fef9747113a2866e3c1a92b2f981d712c8187e8f9d09a61c26b9c4736b05ad"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
+  display_metrics_platform_interface:
+    dependency: transitive
+    description:
+      name: display_metrics_platform_interface
+      sha256: bf18899dcf23078f73faf66698beec206d5402a689c8c75265c5d419e2ded586
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
+  display_metrics_web:
+    dependency: transitive
+    description:
+      name: display_metrics_web
+      sha256: "35feb09d7897533bce4a0a55611cebed7254f72304d7df9138bada34405d9bab"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
+  display_metrics_windows:
+    dependency: transitive
+    description:
+      name: display_metrics_windows
+      sha256: bfd771720e03be9f52ec7e2ad83424bf74817cc8320cea9bf928e9da9fcac564
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   equatable:
     dependency: transitive
     description:
@@ -217,6 +281,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+  fire_tv_listener:
+    dependency: "direct main"
+    description:
+      name: fire_tv_listener
+      sha256: "81a520b9d6e9f999d32f853d706c12cd3c3dab8f0cde6ad7131a41a2751db102"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.6"
   fixnum:
     dependency: transitive
     description:

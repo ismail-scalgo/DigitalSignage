@@ -42,7 +42,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   LayoutblocBloc() : super(LayoutblocInitial()) {
     print("LAYOUT BLOC CALLEDDDDDDDDD");
     log_of_start_stop();
-  
+
     on<LayoutblocEvent>((event, emit) async {
       print("LAYOU BLOCK EVENT");
       print(event);
@@ -51,7 +51,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         print("fetch api event called");
 
         if (isFirstLoad) {
-           await init();
+          await init();
           connect(event.screenCode);
         }
         bool result = await InternetConnection().hasInternetAccess;
@@ -68,7 +68,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             RELOAD_FLAG_COUNT++;
 
             emit(NoBroadcastState());
-          } else { 
+          } else {
             print("there is data");
             if (broadCastData?.currentBroadCast != null) {
               saveTimedifference(
@@ -91,11 +91,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 // add(MediaLoadingEvent());
                 // await preloadContents(current_broadcast!)
                 //     .timeout(Duration(seconds: endTimeDifference));
+                //IT CHECK ALL FILES ARE CACHED IF ANY MISSING THEN IT RETURN FALSE
                 bool isCached = await allCached(current_broadcast!);
                 print("cachdeeeeeeeeeeeeed = $isCached");
 
                 if (isCached) {
-                  preloadContents(current_broadcast!);
+                 await preloadContents(current_broadcast!);
                 } else {
                   try {
                     add(MediaLoadingEvent());
@@ -118,10 +119,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 String stringResponce =
                     jsonEncode(broadCastData!.toJsonBroadCastModel());
 
+                print("STRING RESPONCE FOR CACHING IS >>>>>>>>>>" +
+                    stringResponce);
 
-               print("STRING RESPONCE FOR CACHING IS >>>>>>>>>>"+stringResponce);     
-
-                    // FOR OFFLINE ACCESSIBILITY 
+                // FOR OFFLINE ACCESSIBILITY
                 saveResponce(stringResponce);
 
                 if (next_broadcast != null) {
@@ -290,7 +291,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     return (await prefs.getInt('time_difference') ?? 0);
   }
 
-
 //FOR OFFLINE ACCESSIBILITY //
   void saveResponce(String responce) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -309,6 +309,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     String? cache_responce = prefs.getString('cached_responce');
 
     if (cache_responce == null) {
+      print("cache responce is empty");
       add(OfflineEvent());
     } else {
       print("CACHE SAVED MESSAGE");
@@ -364,19 +365,16 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     bool path = true;
     for (var zoneData in layoutdata.zoneData!) {
       for (var content in zoneData.compositionModels) {
+        print(content.fileFormat);
         print("path = ${content.localstoragepath}");
         if (content.localstoragepath == null ||
             content.localstoragepath.isEmpty) {
           // add(NoBroadCastEvent());
-            if(content.contentType!='app')
-            {
-                        // if it does contain any content that is not able to play
-                        path = false;
-                        break;
-
-            }
-
-
+          if (content.contentType != 'app') {
+            // if it does contain any content that is not able to play
+            path = false;
+            break;
+          }
         }
       }
       if (!path) {
@@ -545,16 +543,14 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("cacheiggg");
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
-            if(content.fileUrl!='' && content.contentType=='media')
-            {
-                      var file = await DefaultCacheManager()
-            .getSingleFile(BASEURL + content.fileUrl);
-        content.localstoragepath = file.path;
+        if (content.fileUrl != '' && content.contentType == 'media') {
+          var file = await DefaultCacheManager()
+              .getSingleFile(BASEURL + content.fileUrl);
+          content.localstoragepath = file.path;
 
-            }
-
-
-
+          print("PRELOAD CONTENTS CALLED");
+          print("CONTENT PATH ==" + file.path);
+        }
       }
       ;
     }

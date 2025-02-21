@@ -7,6 +7,7 @@
 #include "generated_plugin_registrant.h"
 
 #include <connectivity_plus/connectivity_plus_windows_plugin.h>
+#include <display_metrics_windows/display_metrics_windows_plugin_c_api.h>
 #include <fullscreen_window/fullscreen_window_plugin_c_api.h>
 #include <geolocator_windows/geolocator_windows.h>
 #include <media_kit_video/media_kit_video_plugin_c_api.h>
@@ -17,6 +18,8 @@
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   ConnectivityPlusWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("ConnectivityPlusWindowsPlugin"));
+  DisplayMetricsWindowsPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("DisplayMetricsWindowsPluginCApi"));
   FullscreenWindowPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FullscreenWindowPluginCApi"));
   GeolocatorWindowsRegisterWithRegistrar(

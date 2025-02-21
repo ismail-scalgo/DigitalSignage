@@ -11,7 +11,9 @@ import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
 import 'package:digitalsignange/UI/SplashScreen.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
+import 'package:digitalsignange/packagetest.dart';
 import 'package:digitalsignange/test.dart';
+import 'package:display_metrics/display_metrics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fullscreen_window/fullscreen_window.dart';
@@ -40,13 +42,15 @@ class MyApp extends StatelessWidget {
     print("MAIN METHOD CALLEDDD");
     return MaterialApp(
         home: AnimatedSplashScreen(
-      splash: SplashScreen(),
-      // nextScreen: ScreenCodeScreen(),
-      nextScreen: Controllerscreen(),
-      backgroundColor: Colors.black,
-      duration: 3000,
-      splashTransition: SplashTransition.fadeTransition,
-    ));
-    // return MaterialApp(home: ScreenCodeScreen());
+              splash: SplashScreen(),
+              // nextScreen: ScreenCodeScreen(),
+              nextScreen: Controllerscreen(),
+              backgroundColor: Colors.black,
+              duration: 3000,
+              splashTransition: SplashTransition.fadeTransition,
+            )
+            );
+
+   // return MaterialApp(home: DisplayMetricsWidget(child: PackageTest()));
   }
 }

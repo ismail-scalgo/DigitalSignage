@@ -1,5 +1,6 @@
 import 'package:digitalsignange/UI/AutoStartPermissionScreen.dart';
 import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
+import 'package:display_metrics/display_metrics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -39,7 +40,7 @@ class _ControllerscreenState extends State<Controllerscreen> {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-              ScreenCodeScreen(),
+              PreScreenCodeScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,

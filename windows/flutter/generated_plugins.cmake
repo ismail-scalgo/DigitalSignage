@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
+  display_metrics_windows
   fullscreen_window
   geolocator_windows
   media_kit_video

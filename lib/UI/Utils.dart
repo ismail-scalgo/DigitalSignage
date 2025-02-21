@@ -138,7 +138,7 @@ Future<String?> detectDevice() async {
   }
 }
 
-Future<String> getPlatform() async {
+String getPlatform()  {
   var deviceData = <String, dynamic>{};
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   String platform;
@@ -147,14 +147,14 @@ Future<String> getPlatform() async {
     if (kIsWeb) {
       print("web");
       // deviceData = _readWebBrowserInfo(await deviceInfoPlugin.webBrowserInfo);
-      WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+    //  WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
       // print(deviceData);
       // print("platform = ${deviceData['platform']}");
-      platform = webBrowserInfo.platform!;
+    //  platform = webBrowserInfo.platform!;
       print("platform = $deviceData['platform']");
       // request.platform = platform;
       // PLATFORM = deviceData['platform'];
-      return platform;
+      return "Web";
     } else {
       if (Platform.isAndroid) {
         platform = 'Android';
