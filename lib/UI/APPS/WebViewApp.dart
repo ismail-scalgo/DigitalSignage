@@ -45,7 +45,7 @@ Widget build(BuildContext context) {
       },
       onPageStarted: (String url) {},
       onPageFinished: (String url) {},
-      onHttpError: (HttpResponseError error) {},
+      // onHttpError: (HttpResponseError error) {},
       onWebResourceError: (WebResourceError error) {},
       onNavigationRequest: (NavigationRequest request) {
         if (request.url.startsWith('https://www.youtube.com/')) {

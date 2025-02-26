@@ -105,29 +105,29 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             PlatformData? platformInfo = await initPlatformState();
             String browser = platformInfo!.browser;
             String browserVersion = platformInfo.browserVersion;
-            Position position = await determinePosition();
-            latitude = position.latitude.toString();
-            longitude = position.longitude.toString();
-            location =
-                await fetchLocation(position.latitude, position.longitude);
+            // Position position = await determinePosition();
+            // latitude = position.latitude.toString();
+            // longitude = position.longitude.toString();
+            // location =
+            //     await fetchLocation(position.latitude, position.longitude);
           }
           if (HARDCODEPLATFORM == "ANDROIDTV") {
             bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
             if (serviceEnabled) {
-              Position position = await determinePosition();
-              latitude = position.latitude.toString();
-              longitude = position.longitude.toString();
-              location =
-                  await fetchLocation(position.latitude, position.longitude);
+              // Position position = await determinePosition();
+              // latitude = position.latitude.toString();
+              // longitude = position.longitude.toString();
+              // location =
+              //     await fetchLocation(position.latitude, position.longitude);
             }
 
             type = (await detectDevice()) ?? "Unknown";
 
-            DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+          //   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
-            AndroidDeviceInfo info = await deviceInfo.androidInfo;
+          //   AndroidDeviceInfo info = await deviceInfo.androidInfo;
 
-          osVersion=  info.version.sdkInt.toString();
+          // osVersion=  info.version.sdkInt.toString();
           }
 
           RequestModel requestModel = RequestModel(
