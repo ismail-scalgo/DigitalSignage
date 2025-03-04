@@ -1,6 +1,8 @@
 import 'package:digitalsignange/CONTENTLOG.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
+import 'package:digitalsignange/UI/APPS/HtmlApps.dart';
+import 'package:digitalsignange/UI/APPS/ScrollText.dart';
 import 'package:digitalsignange/UI/ELEMENTS/ANDROID/AndroidVideoPlayer.dart';
 import 'package:digitalsignange/UI/ELEMENTS/COMMON/ImageView.dart';
 import 'package:digitalsignange/UI/ELEMENTS/COMMON/PdfView.dart';
@@ -65,16 +67,16 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
 
 
 
-    if (compositiondata.fileFormat == "jpeg" ||
-        compositiondata.fileFormat == "jpg" ||
-        compositiondata.fileFormat == "png") {
+    if (compositiondata.fileFormat == ".jpeg" ||
+        compositiondata.fileFormat == ".jpg" ||
+        compositiondata.fileFormat == ".png") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
       return Container(
         width: (gwidth * widget.zonedata.widthPercent) / 100,
         height: (gheight * widget.zonedata.heightPercent) / 100,
         child: ImageScreen(url: fullUrl),
       );
-    } else if (compositiondata.fileFormat == "mp4") {
+    } else if (compositiondata.fileFormat == ".mp4") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
 
       double aspectRatio = (gwidth * widget.zonedata.widthPercent) /
@@ -100,9 +102,30 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       // return AspectRatio(
       //   aspectRatio: aspectRatio,
       //   child:AndroidVideoPlayer(url: fullUrl));
-    } else if (compositiondata.fileFormat == "pdf") {
+    } else if (compositiondata.fileFormat == ".pdf") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
       return CustomPdf(fullUrl);
+    }
+
+    else if(compositiondata.fileFormat == ".html")
+    {
+
+
+      //  {
+      //                       "content_id": 170,
+      //                       "content_name": "ForBiggerMeltdowns",
+      //                       "text_content": "HAII MY NAME",
+      //                       "file_format": "scroll_text",
+      //                       "font_color":0xFF4CAF50,
+      //                       "background_color":0xFFFFC107,
+      //                       "speed":12 ,
+      //                       "direction" : ,
+      //                   },
+
+
+      return HtmlApps(htmlUrl:BASEURL +compositiondata.fileUrl,);
+
+
     }
     return Center(
       child: Text("Unknown media format"),
