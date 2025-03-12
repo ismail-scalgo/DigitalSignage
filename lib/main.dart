@@ -9,6 +9,7 @@ import 'package:digitalsignange/UI/LaunchingScreen.dart';
 import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 
 import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
+import 'package:digitalsignange/UI/ScreenDeleted.dart';
 import 'package:digitalsignange/UI/SplashScreen.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/packagetest.dart';
@@ -18,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fullscreen_window/fullscreen_window.dart';
 import 'package:hive/hive.dart';
-import 'package:media_kit/media_kit.dart';
+
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
@@ -51,6 +52,6 @@ class MyApp extends StatelessWidget {
             )
             );
 
-   // return MaterialApp(home: DisplayMetricsWidget(child: PackageTest()));
+   // return MaterialApp(home: ScreenDeletedScreen());
   }
 }

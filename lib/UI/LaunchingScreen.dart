@@ -17,6 +17,7 @@ import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
 import 'package:digitalsignange/UI/NoBroadCastScreen.dart';
 
 import 'package:digitalsignange/UI/NoInternetScreen.dart';
+import 'package:digitalsignange/UI/ScreenDeleted.dart';
 
 import 'package:digitalsignange/UI/SingleZoneController.dart';
 import 'package:digitalsignange/UI/Utils.dart';
@@ -152,10 +153,10 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                           if (state is LogoutState) {
                             // LoadingWidget(height, width);
                             // await Future.delayed(Duration(seconds: 2));
-                            Navigator.pushAndRemoveUntil(
+                           Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ScreenCodeScreen()),
+                                    builder: (context) => ScreenDeletedScreen()),
                                 (route) => false);
                           }
                           // if (state is MediaLoadingState) {

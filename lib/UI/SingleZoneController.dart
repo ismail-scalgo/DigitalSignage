@@ -4,6 +4,7 @@ import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/UI/APPS/HtmlApps.dart';
 import 'package:digitalsignange/UI/APPS/ScrollText.dart';
 import 'package:digitalsignange/UI/ELEMENTS/ANDROID/AndroidVideoPlayer.dart';
+import 'package:digitalsignange/UI/ELEMENTS/ANDROID/IframeYouTubePlayer.dart';
 import 'package:digitalsignange/UI/ELEMENTS/COMMON/ImageView.dart';
 import 'package:digitalsignange/UI/ELEMENTS/COMMON/PdfView.dart';
 import 'package:flutter/material.dart';
@@ -97,9 +98,27 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       //   child:AndroidVideoPlayer(url: fullUrl));
     } else if (compositiondata.fileFormat == ".pdf") {
       String fullUrl = BASEURL + compositiondata.fileUrl;
-      return CustomPdf(url: fullUrl,key: Key(fullUrl),);
+      return CustomPdf(
+        url: fullUrl,
+        key: Key(fullUrl),
+      );
     } else if (compositiondata.fileFormat == ".html") {
       print("HTML APP CALLED  URL ${compositiondata.fileUrl}");
+
+
+      if(compositiondata.appType=='Youtube')
+      {
+        
+        return Iframeyoutubeplayer(url: compositiondata.youtube_url);
+
+      }
+      else
+      {
+         return HtmlApps(
+        htmlUrl: BASEURL + compositiondata.fileUrl,key:Key(compositiondata.fileUrl),
+      );
+
+      }
 
       //  {
       //                       "content_id": 170,
@@ -112,9 +131,10 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       //                       "direction" : ,
       //                   },
 
-      return HtmlApps(
-        htmlUrl: BASEURL + compositiondata.fileUrl,key:Key(compositiondata.fileUrl),
-      );
+      // return HtmlApps(
+      //   htmlUrl: BASEURL + compositiondata.fileUrl,key:Key(compositiondata.fileUrl),
+      // );
+      // return Iframeyoutubeplayer(url: "https://www.youtube.com/watch?v=EJxeMbDTkVI");
     }
     return Center(
       child: Text("Unknown media format"),

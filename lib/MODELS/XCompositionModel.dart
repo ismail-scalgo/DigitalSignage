@@ -9,6 +9,7 @@ class CompositionModel {
   Map appdata;
   String appType;
   String contentType;
+  String youtube_url;
 
   CompositionModel(
       {required this.fileUrl,
@@ -18,7 +19,9 @@ class CompositionModel {
       required this.filename,
       required this.appType,
       required this.appdata,
-      required this.contentType});
+      required this.contentType,
+      required this.youtube_url
+      });
 
   // Convert JSON to CompositionModel
   factory CompositionModel.fromJson(Map<String, dynamic> json) {
@@ -31,12 +34,15 @@ class CompositionModel {
         filename: json['content_name'],
         appType: json["app_type"],
         appdata: json['appdata'] == null ? {} : json['appdata'],
-        contentType: json['content_type']);
+        contentType: json['content_type'],
+        youtube_url: json['youtube_url'] ==null ? '' : json['youtube_url']
+        );
   }
 
   Map toJson() {
-    print("TO JSON OF COMPOSITION MODEL CALLED WITH LOCALSTORAGE PATH $localstoragepath");
-   
+    print(
+        "TO JSON OF COMPOSITION MODEL CALLED WITH LOCALSTORAGE PATH $localstoragepath");
+
     return {
       "app_type": appType,
       "appdata": appdata,

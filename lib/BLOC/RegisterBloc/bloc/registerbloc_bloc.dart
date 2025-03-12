@@ -40,6 +40,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
       print("BLOC CALLED WITH EVENT");
       print(event);
       if (event is AddContext) {
+        print("ADD CONTEXT CALLLEDDDDDDDDDDDDDDDDDD");
         context = event.context;
       }
 
@@ -86,7 +87,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           String longitude = "0.0";
           String location = "Unknown";
           String orientation = "0";
-     
+
           String height = "0";
           String width = "0";
           String type = "Unknown";
@@ -127,7 +128,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
 
             AndroidDeviceInfo info = await deviceInfo.androidInfo;
 
-          osVersion=  info.version.sdkInt.toString();
+            osVersion = info.version.sdkInt.toString();
           }
 
           RequestModel requestModel = RequestModel(
