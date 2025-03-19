@@ -9,6 +9,8 @@ import 'package:digitalsignange/UI/ELEMENTS/COMMON/ImageView.dart';
 import 'package:digitalsignange/UI/ELEMENTS/COMMON/PdfView.dart';
 import 'package:flutter/material.dart';
 
+
+
 class SingleZoneController extends StatefulWidget {
   ZoneData zonedata;
   String broadcast_id;
@@ -64,14 +66,14 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
     if (compositiondata.fileFormat == ".jpeg" ||
         compositiondata.fileFormat == ".jpg" ||
         compositiondata.fileFormat == ".png") {
-      String fullUrl = BASEURL + compositiondata.fileUrl;
+      String fullUrl = BASEURLMEDIA + compositiondata.fileUrl;
       return Container(
         width: (gwidth * widget.zonedata.widthPercent) / 100,
         height: (gheight * widget.zonedata.heightPercent) / 100,
         child: ImageScreen(url: fullUrl),
       );
     } else if (compositiondata.fileFormat == ".mp4") {
-      String fullUrl = BASEURL + compositiondata.fileUrl;
+      String fullUrl = BASEURLMEDIA + compositiondata.fileUrl;
 
       double aspectRatio = (gwidth * widget.zonedata.widthPercent) /
           (gheight * widget.zonedata.heightPercent);
@@ -97,7 +99,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       //   aspectRatio: aspectRatio,
       //   child:AndroidVideoPlayer(url: fullUrl));
     } else if (compositiondata.fileFormat == ".pdf") {
-      String fullUrl = BASEURL + compositiondata.fileUrl;
+      String fullUrl = BASEURLMEDIA + compositiondata.fileUrl;
       return CustomPdf(
         url: fullUrl,
         key: Key(fullUrl),
@@ -105,19 +107,13 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
     } else if (compositiondata.fileFormat == ".html") {
       print("HTML APP CALLED  URL ${compositiondata.fileUrl}");
 
-
-      if(compositiondata.appType=='Youtube')
-      {
-        
+      if (compositiondata.appType == 'Youtube') {
         return Iframeyoutubeplayer(url: compositiondata.youtube_url);
-
-      }
-      else
-      {
-         return HtmlApps(
-        htmlUrl: BASEURL + compositiondata.fileUrl,key:Key(compositiondata.fileUrl),
-      );
-
+      } else {
+        return HtmlApps(
+          htmlUrl: BASEURLMEDIA + compositiondata.fileUrl,
+          key: Key(compositiondata.fileUrl),
+        );
       }
 
       //  {
@@ -132,7 +128,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       //                   },
 
       // return HtmlApps(
-      //   htmlUrl: BASEURL + compositiondata.fileUrl,key:Key(compositiondata.fileUrl),
+      //   htmlUrl: BASEURLMEDIA + compositiondata.fileUrl,key:Key(compositiondata.fileUrl),
       // );
       // return Iframeyoutubeplayer(url: "https://www.youtube.com/watch?v=EJxeMbDTkVI");
     }

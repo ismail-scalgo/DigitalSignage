@@ -458,7 +458,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       for (var content in zoneData.compositionModels) {
         // var file = await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
         cachedFile =
-            await cacheManager.getFileFromCache(BASEURL + content.fileUrl);
+            await cacheManager.getFileFromCache(BASEURLMEDIA + content.fileUrl);
         if (cachedFile == null) {
           isAllCached = false;
           break;
@@ -545,7 +545,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       for (var content in zoneData.compositionModels) {
         if (content.fileUrl != '' && content.contentType == 'media') {
           var file = await DefaultCacheManager()
-              .getSingleFile(BASEURL + content.fileUrl);
+              .getSingleFile(BASEURLMEDIA + content.fileUrl);
           content.localstoragepath = file.path;
 
           print("PRELOAD CONTENTS CALLED");
