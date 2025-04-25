@@ -4,14 +4,17 @@ import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:digitalsignange/UI/APPS/HtmlApps.dart';
 import 'package:digitalsignange/UI/APPS/ScrollText.dart';
 import 'package:digitalsignange/UI/ELEMENTS/ANDROID/AndroidVideoPlayer.dart';
+import 'package:digitalsignange/UI/ELEMENTS/ANDROID/IframeYouTubePlayer.dart';
 import 'package:digitalsignange/UI/ELEMENTS/COMMON/ImageView.dart';
 import 'package:digitalsignange/UI/ELEMENTS/COMMON/PdfView.dart';
 import 'package:flutter/material.dart';
 
+
+
 class SingleZoneController extends StatefulWidget {
   ZoneData zonedata;
   String broadcast_id;
-  SingleZoneController({required this.zonedata,required this.broadcast_id});
+  SingleZoneController({required this.zonedata, required this.broadcast_id});
   @override
   State<SingleZoneController> createState() => _SingleZoneControllerState();
 }
@@ -45,39 +48,32 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
 
   @override
   Widget build(BuildContext context) {
-
-    Map content_start_data={
-      'event':"content_add_event",
-      'broadcast_id':widget.broadcast_id,
-      'content_name':widget.zonedata.compositionModels[currentIndex].filename,
-      'content_duration':widget.zonedata.compositionModels[currentIndex].fileDuration,
-      'content_zone':widget.zonedata.id
+    Map content_start_data = {
+      'event': "content_add_event",
+      'broadcast_id': widget.broadcast_id,
+      'content_name': widget.zonedata.compositionModels[currentIndex].filename,
+      'content_duration':
+          widget.zonedata.compositionModels[currentIndex].fileDuration,
+      'content_zone': widget.zonedata.id
     };
-    
 
-
-      controller.add(content_start_data);
-
+    controller.add(content_start_data);
 
     return getWidget(widget.zonedata.compositionModels[currentIndex]);
   }
 
   Widget getWidget(CompositionModel compositiondata) {
-
-
-
-
     if (compositiondata.fileFormat == ".jpeg" ||
         compositiondata.fileFormat == ".jpg" ||
         compositiondata.fileFormat == ".png") {
-      String fullUrl = BASEURL + compositiondata.fileUrl;
+      String fullUrl = BASEURLMEDIA + compositiondata.fileUrl;
       return Container(
         width: (gwidth * widget.zonedata.widthPercent) / 100,
         height: (gheight * widget.zonedata.heightPercent) / 100,
         child: ImageScreen(url: fullUrl),
       );
     } else if (compositiondata.fileFormat == ".mp4") {
-      String fullUrl = BASEURL + compositiondata.fileUrl;
+      String fullUrl = BASEURLMEDIA + compositiondata.fileUrl;
 
       double aspectRatio = (gwidth * widget.zonedata.widthPercent) /
           (gheight * widget.zonedata.heightPercent);
@@ -88,6 +84,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       return AndroidVideoPlayer(
         url: fullUrl,
         filepath: compositiondata.localstoragepath,
+        key: Key(fullUrl),
       );
 
 //        url2 = https://web-dev-sgdsignage.scalgo.net/media/uploads/4.%20Sooraj/ForBiggerEscapes_pHCKvHE.mp4
@@ -103,13 +100,22 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       //   aspectRatio: aspectRatio,
       //   child:AndroidVideoPlayer(url: fullUrl));
     } else if (compositiondata.fileFormat == ".pdf") {
-      String fullUrl = BASEURL + compositiondata.fileUrl;
-      return CustomPdf(fullUrl);
-    }
+      String fullUrl = BASEURLMEDIA + compositiondata.fileUrl;
+      return CustomPdf(
+        url: fullUrl,
+        key: Key(fullUrl),
+      );
+    } else if (compositiondata.fileFormat == ".html") {
+      print("HTML APP CALLED  URL ${compositiondata.fileUrl}");
 
-    else if(compositiondata.fileFormat == ".html")
-    {
-
+      if (compositiondata.appType == 'Youtube') {
+        return Iframeyoutubeplayer(url: compositiondata.youtube_url);
+      } else {
+        return HtmlApps(
+          htmlUrl: BASEURLMEDIA + compositiondata.fileUrl,
+          key: Key(compositiondata.fileUrl),
+        );
+      }
 
       //  {
       //                       "content_id": 170,
@@ -122,10 +128,10 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       //                       "direction" : ,
       //                   },
 
-
-      return HtmlApps(htmlUrl:BASEURL +compositiondata.fileUrl,);
-
-
+      // return HtmlApps(
+      //   htmlUrl: BASEURLMEDIA + compositiondata.fileUrl,key:Key(compositiondata.fileUrl),
+      // );
+      // return Iframeyoutubeplayer(url: "https://www.youtube.com/watch?v=EJxeMbDTkVI");
     }
     return Center(
       child: Text("Unknown media format"),

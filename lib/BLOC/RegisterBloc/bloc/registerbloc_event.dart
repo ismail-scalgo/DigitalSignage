@@ -10,6 +10,12 @@ class RegisterUser extends RegisterblocEvent {
   RegisterUser({required this.request});
 }
 
+class AddContext extends RegisterblocEvent {
+  BuildContext context;
+
+  AddContext({required this.context});
+}
+
 class LoginUser extends RegisterblocEvent {
   String screenCode;
   LoginUser({required this.screenCode});

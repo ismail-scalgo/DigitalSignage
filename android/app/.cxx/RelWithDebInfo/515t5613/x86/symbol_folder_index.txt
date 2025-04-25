@@ -1,0 +1,1 @@
+/home/scalgo/SCALGO/DIGITAL SIGNAGE/APR 15/DigitalSignage/build/app/intermediates/cxx/RelWithDebInfo/515t5613/obj/x86

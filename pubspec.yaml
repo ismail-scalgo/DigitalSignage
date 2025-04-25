@@ -16,10 +16,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.10.0+1
+version: 1.14.0+1
 
 environment:
-  sdk: '>=3.4.4 <4.0.0'
+  sdk: '>=3.4.3 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -33,40 +33,50 @@ dependencies:
   # media_kit: ^1.1.10                          
   # media_kit_video: ^1.2.4                       
   # media_kit_libs_video: ^1.0.4
-  flutter_staggered_grid_view: ^0.7.0
-  http: ^1.2.1
+  flutter_staggered_grid_view: 
+  http: 
   flutter_bloc:
-  flutter_pdfview: ^1.2.5
-  flutter_cache_manager: ^3.4.1
-  toastification: ^2.1.0
+  flutter_pdfview: 
+  flutter_cache_manager:
+  toastification:
   intl:
-  cupertino_icons: ^1.0.6
-  video_player: ^2.9.1
-  video_player_media_kit: ^1.0.5
-  pdfx: ^2.6.0
-  geolocator: ^12.0.0
-  device_info_plus: ^9.1.2
-  web_socket_client: ^0.1.0
-  platform_detector: ^0.2.0
-  lottie: ^3.1.2
-  shared_preferences: ^2.3.2
-  timer_count_down: ^2.2.2
+  cupertino_icons:
+
+  pdfx: 
+  geolocator:
+  device_info_plus:
+  web_socket_client: 
+  platform_detector: 
+  lottie:
+  shared_preferences: 
+  timer_count_down: 
   animated_splash_screen:
-  flutter_native_splash: ^2.4.1
-  text_scroll: ^0.2.0
-  google_fonts: ^6.2.1
-  stroke_text: ^0.0.3
-  simple_gradient_text: ^1.3.0
-  wakelock_plus: ^1.2.8
-  fullscreen_window: ^1.0.3
-  native_video_player: ^1.3.1
+  flutter_native_splash: 
+  text_scroll: 
+  google_fonts: 
+  stroke_text: 
+  simple_gradient_text: 
+  wakelock_plus: 
+  fullscreen_window: 
+  native_video_player: 
   # flutter_vlc_player: ^7.4.2
-  internet_connection_checker_plus: ^2.5.2
-  hive: ^2.2.3
-  stream_video_push_notification: ^0.4.1
-  stream_video: ^0.4.1
-  youtube_player_flutter: ^9.0.4
-  webview_flutter: ^4.10.0
+  internet_connection_checker_plus: 
+  hive: 
+
+  youtube_player_flutter:
+  webview_flutter: 
+  permission_handler: 
+  android_intent_plus: 
+
+  # to get sccreen resolution
+  display_metrics: 
+  fire_tv_listener: 
+  youtube_player_iframe: ^5.2.1
+  screenshot: ^3.0.0
+  mime: ^1.0.4
+  path_provider: ^2.1.5
+
+  widgets_to_image: ^1.0.0
 
   
   
@@ -79,9 +89,9 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/scalgo_logo.png"
-  adaptive_icon_background: "assets/scalgo_logo.png"
-  adaptive_icon_foreground: "assets/scalgo_logo.png"
+  image_path: "assets/zignflix_logo.png"
+  adaptive_icon_background: "assets/zignflix_logo.png"
+  adaptive_icon_foreground: "assets/zignflix_logo.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -113,6 +123,7 @@ flutter:
     - assets/signageVideo1.mp4
     - assets/BGvideo2.mp4
     - assets/BGvideo3.mp4
+    - assets/deletedscreen.json
     
     # - images/a_dot_ham.jpeg loginAnim
 

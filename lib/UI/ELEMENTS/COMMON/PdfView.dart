@@ -7,7 +7,7 @@ import 'package:pdfx/pdfx.dart';
 
 class CustomPdf extends StatefulWidget {
   String url;
-  CustomPdf(this.url);
+  CustomPdf({required this.url, required super.key});
 
   @override
   State<CustomPdf> createState() => _CustomPdfState();
@@ -45,9 +45,11 @@ class _CustomPdfState extends State<CustomPdf> {
           headers: {'Cache-Control': 'max-age=3600'});
 
       // Initialize the PDF controller with the loaded file
+
       pdfPinchController = PdfController(
         document: PdfDocument.openData(file.readAsBytes()),
       );
+
       setState(() {
         isLoading = false;
       });
@@ -67,12 +69,25 @@ class _CustomPdfState extends State<CustomPdf> {
 
   void animation() async {
     await Future.delayed(Duration(seconds: 3));
-    //may be it is scheduled before dispose that is why it is checked before animate to another page
-    if (!isdisposed) {
-      pdfPinchController.animateToPage(page,
-          duration: Duration(milliseconds: 1000), curve: Curves.slowMiddle);
-      page++;
-      animation();
+
+    print("PAGES==========");
+    print(pdfPinchController.pagesCount);
+    if (pdfPinchController.pagesCount! > 1) {
+      //may be it is scheduled before dispose that is why it is checked before animate to another page
+      if (!isdisposed) {
+        pdfPinchController.animateToPage(page,
+            duration: Duration(milliseconds: 1000), curve: Curves.slowMiddle);
+
+        if (page == pdfPinchController.pagesCount) {
+          page = 0;
+        }
+        else
+        {
+page++;
+        }
+        
+        animation();
+      }
     }
   }
 }

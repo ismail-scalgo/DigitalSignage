@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/ContentModel.dart';
@@ -12,7 +13,9 @@ import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
 
 import 'package:digitalsignange/REPOSITORIES/RegisterRepo.dart';
 import 'package:digitalsignange/UI/Utils.dart';
+import 'package:display_metrics/display_metrics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
 
@@ -30,11 +33,18 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
   late StreamSubscription internetlistener;
 
   bool isfirsttime = true;
+  BuildContext? context;
+  bool isWebSocketConnected = false;
 
   RegisterblocBloc() : super(RegisterblocInitial()) {
+    print("REGISTRATION BLOC INITIALISED");
     on<RegisterblocEvent>((event, emit) async {
       print("BLOC CALLED WITH EVENT");
       print(event);
+      if (event is AddContext) {
+        print("ADD CONTEXT CALLLEDDDDDDDDDDDDDDDDDD");
+        context = event.context;
+      }
 
       if ((event is InterNetStatusEvent) && isfirsttime) {
         isfirsttime = false;
@@ -48,6 +58,9 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
       }
 
       if (event is CheckDeviceStatusEvent) {
+        print("from reg bloc");
+        print("CheckDeviceStatusEvent");
+
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
         String? screenCode = prefs.getString('NewScreenCode');
@@ -79,12 +92,20 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           String longitude = "0.0";
           String location = "Unknown";
           String orientation = "0";
-          String osversion = "Unknown";
+
           String height = "0";
           String width = "0";
           String type = "Unknown";
           String osVersion = "Unknown";
           String platform = "Unknown";
+
+          platform = getPlatform();
+
+          final metrics = DisplayMetrics.of(context!);
+          height = metrics.resolution.height.toString();
+          width = metrics.resolution.width.toString();
+          print(metrics.resolution.height);
+          print(metrics.resolution.width);
 
           if (HARDCODEPLATFORM == "WEB") {
             PlatformData? platformInfo = await initPlatformState();
@@ -96,13 +117,24 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             location =
                 await fetchLocation(position.latitude, position.longitude);
           }
-          if (HARDCODEPLATFORM == "ANDROID") {
-            Position position = await determinePosition();
-            latitude = position.latitude.toString();
-            longitude = position.longitude.toString();
-            location =
-                await fetchLocation(position.latitude, position.longitude);
+          if (HARDCODEPLATFORM == "ANDROIDTV") {
+            bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+            if (serviceEnabled) {
+              Position position = await determinePosition();
+              latitude = position.latitude.toString();
+              longitude = position.longitude.toString();
+              // location =
+              //     await fetchLocation(position.latitude, position.longitude);
+              location = "Unknown";
+            }
+
             type = (await detectDevice()) ?? "Unknown";
+
+            DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+            AndroidDeviceInfo info = await deviceInfo.androidInfo;
+
+            osVersion = info.version.sdkInt.toString();
           }
 
           RequestModel requestModel = RequestModel(
@@ -124,8 +156,12 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
                 await RegisterRepository().fetchScreenCode(requestModel);
             screenCode != null ? saveNewScreenCode(screenCode) : print('');
 
-            connect(screenCode!);
-            emit(DisplayScreenCodeState(screenCode: screenCode));
+            if (!isWebSocketConnected) {
+              connect(screenCode!);
+              isWebSocketConnected = true;
+            }
+
+            emit(DisplayScreenCodeState(screenCode: screenCode!));
           } catch (e) {
             print(e);
           }
@@ -135,7 +171,11 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         if (await isOffline()) {
           add(OfflineEvent());
         } else {
-          connect(event.screenCode);
+          if (!isWebSocketConnected) {
+            connect(event.screenCode!);
+            isWebSocketConnected = true;
+          }
+          // connect(event.screenCode);
           // print("emitting old");
           // emit(DisplayOldScreenCode(screenCode: event.screenCode));
           // connect(event.screenCode);
@@ -163,7 +203,10 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         }
       }
       if (event is ConnectSocket) {
-        connect(event.screenCode);
+        if (!isWebSocketConnected) {
+          connect(event.screenCode!);
+          isWebSocketConnected = true;
+        }
       }
       if (event is OfflineEvent) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -199,6 +242,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
   }
 
   void connect(String screencode) async {
+    print("WEB SOCKET CONNECTION ON REG SCREEN CALLED");
     final socket = WebSocket(Uri.parse(SOCKET_ADDRESS));
     globalConnection = socket;
     socket.messages.listen((message) async {
@@ -248,7 +292,8 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
     if (globalConnection != null) {
       try {
         globalConnection.close();
-        print("WebSocket connection closed.");
+        isWebSocketConnected = false;
+        print("WEB SOCKET CONNECTION CLOSED ON REG SCREEN CALLED");
       } catch (e) {
         print("Error while closing WebSocket: $e");
       }

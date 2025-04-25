@@ -3,6 +3,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 import 'package:digitalsignange/CONTENTLOG.dart';
@@ -18,6 +20,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
@@ -42,7 +45,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   LayoutblocBloc() : super(LayoutblocInitial()) {
     print("LAYOUT BLOC CALLEDDDDDDDDD");
     log_of_start_stop();
-  
+
     on<LayoutblocEvent>((event, emit) async {
       print("LAYOU BLOCK EVENT");
       print(event);
@@ -51,7 +54,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         print("fetch api event called");
 
         if (isFirstLoad) {
-           await init();
+          await init();
           connect(event.screenCode);
         }
         bool result = await InternetConnection().hasInternetAccess;
@@ -68,7 +71,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             RELOAD_FLAG_COUNT++;
 
             emit(NoBroadcastState());
-          } else { 
+          } else {
             print("there is data");
             if (broadCastData?.currentBroadCast != null) {
               saveTimedifference(
@@ -91,11 +94,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 // add(MediaLoadingEvent());
                 // await preloadContents(current_broadcast!)
                 //     .timeout(Duration(seconds: endTimeDifference));
+                //IT CHECK ALL FILES ARE CACHED IF ANY MISSING THEN IT RETURN FALSE
                 bool isCached = await allCached(current_broadcast!);
                 print("cachdeeeeeeeeeeeeed = $isCached");
 
                 if (isCached) {
-                  preloadContents(current_broadcast!);
+                  await preloadContents(current_broadcast!);
                 } else {
                   try {
                     add(MediaLoadingEvent());
@@ -118,10 +122,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 String stringResponce =
                     jsonEncode(broadCastData!.toJsonBroadCastModel());
 
+                print("STRING RESPONCE FOR CACHING IS >>>>>>>>>>" +
+                    stringResponce);
 
-               print("STRING RESPONCE FOR CACHING IS >>>>>>>>>>"+stringResponce);     
-
-                    // FOR OFFLINE ACCESSIBILITY 
+                // FOR OFFLINE ACCESSIBILITY
                 saveResponce(stringResponce);
 
                 if (next_broadcast != null) {
@@ -129,31 +133,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 }
               }
 
-              // if (HARDCODEPLATFORM != 'WEB') {
-              //   if (startTimeDifference > 0) {
-              //     preloadContents(current_broadcast!);
-              //   } else if (startTimeDifference <= 0) {
-              //     // add(MediaLoadingEvent());
-              //     // await preloadContents(current_broadcast!)
-              //     //     .timeout(Duration(seconds: endTimeDifference));
-              //     try {
-              //       emit(MediaLoadingState());
-              //       await preloadContents(current_broadcast!)
-              //           .timeout(Duration(seconds: endTimeDifference));
-              //     } on TimeoutException {
-              //       log("Preloading timed out!");
-              //       add(FetchApi(screenCode: event.screenCode));
-              //     }
-              //   }
-              //   String stringResponce =
-              //       jsonEncode(broadCastData!.toJsonBroadCastModel());
-              //   saveResponce(stringResponce);
+              // IF YOU WANT LOADING SCREEN ON EACH TRANSITION PLEASE UNCOMMENT IT
 
-              //   if (next_broadcast != null) {
-              //     preloadContents(next_broadcast!);
-              //   }
-              // }
-              add(TrasnsitionEvent());
+              //  add(TrasnsitionEvent());
               await Future.delayed(Duration(seconds: 1));
               print("data changingggggggggg");
               RELOAD_FLAG_COUNT++;
@@ -174,8 +156,27 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       if (event is MediaLoadingEvent) {
         if (HARDCODEPLATFORM != "WEB") {
-          emit(MediaLoadingState());
+          //  emit(MediaLoadingState());
         }
+      }
+      if (event is TakeScreenShotEvent) {
+        emit(TakeScreenState());
+      }
+      if (event is UploadScreenShootEvent) {
+        String? signedurl = await LayoutRepository().generateSignedUrlForAws();
+        print("signed url = " + signedurl!);
+        final tempDir = await getTemporaryDirectory();
+        File file = await File('${tempDir.path}/image.png').create();
+        file.writeAsBytesSync(event.capturedimage);
+
+        await LayoutRepository().uploadFileToPresignedUrl(file, signedurl);
+
+        String cleanUrl = signedurl.split('?')[0];
+
+        await LayoutRepository().updateScreenShotToDb(screen_code!, cleanUrl);
+
+        print("SCREEN SHOOT UPLOAD SUCEESFULLY");
+        print(cleanUrl);
       }
       if (event is StartEvent) {
         emit(DisplayLayout(layoutdata: event.layoutdata));
@@ -290,7 +291,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     return (await prefs.getInt('time_difference') ?? 0);
   }
 
-
 //FOR OFFLINE ACCESSIBILITY //
   void saveResponce(String responce) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -309,6 +309,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     String? cache_responce = prefs.getString('cached_responce');
 
     if (cache_responce == null) {
+      print("cache responce is empty");
       add(OfflineEvent());
     } else {
       print("CACHE SAVED MESSAGE");
@@ -364,19 +365,16 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     bool path = true;
     for (var zoneData in layoutdata.zoneData!) {
       for (var content in zoneData.compositionModels) {
+        print(content.fileFormat);
         print("path = ${content.localstoragepath}");
         if (content.localstoragepath == null ||
             content.localstoragepath.isEmpty) {
           // add(NoBroadCastEvent());
-            if(content.contentType!='app')
-            {
-                        // if it does contain any content that is not able to play
-                        path = false;
-                        break;
-
-            }
-
-
+          if (content.contentType != 'app') {
+            // if it does contain any content that is not able to play
+            path = false;
+            break;
+          }
         }
       }
       if (!path) {
@@ -460,16 +458,20 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       for (var content in zoneData.compositionModels) {
         // var file = await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
         cachedFile =
-            await cacheManager.getFileFromCache(BASEURL + content.fileUrl);
+            await cacheManager.getFileFromCache(BASEURLMEDIA + content.fileUrl);
         if (cachedFile == null) {
+          print("ONE FILE IS NOT CACHED");
+          print(BASEURLMEDIA + content.fileUrl);
           isAllCached = false;
           break;
         }
       }
       if (!isAllCached) {
+        print("ALL FILES ARE NOT CACHED ALREADY");
         break;
       }
     }
+    print("ALL FILES ARE CACHED ALREADY");
     return isAllCached;
   }
 
@@ -486,9 +488,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       log("socket updated time = ${jsonresponce['updated_at']}");
       log("laaaaaaaaaaaaaaaaaaaast updated = $lastUpdateTime");
       if (lastUpdateTime != jsonresponce['updated_at']) {
-        log("Time changeddddddddddddddddddddddddddddddddddddddddddd");
-        lastUpdateTime = jsonresponce['updated_at'];
-        add(FetchApi(screenCode: screencode));
+        if (jsonresponce["status"] == "take screenshot") {
+          add(TakeScreenShotEvent());
+        } else {
+          log("Time changeddddddddddddddddddddddddddddddddddddddddddd");
+          lastUpdateTime = jsonresponce['updated_at'];
+          add(FetchApi(screenCode: screencode));
+        }
       }
     });
 
@@ -545,16 +551,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("cacheiggg");
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
-            if(content.fileUrl!='' && content.contentType=='media')
-            {
-                      var file = await DefaultCacheManager()
-            .getSingleFile(BASEURL + content.fileUrl);
-        content.localstoragepath = file.path;
-
-            }
+        if (content.fileUrl != '' && content.contentType == 'media') {
+          var file = await DefaultCacheManager()
+              .getSingleFile(BASEURLMEDIA + content.fileUrl);
+          content.localstoragepath = file.path;
 
 
 
+
+          print("PRELOAD CONTENTS CALLED");
+          print("CONTENT PATH ==" + file.path);
+        }
       }
       ;
     }

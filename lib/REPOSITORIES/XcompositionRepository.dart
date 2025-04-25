@@ -1,6 +1,7 @@
 // ignore_for_file: unused_local_variable
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 import 'package:digitalsignange/Costants.dart';
@@ -10,7 +11,7 @@ import 'package:digitalsignange/MODELS/XCompositionModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
+import 'package:mime/mime.dart';
 
 // String dummyresponce="""{
 //     "data": {
@@ -60,7 +61,6 @@ import 'dart:convert';
 //     "message": "Screen is registered"
 // }""";
 
-
 // String dummyresponce = """{
 //     "data": {
 //         "first_broadcast_data": {
@@ -102,7 +102,6 @@ import 'dart:convert';
 //     },
 //     "message": "Screen is registered"
 // }""";
-
 
 String dummyresponce = """{
     "data": {
@@ -186,8 +185,6 @@ String dummyresponce = """{
     "message": "Screen is registered"
 }""";
 
-
-
 class LayoutRepository {
   Future<BroadCastModel?> newFetchData(String code) async {
     print("enteringggg");
@@ -197,14 +194,8 @@ class LayoutRepository {
     var response = await http.get(Uri.parse(data_url));
     // BroadCastModel? broadCastData;
     if (response.statusCode == 200) {
-
-
-
-
-
-
-       var jsonData = json.decode(response.body);
-        // var jsonData = json.decode(responce);
+      var jsonData = json.decode(response.body);
+      // var jsonData = json.decode(responce);
       String? screenStatus = jsonData["message"];
       print("data1 = ${jsonData["data"]["first_broadcast_data"]}");
       if (jsonData["data"]["first_broadcast_data"]['message'] ==
@@ -235,6 +226,7 @@ class LayoutRepository {
       return broadCastData;
     } else {
       print(" irresponse error");
+      print(response.body);
       var jsonData = json.decode(response.body);
       log("message1 = ${jsonData["message"]}");
       // String screenStatus = jsonData["message"];
@@ -283,5 +275,63 @@ class LayoutRepository {
     //       .removeWhere((content) => content.fileDuration == '0.0');
     // });
     return broadCastData;
+  }
+
+  Future<String?> generateSignedUrlForAws() async {
+    // String status;
+    final apiUrl =
+        '$BASEURL/api/s3-upload/?file_name=abs.png&content_type=image/png';
+
+    var response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      print("respose body = ${response.body}");
+      final jsonData = json.decode(response.body);
+
+      return jsonData['url'];
+    } else {
+      return null;
+    }
+  }
+
+  Future<void> uploadFileToPresignedUrl(File file, String presignedUrl) async {
+    final fileBytes = await file.readAsBytes();
+    final contentType = lookupMimeType(file.path) ?? 'application/octet-stream';
+
+    final response = await http.put(
+      Uri.parse(presignedUrl),
+      headers: {
+        'Content-Type': contentType,
+      },
+      body: fileBytes,
+    );
+
+    if (response.statusCode == 200) {
+      print('Upload successful');
+    } else {
+      print('Upload failed: ${response.statusCode}');
+    }
+  }
+
+  Future updateScreenShotToDb(String scrrencode,String url) async {
+    print("enteringggggggggggggg");
+    String status;
+    final apiUrl = '$BASEURL/api/store-screenshot/';
+    var req_body = {
+      "screen_code": scrrencode,
+      "file_upload": url
+    };
+
+    print(req_body);
+    var response = await http.post(Uri.parse(apiUrl), body: req_body);
+    print("response data = ${response.statusCode}");
+
+    print("body = ${response}");
+    if (response.statusCode == 201) {
+      print("respose body = ${response.body}");
+     
+    } else {
+      print("error");
+    }
   }
 }

@@ -7,29 +7,29 @@
 #include "generated_plugin_registrant.h"
 
 #include <connectivity_plus/connectivity_plus_windows_plugin.h>
-#include <firebase_core/firebase_core_plugin_c_api.h>
-#include <flutter_webrtc/flutter_web_r_t_c_plugin.h>
+#include <display_metrics_windows/display_metrics_windows_plugin_c_api.h>
+#include <flutter_inappwebview_windows/flutter_inappwebview_windows_plugin_c_api.h>
 #include <fullscreen_window/fullscreen_window_plugin_c_api.h>
 #include <geolocator_windows/geolocator_windows.h>
-#include <media_kit_video/media_kit_video_plugin_c_api.h>
 #include <pdfx/pdfx_plugin.h>
-#include <screen_brightness_windows/screen_brightness_windows_plugin.h>
+#include <permission_handler_windows/permission_handler_windows_plugin.h>
+#include <url_launcher_windows/url_launcher_windows.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   ConnectivityPlusWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("ConnectivityPlusWindowsPlugin"));
-  FirebaseCorePluginCApiRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("FirebaseCorePluginCApi"));
-  FlutterWebRTCPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("FlutterWebRTCPlugin"));
+  DisplayMetricsWindowsPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("DisplayMetricsWindowsPluginCApi"));
+  FlutterInappwebviewWindowsPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FlutterInappwebviewWindowsPluginCApi"));
   FullscreenWindowPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FullscreenWindowPluginCApi"));
   GeolocatorWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("GeolocatorWindows"));
-  MediaKitVideoPluginCApiRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("MediaKitVideoPluginCApi"));
   PdfxPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("PdfxPlugin"));
-  ScreenBrightnessWindowsPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("ScreenBrightnessWindowsPlugin"));
+  PermissionHandlerWindowsPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("PermissionHandlerWindowsPlugin"));
+  UrlLauncherWindowsRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("UrlLauncherWindows"));
 }

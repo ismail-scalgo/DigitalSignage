@@ -36,3 +36,5 @@ class MediaLoadingState extends LayoutblocState {}
 class ProgressState extends LayoutblocState {}
 
 class LogoutState extends LayoutblocState {}
+
+class TakeScreenState extends LayoutblocState {}

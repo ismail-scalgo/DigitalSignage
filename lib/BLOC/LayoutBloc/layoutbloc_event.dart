@@ -60,3 +60,11 @@ class TrasnsitionEvent extends LayoutblocEvent {}
 class OfflineEvent extends LayoutblocEvent {}
 
 class MediaLoadingEvent extends LayoutblocEvent {}
+
+class TakeScreenShotEvent extends LayoutblocEvent {}
+
+class UploadScreenShootEvent extends LayoutblocEvent {
+  Uint8List capturedimage;
+
+  UploadScreenShootEvent({required this.capturedimage});
+}
