@@ -3,6 +3,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
@@ -22,11 +24,14 @@ import 'package:digitalsignange/UI/ScreenDeleted.dart';
 import 'package:digitalsignange/UI/SingleZoneController.dart';
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,16 +51,20 @@ class LaunchingScreen extends StatefulWidget {
 
 class _LyoutScreenState extends State<LaunchingScreen> {
   double factor = 1.59;
- // ScreenshotController screenshotController = ScreenshotController();
+  // ScreenshotController screenshotController = ScreenshotController();
 
   WidgetsToImageController controller = WidgetsToImageController();
 
-
+  static const platform = MethodChannel('com.example.channel');
 
   bool isLoad = true;
   bool isButtonVisible = true;
   bool isShrink = false;
   late LayoutblocBloc apiBloc;
+
+  GlobalKey? imageKey;
+
+  var scr = GlobalKey();
 
   @override
   void initState() {
@@ -77,6 +86,16 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     WakelockPlus.disable();
 
     super.dispose();
+  }
+
+  Future<String?> takeScreenShotFromNative() async {
+    try {
+      final result = await platform.invokeMethod<String>('take_screen_shot');
+      return result;
+    } on PlatformException catch (e) {
+      print("Failed to get native message: '${e.message}'.");
+      return null;
+    }
   }
 
   @override
@@ -141,8 +160,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
             //   apiBloc.add(visibleButton(isvisible: false));
             // });
           },
-          child: WidgetsToImage(
-            controller: controller,
+          child: RepaintBoundary(
+            key: scr,
             child: Container(
               color: Colors.transparent,
               width: width,
@@ -177,16 +196,53 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             if (state is TakeScreenState) {
                               print("TAKE SCREEN SHOT CALLED ON LISTENER");
 
-                              controller
-                                  .capture()
-                                  .then((capturedImage) async {
-                                apiBloc.add(UploadScreenShootEvent(
-                                    capturedimage: capturedImage!));
+//try {
+    // Capture the widget as an image
+  //   final RenderRepaintBoundary boundary =
+  //       scr.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+  //   final ui.Image image = await boundary.toImage();
+  //   final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
-                                
-                              }).catchError((onError) {
-                                print(onError);
+  //   if (byteData != null) {
+  //     final Uint8List pngBytes = byteData.buffer.asUint8List();
+
+  //     // Get a path to store the image
+  //     final directory = await getApplicationDocumentsDirectory(); // Or getTemporaryDirectory()
+  //     final String filePath = '${directory.path}/screenshot.png';
+
+  //     // Write the image data to the file
+  //     final File imgFile = File(filePath);
+  //     await imgFile.writeAsBytes(pngBytes);
+
+  //     print('✅ Image saved to: $filePath');
+
+  //      apiBloc.add(UploadScreenShootEvent(
+  //                                   capturedimage: filePath!));
+  //   }
+  // } catch (e) {
+  //   print('❌ Error saving image: $e');
+  // }
+
+                              takeScreenShotFromNative().then((path) {
+                                print("CAPTURED IMAGE PATH ON FLUTTER");
+                                print(path);
+                               // apiBloc.add(UploadScreenShootEvent(
+                                  //  capturedimage: path!));
                               });
+
+                              // controller.capture().then((capturedImage) async {
+                              //   apiBloc.add(UploadScreenShootEvent(
+                              //       capturedimage: capturedImage!));
+                              // }).catchError((onError) {
+                              //   print(onError);
+                              // });
+
+                              // controller.capture().then((capturedImage) async {
+                              //   apiBloc.add(UploadScreenShootEvent(
+                              //       capturedimage: capturedImage!));
+                              // }).catchError((onError) {
+                              //   print(onError);
+                              // });
                             }
                             // if (state is MediaLoadingState) {
                             //   MaterialPageRoute(
@@ -561,6 +617,14 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     return staggeredList;
   }
 
+
+  Future<void> _capturePng() async {
+    final RenderRepaintBoundary boundary = scr.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    final ui.Image image = await boundary.toImage();
+    final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    final Uint8List pngBytes = byteData!.buffer.asUint8List();
+    print(pngBytes);
+  }
   void showMyDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,

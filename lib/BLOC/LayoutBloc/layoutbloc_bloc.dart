@@ -166,8 +166,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         String? signedurl = await LayoutRepository().generateSignedUrlForAws();
         print("signed url = " + signedurl!);
         final tempDir = await getTemporaryDirectory();
-        File file = await File('${tempDir.path}/image.png').create();
-        file.writeAsBytesSync(event.capturedimage);
+        File file = await File(event.capturedimage);
+        // file.writeAsBytesSync(event.capturedimage);
+
+        print(await file.length());
 
         await LayoutRepository().uploadFileToPresignedUrl(file, signedurl);
 
@@ -555,9 +557,6 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           var file = await DefaultCacheManager()
               .getSingleFile(BASEURLMEDIA + content.fileUrl);
           content.localstoragepath = file.path;
-
-
-
 
           print("PRELOAD CONTENTS CALLED");
           print("CONTENT PATH ==" + file.path);

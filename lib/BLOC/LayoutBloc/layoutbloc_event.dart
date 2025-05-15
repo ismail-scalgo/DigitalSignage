@@ -64,7 +64,7 @@ class MediaLoadingEvent extends LayoutblocEvent {}
 class TakeScreenShotEvent extends LayoutblocEvent {}
 
 class UploadScreenShootEvent extends LayoutblocEvent {
-  Uint8List capturedimage;
+  String capturedimage;
 
   UploadScreenShootEvent({required this.capturedimage});
 }

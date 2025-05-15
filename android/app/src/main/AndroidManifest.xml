@@ -14,7 +14,7 @@
         <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" android:maxSdkVersion="29"/>
         <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" android:maxSdkVersion="33"/>
         <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" android:maxSdkVersion="33"/>
-        <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" android:maxSdkVersion="33"/>
+
     <application
         android:label="ZignFlixQA"
         android:name="${applicationName}"
@@ -57,6 +57,18 @@
             android:value="2" />
             <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="YOUR KEY HERE"/>
+
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

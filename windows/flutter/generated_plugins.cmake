@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   display_metrics_windows
   flutter_inappwebview_windows
   fullscreen_window
+  gal
   geolocator_windows
   pdfx
   permission_handler_windows
