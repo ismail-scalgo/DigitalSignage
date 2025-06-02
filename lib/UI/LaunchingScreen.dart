@@ -3,8 +3,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
-import 'dart:ui' as ui;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
@@ -24,14 +22,12 @@ import 'package:digitalsignange/UI/ScreenDeleted.dart';
 import 'package:digitalsignange/UI/SingleZoneController.dart';
 import 'package:digitalsignange/UI/Utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linear_progress_bar/linear_progress_bar.dart';
 import 'package:lottie/lottie.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,16 +51,10 @@ class _LyoutScreenState extends State<LaunchingScreen> {
 
   WidgetsToImageController controller = WidgetsToImageController();
 
-  static const platform = MethodChannel('com.example.channel');
-
   bool isLoad = true;
   bool isButtonVisible = true;
   bool isShrink = false;
   late LayoutblocBloc apiBloc;
-
-  GlobalKey? imageKey;
-
-  var scr = GlobalKey();
 
   @override
   void initState() {
@@ -86,16 +76,6 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     WakelockPlus.disable();
 
     super.dispose();
-  }
-
-  Future<String?> takeScreenShotFromNative() async {
-    try {
-      final result = await platform.invokeMethod<String>('take_screen_shot');
-      return result;
-    } on PlatformException catch (e) {
-      print("Failed to get native message: '${e.message}'.");
-      return null;
-    }
   }
 
   @override
@@ -160,8 +140,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
             //   apiBloc.add(visibleButton(isvisible: false));
             // });
           },
-          child: RepaintBoundary(
-            key: scr,
+          child: WidgetsToImage(
+            controller: controller,
             child: Container(
               color: Colors.transparent,
               width: width,
@@ -175,7 +155,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       child: Center(
                         child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
                           buildWhen: (previous, current) {
-                            if (current is TakeScreenState) {
+                            if (current is TakeScreenState || current is DownloadProgressState) {
                               return false;
                             }
 
@@ -196,53 +176,12 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             if (state is TakeScreenState) {
                               print("TAKE SCREEN SHOT CALLED ON LISTENER");
 
-//try {
-    // Capture the widget as an image
-  //   final RenderRepaintBoundary boundary =
-  //       scr.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-  //   final ui.Image image = await boundary.toImage();
-  //   final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-
-  //   if (byteData != null) {
-  //     final Uint8List pngBytes = byteData.buffer.asUint8List();
-
-  //     // Get a path to store the image
-  //     final directory = await getApplicationDocumentsDirectory(); // Or getTemporaryDirectory()
-  //     final String filePath = '${directory.path}/screenshot.png';
-
-  //     // Write the image data to the file
-  //     final File imgFile = File(filePath);
-  //     await imgFile.writeAsBytes(pngBytes);
-
-  //     print('✅ Image saved to: $filePath');
-
-  //      apiBloc.add(UploadScreenShootEvent(
-  //                                   capturedimage: filePath!));
-  //   }
-  // } catch (e) {
-  //   print('❌ Error saving image: $e');
-  // }
-
-                              takeScreenShotFromNative().then((path) {
-                                print("CAPTURED IMAGE PATH ON FLUTTER");
-                                print(path);
-                               // apiBloc.add(UploadScreenShootEvent(
-                                  //  capturedimage: path!));
+                              controller.capture().then((capturedImage) async {
+                                apiBloc.add(UploadScreenShootEvent(
+                                    capturedimage: capturedImage!));
+                              }).catchError((onError) {
+                                print(onError);
                               });
-
-                              // controller.capture().then((capturedImage) async {
-                              //   apiBloc.add(UploadScreenShootEvent(
-                              //       capturedimage: capturedImage!));
-                              // }).catchError((onError) {
-                              //   print(onError);
-                              // });
-
-                              // controller.capture().then((capturedImage) async {
-                              //   apiBloc.add(UploadScreenShootEvent(
-                              //       capturedimage: capturedImage!));
-                              // }).catchError((onError) {
-                              //   print(onError);
-                              // });
                             }
                             // if (state is MediaLoadingState) {
                             //   MaterialPageRoute(
@@ -562,6 +501,55 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       return Center();
                     },
                   ),
+
+                  BlocConsumer<LayoutblocBloc, LayoutblocState>(
+                    listener: (context, state) {},
+                    buildWhen: (previous, current) {
+                      return current is DownloadProgressState;
+                    },
+                    builder: (context, state) {
+                      print("INSIDE DOWNLOAD PROGRESS STATE");
+                      if (state is DownloadProgressState && state.isVisible) {
+                        return Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Container(
+                              height: 100,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                              
+                                  Container(
+                              
+                               
+                                child: Text(state.markerText,style: TextStyle(color: Colors.amber,fontSize: 18),)
+                              ),
+                              
+                              
+                              
+                                  LinearProgressBar(
+                                    maxSteps: 100,
+                                    progressType: LinearProgressBar
+                                        .progressTypeLinear, // Use Linear progress
+                                    currentStep: state.progress,
+                                    progressColor:
+                                        const Color.fromARGB(255, 255, 0, 128),
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 255, 255, 255),
+                                    borderRadius: BorderRadius.circular(10), //  NEW
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return Center();
+                      }
+                    },
+                  )
                   // if (isShrink)
                   //   Positioned(
                   //     // right: 10,
@@ -617,14 +605,6 @@ class _LyoutScreenState extends State<LaunchingScreen> {
     return staggeredList;
   }
 
-
-  Future<void> _capturePng() async {
-    final RenderRepaintBoundary boundary = scr.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-    final ui.Image image = await boundary.toImage();
-    final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    final Uint8List pngBytes = byteData!.buffer.asUint8List();
-    print(pngBytes);
-  }
   void showMyDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,

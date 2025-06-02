@@ -10,7 +10,6 @@
 #include <display_metrics_windows/display_metrics_windows_plugin_c_api.h>
 #include <flutter_inappwebview_windows/flutter_inappwebview_windows_plugin_c_api.h>
 #include <fullscreen_window/fullscreen_window_plugin_c_api.h>
-#include <gal/gal_plugin_c_api.h>
 #include <geolocator_windows/geolocator_windows.h>
 #include <pdfx/pdfx_plugin.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>
@@ -25,8 +24,6 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("FlutterInappwebviewWindowsPluginCApi"));
   FullscreenWindowPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FullscreenWindowPluginCApi"));
-  GalPluginCApiRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("GalPluginCApi"));
   GeolocatorWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("GeolocatorWindows"));
   PdfxPluginRegisterWithRegistrar(

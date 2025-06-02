@@ -38,9 +38,16 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   String? screen_code;
   late WebSocket globalConnection;
 
-//if any time it is reloaded then any timer scheduled will not work
-//it will check usig reload variable
+  StreamSubscription<FileResponse>? lastDownloadingFile;
+
+  // final downloadController = StreamController<LayoutData>();
+
+  int lastdownloadprogress = 0;
+  //if any time it is reloaded then any timer scheduled will not work
+  //it will check usig reload variable
   int RELOAD_FLAG_COUNT = 0;
+
+  int QUICK_BROADCAST_COUNT = 0;
 
   LayoutblocBloc() : super(LayoutblocInitial()) {
     print("LAYOUT BLOC CALLEDDDDDDDDD");
@@ -97,6 +104,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 //IT CHECK ALL FILES ARE CACHED IF ANY MISSING THEN IT RETURN FALSE
                 bool isCached = await allCached(current_broadcast!);
                 print("cachdeeeeeeeeeeeeed = $isCached");
+
+                lastDownloadingFile?.cancel();
+                add(DownloadFeedbackEvent(
+                    progress: 50, isVisible: false, markerText: ""));
 
                 if (isCached) {
                   await preloadContents(current_broadcast!);
@@ -166,10 +177,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         String? signedurl = await LayoutRepository().generateSignedUrlForAws();
         print("signed url = " + signedurl!);
         final tempDir = await getTemporaryDirectory();
-        File file = await File(event.capturedimage);
-        // file.writeAsBytesSync(event.capturedimage);
-
-        print(await file.length());
+        File file = await File('${tempDir.path}/image.png').create();
+        file.writeAsBytesSync(event.capturedimage);
 
         await LayoutRepository().uploadFileToPresignedUrl(file, signedurl);
 
@@ -236,6 +245,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is OfflineEvent) {
         emit(OfflineState());
       }
+      if (event is DownloadFeedbackEvent) {
+        print("DownloadFeedbackEvent");
+        emit(DownloadProgressState(
+            progress: event.progress,
+            isVisible: event.isVisible,
+            markerText: event.markerText));
+      }
 
       if (event is currentBroadCastEnds) {
         print("CURRENT BROADCAST ENDS");
@@ -293,7 +309,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     return (await prefs.getInt('time_difference') ?? 0);
   }
 
-//FOR OFFLINE ACCESSIBILITY //
+  //FOR OFFLINE ACCESSIBILITY //
   void saveResponce(String responce) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('cached_responce', responce);
@@ -455,12 +471,14 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("check cachinggg");
     bool isAllCached = true;
     var cachedFile;
+
     final cacheManager = DefaultCacheManager();
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
         // var file = await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
         cachedFile =
             await cacheManager.getFileFromCache(BASEURLMEDIA + content.fileUrl);
+
         if (cachedFile == null) {
           print("ONE FILE IS NOT CACHED");
           print(BASEURLMEDIA + content.fileUrl);
@@ -549,11 +567,85 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   //     });
   //   });
   // }
+
+// void activateDownloadcontroller(){
+
+// downloadController.stream.listen((event) {
+//     preloadContents(broadcastData)
+//   });
+
+// }
+
   Future preloadContents(LayoutData broadcastData) async {
-    print("cacheiggg");
+    int totalFiles = 0;
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
         if (content.fileUrl != '' && content.contentType == 'media') {
+          totalFiles++;
+        }
+      }
+    }
+
+    int currentCount = 0;
+
+    print("cacheiggg");
+
+    String currentTime = getFormattedCurrentDateTime();
+    int startTimeDifference =
+        timeDifference(current_broadcast!.startDateTime!, currentTime);
+
+    int quick_broadcast_count = 0;
+
+    print("TIME DIFFERENCE");
+    print(startTimeDifference);
+
+    if (startTimeDifference <= 10) {
+      QUICK_BROADCAST_COUNT = QUICK_BROADCAST_COUNT + 1;
+      quick_broadcast_count = QUICK_BROADCAST_COUNT;
+      print("QUICK BROADCAST ADDED");
+    }
+
+    for (var zoneData in broadcastData.zoneData!) {
+      for (var content in zoneData.compositionModels) {
+        if (content.fileUrl != '' && content.contentType == 'media') {
+          currentCount++;
+
+          if (quick_broadcast_count == QUICK_BROADCAST_COUNT) {
+            lastDownloadingFile = DefaultCacheManager()
+                .getFileStream(content.fileUrl, withProgress: true)
+                .listen((response) {
+              if (response is DownloadProgress) {
+                double percent =
+                    (response.downloaded / response.totalSize!.toInt()) * 100;
+                // print("percent $percent");
+
+                if (lastdownloadprogress != percent.toInt()) {
+                  lastdownloadprogress = percent.toInt();
+                  // print("add DownloadfeedbackEvent");
+                  if (percent.toInt() < 99) {
+                    add(DownloadFeedbackEvent(
+                        progress: lastdownloadprogress,
+                        isVisible: true,
+                        markerText:
+                            "Downloading file $currentCount/$totalFiles"));
+                  } else {
+                    print("else block of 100 percent");
+                    lastdownloadprogress = 0;
+                    add(DownloadFeedbackEvent(
+                        progress: 50,
+                        isVisible: false,
+                        markerText: "${currentCount / totalFiles}"));
+                  }
+                }
+
+                print(
+                    'Downloading: ${response.downloaded}/${response.totalSize}');
+              } else if (response is FileInfo) {
+                print('File ready: ${response.file.path}');
+              }
+            });
+          }
+
           var file = await DefaultCacheManager()
               .getSingleFile(BASEURLMEDIA + content.fileUrl);
           content.localstoragepath = file.path;

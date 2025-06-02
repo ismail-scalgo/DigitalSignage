@@ -38,3 +38,11 @@ class ProgressState extends LayoutblocState {}
 class LogoutState extends LayoutblocState {}
 
 class TakeScreenState extends LayoutblocState {}
+
+class DownloadProgressState extends LayoutblocState {
+  int progress;
+  bool isVisible;
+  String markerText;
+
+  DownloadProgressState({required this.progress, required this.isVisible,required this.markerText});
+}

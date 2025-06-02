@@ -41,3 +41,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+echo "build/" >> .gitignore
+git rm -r --cached build/
+git add .gitignore
+git commit -m "Ignore build artifacts"
