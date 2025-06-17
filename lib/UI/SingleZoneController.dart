@@ -84,6 +84,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       return AndroidVideoPlayer(
         url: fullUrl,
         filepath: compositiondata.localstoragepath,
+        key: Key(fullUrl),
       );
 
 //        url2 = https://web-dev-sgdsignage.scalgo.net/media/uploads/4.%20Sooraj/ForBiggerEscapes_pHCKvHE.mp4

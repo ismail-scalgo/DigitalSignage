@@ -139,7 +139,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                   height: 40,
                 ),
                 Text(
-                  "1,  Login to your Digital Signage account at www.web-sgdsg.com",
+                  "1. Login into https://test-sgdsignage.scalgo.net",
                   style: TextStyle(
                       color: const Color.fromARGB(255, 190, 190, 190),
                       fontSize: 20,
@@ -150,7 +150,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                   height: 40,
                 ),
                 Text(
-                  "2,  Select New Screen and enter this code in the popup",
+                  "2. Click 'Add Screen' and enter the below screen code",
                   style: TextStyle(
                       color: const Color.fromARGB(255, 190, 190, 190),
                       fontSize: 20,

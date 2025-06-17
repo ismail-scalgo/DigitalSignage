@@ -43,7 +43,7 @@ class _ImageScreenState extends State<ImageScreen> {
                     width: width / 10,
                     height: width / 10,
                     child: Lottie.asset('assets/loading3.json'))))
-        : Container(child: Image.file(imageFile, fit: BoxFit.fill));
+        : Container(child: Image.file(imageFile, fit: BoxFit.contain));
   }
 
   void load() async {

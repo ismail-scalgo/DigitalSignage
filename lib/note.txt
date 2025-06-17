@@ -141,3 +141,56 @@ sampleeee
     },
     "message": "Screen is registered"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I/flutter (25471): socket message = {"updated_at": "2025-05-16T16:24:34", "status": "quick broadcast created"}
+I/flutter (25471): socket response = {updated_at: 2025-05-16T16:24:34, status: quick broadcast created}
+I/flutter (25471): socket updated time = 2025-05-16T16:24:34
+I/flutter (25471): LAYOU BLOCK EVENT
+I/flutter (25471): Instance of 'FetchApi'
+I/flutter (25471): fetch api event called
+I/flutter (25471): enteringggg
+I/flutter (25471): data1 = {id: 217, name: grapes Schedule 2025-05-16 10:54:34, message: Live Broadcast, current_datetime: 2025-05-16T16:24:35, updated_datetime: 2025-05-16T16:24:34, start_datetime: 2025-05-16T16:24:35, end_datetime: 2025-05-23T16:24:34, orientation_angle: 0, zone_count: 1, zone_data: [{id: 1, name: Zone 1, widthPercent: 100, heightPercent: 100, xPercent: 0, yPercent: 0, contents: [{content_id: 40, content_name: grapes, file_upload: https://zignflix.s3.amazonaws.com/local/5/uploads/7/grapes_86ff386800dc447783fc40af8176b2bd.jpeg, file_format: .jpeg, app_type: default, content_type: media, duration: 10.0, sort_order: 1, is_muted: true}]}]}
+I/flutter (25471): from  layout
+I/flutter (25471): 0
+I/flutter (25471): FILE TYPE IS NORMAL DATA TYPE
+I/flutter (25471): there is data
+I/flutter (25471): check cachinggg
+I/flutter (25471): R: 0
+I/flutter (25471): ONE FILE IS NOT CACHED
+I/flutter (25471): https://zignflix.s3.amazonaws.com/local/5/uploads/7/grapes_86ff386800dc447783fc40af8176b2bd.jpeg
+I/flutter (25471): ALL FILES ARE NOT CACHED ALREADY
+I/flutter (25471): ALL FILES ARE CACHED ALREADY
+I/flutter (25471): cachdeeeeeeeeeeeeed = false
+I/flutter (25471): cacheiggg
+I/flutter (25471): LAYOU BLOCK EVENT
+I/flutter (25471): Instance of 'MediaLoadingEvent'
+I/flutter (25471): PRELOAD CONTENTS CALLED
+I/flutter (25471): CONTENT PATH ==/data/user/0/com.example.digitalsignange/cache/libCachedImageData/27c65680-3244-11f0-a38c-e5c0dac85803.jpg
+I/flutter (25471): LAYOUT DATA TO JSON CALLED
+I/flutter (25471): Live Broadcast
+I/flutter (25471): TO JSON OF COMPOSITION MODEL CALLED WITH LOCALSTORAGE PATH /data/user/0/com.example.digitalsignange/cache/libCachedImageData/27c65680-3244-11f0-a38c-e5c0dac85803.jpg
+I/flutter (25471): STRING RESPONCE FOR CACHING IS >>>>>>>>>>{"data":{"first_broadcast_data":{"id":217,"name":"grapes Schedule 2025-05-16 10:54:34","message":"Live Broadcast","current_datetime":"2025-05-16T16:24:35","updated_datetime":"2025-05-16T16:24:34","start_datetime":"2025-05-16T16:24:35","end_datetime":"2025-05-23T16:24:34","orientation_angle":0,"zone_count":1,"zone_data":[{"id":1,"name":"Zone 1","widthPercent":100,"heightPercent":100,"xPercent":0,"yPercent":0,"contents":[{"app_type":"default","appdata":{},"content_type":"media","content_name":"grapes","file_upload":"https://zignflix.s3.amazonaws.com/local/5/uploads/7/grapes_86ff386800dc447783fc40af8176b2bd.jpeg","file_format":".jpeg","duration":"10.0","localstoragepath":"/data/user/0/com.example.digitalsignange/cache/libCachedImageData/27c65680-3244-11f0-a38c-e5c0dac85803.jpg"}]}]},"second_broadcast_data":{"message":"No other broadcast"},"message":"Screen is registered"}}
+I/flutter (25471): data changingggggggggg
+
+
+
+
+

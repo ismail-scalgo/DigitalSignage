@@ -26,13 +26,16 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linear_progress_bar/linear_progress_bar.dart';
 import 'package:lottie/lottie.dart';
+import 'package:screenshot/screenshot.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 import 'package:toastification/toastification.dart';
 
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:widgets_to_image/widgets_to_image.dart';
 
 class LaunchingScreen extends StatefulWidget {
   String screenCode;
@@ -44,6 +47,9 @@ class LaunchingScreen extends StatefulWidget {
 
 class _LyoutScreenState extends State<LaunchingScreen> {
   double factor = 1.59;
+  // ScreenshotController screenshotController = ScreenshotController();
+
+  WidgetsToImageController controller = WidgetsToImageController();
 
   bool isLoad = true;
   bool isButtonVisible = true;
@@ -134,370 +140,446 @@ class _LyoutScreenState extends State<LaunchingScreen> {
             //   apiBloc.add(visibleButton(isvisible: false));
             // });
           },
-          child: Container(
-            color: Colors.transparent,
-            width: width,
-            height: height,
-            child: Stack(
-              children: [
-                Center(
-                  child: SizedBox(
-                    width: isShrink ? width * 0.9 : width,
-                    height: isShrink ? height * 0.7 : height,
-                    child: Center(
-                      child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
-                        buildWhen: (previous, current) {
-                          return current is! DisplayButton;
-                        },
-                        listener: (context, state) async {
-                          if (state is LogoutState) {
-                            // LoadingWidget(height, width);
-                            // await Future.delayed(Duration(seconds: 2));
-                           Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ScreenDeletedScreen()),
-                                (route) => false);
-                          }
-                          // if (state is MediaLoadingState) {
-                          //   MaterialPageRoute(
-                          //           builder: (context) => MediaDownloadingScreen());
-                          // }
-                        },
-                        builder: (context, state) {
-                          print("Builder called in UI");
-                          if (state is NoBroadcastState) {
-                            // return Center(child: Text("no broad"));
-                            return NoBroadCastScreen();
-                          }
-                          if (state is OfflineState) {
-                            return NoInternetScreen();
-                          }
-                          if (state is MediaLoadingState) {
-                            return MediaDownloadingScreen();
-                          }
-                          print("state is $state");
-                          if (state is DisplayLayout) {
-                            // connectivitySubscription.cancel();
-                            if (state.layoutdata.oreintationAngle == 0 ||
-                                state.layoutdata.oreintationAngle == 180) {
-                              gwidth = width;
-                              gheight = height;
-                            } else {
-                              gwidth = height;
-                              gheight = width;
-                            }
-                            factor = gwidth / gheight;
-
-                            int quarterTurns = 0;
-
-                            if (state.layoutdata.oreintationAngle >= 0 &&
-                                state.layoutdata.oreintationAngle < 90) {
-                              gwidth = width;
-                              gheight = height;
-
-                              quarterTurns = 0;
+          child: WidgetsToImage(
+            controller: controller,
+            child: Container(
+              color: Colors.transparent,
+              width: width,
+              height: height,
+              child: Stack(
+                children: [
+                  Center(
+                    child: SizedBox(
+                      width: isShrink ? width * 0.9 : width,
+                      height: isShrink ? height * 0.7 : height,
+                      child: Center(
+                        child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
+                          buildWhen: (previous, current) {
+                            if (current is TakeScreenState || current is DownloadProgressState) {
+                              return false;
                             }
 
-                            if (state.layoutdata.oreintationAngle >= 90 &&
-                                state.layoutdata.oreintationAngle < 180) {
-                              gwidth = height;
-                              gheight = width;
-                              quarterTurns = 1;
+                            return (current is! DisplayButton);
+                          },
+                          listener: (context, state) async {
+                            if (state is LogoutState) {
+                              // LoadingWidget(height, width);
+                              // await Future.delayed(Duration(seconds: 2));
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ScreenDeletedScreen()),
+                                  (route) => false);
                             }
 
-                            if (state.layoutdata.oreintationAngle >= 180 &&
-                                state.layoutdata.oreintationAngle < 270) {
-                              gwidth = width;
-                              gheight = height;
-                              quarterTurns = 2;
-                            }
+                            if (state is TakeScreenState) {
+                              print("TAKE SCREEN SHOT CALLED ON LISTENER");
 
-                            if (state.layoutdata.oreintationAngle >= 270 &&
-                                state.layoutdata.oreintationAngle < 360) {
-                              gwidth = height;
-                              gheight = width;
-                              quarterTurns = 3;
+                              controller.capture().then((capturedImage) async {
+                                apiBloc.add(UploadScreenShootEvent(
+                                    capturedimage: capturedImage!));
+                              }).catchError((onError) {
+                                print(onError);
+                              });
                             }
-                            factor = gwidth / gheight;
+                            // if (state is MediaLoadingState) {
+                            //   MaterialPageRoute(
+                            //           builder: (context) => MediaDownloadingScreen());
+                            // }
+                          },
+                          builder: (context, state) {
+                            print("Builder called in UI");
+                            print(state);
+                            if (state is NoBroadcastState) {
+                              // return Center(child: Text("no broad"));
+                              return NoBroadCastScreen();
+                            }
+                            if (state is OfflineState) {
+                              return NoInternetScreen();
+                            }
+                            if (state is MediaLoadingState) {
+                              return MediaDownloadingScreen();
+                            }
+                            print("state is $state");
+                            if (state is DisplayLayout) {
+                              // connectivitySubscription.cancel();
+                              if (state.layoutdata.oreintationAngle == 0 ||
+                                  state.layoutdata.oreintationAngle == 180) {
+                                gwidth = width;
+                                gheight = height;
+                              } else {
+                                gwidth = height;
+                                gheight = width;
+                              }
+                              factor = gwidth / gheight;
 
-                            return RotatedBox(
-                              quarterTurns: quarterTurns,
-                              child: StaggeredGrid.count(
-                                  crossAxisCount: 100,
-                                  children: buildGrids(state.layoutdata)),
-                            );
-                          }
-                          if (state is TrasitionState) {
-                            return Container(
-                              color: Colors.black,
-                              child: Center(
-                                child: LoadingWidget(height, width),
-                              ),
-                            );
-                          }
-                          if (state is DefaultScreen) {
-                            // loadPlayer();
-                            return Container(
-                              width: width,
-                              height: height,
-                              color: Colors.black,
-                              child: Stack(
-                                children: [
-                                  // Container(
-                                  //   child: VideoPlayer(controller),
-                                  // ),
-                                  // Container(
-                                  //   color: Color.fromARGB(255, 44, 43, 43)
-                                  //       .withOpacity(0.8),
-                                  //   // decoration: BoxDecoration(
-                                  //   //     color: Color.fromARGB(255, 44, 43, 43)
-                                  //   //         .withOpacity(0.8)),
-                                  // ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Center(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            // Text(
-                                            //   "NO",
-                                            //   style: GoogleFonts.protestStrike(
-                                            //       textStyle: TextStyle(
-                                            //           // color: Color.fromARGB(255, 65, 51, 51),
-                                            //           color: Color.fromARGB(
-                                            //               255, 216, 213, 213),
-                                            //           fontSize: width > height
-                                            //               ? width / 12
-                                            //               : height / 12,
-                                            //           fontWeight:
-                                            //               FontWeight.w500),
-                                            //       height: 0.8),
-                                            // ),
-                                            // Text(
-                                            //   "BROADCAST.",
-                                            //   style: GoogleFonts.protestStrike(
-                                            //     textStyle: TextStyle(
-                                            //         color: Color.fromARGB(
-                                            //             255, 218, 46, 15),
-                                            //         fontSize: width > height
-                                            //             ? width / 17
-                                            //             : height / 17,
-                                            //         fontWeight: FontWeight.bold,
-                                            //         letterSpacing: 0),
-                                            //   ),
-                                            // ),
-                                            Countdown(
-                                              // controller: _controller,
-                                              seconds: state.countdown,
-                                              build: (_, double time) => Column(
-                                                children: [
-                                                  // Text(
-                                                  //   "NEXT IN",
-                                                  //   style: TextStyle(
-                                                  //       letterSpacing: 18,
-                                                  //       fontSize: 18,
-                                                  //       fontWeight:
-                                                  //           FontWeight.bold,
-                                                  //       color: Color.fromARGB(
-                                                  //           255, 255, 217, 0)),
-                                                  // ),
-                                                  Text(
-                                                    "BROADCAST in",
-                                                    style: TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 255, 255, 255),
-                                                        fontSize: width > height
-                                                            ? width / 17
-                                                            : height / 17,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontFamily:
-                                                            'MyCustomFont',
-                                                        letterSpacing: 0),
+                              int quarterTurns = 0;
+
+                              if (state.layoutdata.oreintationAngle >= 0 &&
+                                  state.layoutdata.oreintationAngle < 90) {
+                                gwidth = width;
+                                gheight = height;
+
+                                quarterTurns = 0;
+                              }
+
+                              if (state.layoutdata.oreintationAngle >= 90 &&
+                                  state.layoutdata.oreintationAngle < 180) {
+                                gwidth = height;
+                                gheight = width;
+                                quarterTurns = 1;
+                              }
+
+                              if (state.layoutdata.oreintationAngle >= 180 &&
+                                  state.layoutdata.oreintationAngle < 270) {
+                                gwidth = width;
+                                gheight = height;
+                                quarterTurns = 2;
+                              }
+
+                              if (state.layoutdata.oreintationAngle >= 270 &&
+                                  state.layoutdata.oreintationAngle < 360) {
+                                gwidth = height;
+                                gheight = width;
+                                quarterTurns = 3;
+                              }
+                              factor = gwidth / gheight;
+
+                              return RotatedBox(
+                                quarterTurns: quarterTurns,
+                                child: StaggeredGrid.count(
+                                    crossAxisCount: 100,
+                                    children: buildGrids(state.layoutdata)),
+                              );
+                            }
+                            if (state is TrasitionState) {
+                              return Container(
+                                color: Colors.black,
+                                child: Center(
+                                  child: LoadingWidget(height, width),
+                                ),
+                              );
+                            }
+                            if (state is DefaultScreen) {
+                              // loadPlayer();
+                              return Container(
+                                width: width,
+                                height: height,
+                                color: Colors.black,
+                                child: Stack(
+                                  children: [
+                                    // Container(
+                                    //   child: VideoPlayer(controller),
+                                    // ),
+                                    // Container(
+                                    //   color: Color.fromARGB(255, 44, 43, 43)
+                                    //       .withOpacity(0.8),
+                                    //   // decoration: BoxDecoration(
+                                    //   //     color: Color.fromARGB(255, 44, 43, 43)
+                                    //   //         .withOpacity(0.8)),
+                                    // ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Center(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              // Text(
+                                              //   "NO",
+                                              //   style: GoogleFonts.protestStrike(
+                                              //       textStyle: TextStyle(
+                                              //           // color: Color.fromARGB(255, 65, 51, 51),
+                                              //           color: Color.fromARGB(
+                                              //               255, 216, 213, 213),
+                                              //           fontSize: width > height
+                                              //               ? width / 12
+                                              //               : height / 12,
+                                              //           fontWeight:
+                                              //               FontWeight.w500),
+                                              //       height: 0.8),
+                                              // ),
+                                              // Text(
+                                              //   "BROADCAST.",
+                                              //   style: GoogleFonts.protestStrike(
+                                              //     textStyle: TextStyle(
+                                              //         color: Color.fromARGB(
+                                              //             255, 218, 46, 15),
+                                              //         fontSize: width > height
+                                              //             ? width / 17
+                                              //             : height / 17,
+                                              //         fontWeight: FontWeight.bold,
+                                              //         letterSpacing: 0),
+                                              //   ),
+                                              // ),
+                                              Countdown(
+                                                // controller: _controller,
+                                                seconds: state.countdown,
+                                                build: (_, double time) =>
+                                                    Column(
+                                                  children: [
+                                                    // Text(
+                                                    //   "NEXT IN",
+                                                    //   style: TextStyle(
+                                                    //       letterSpacing: 18,
+                                                    //       fontSize: 18,
+                                                    //       fontWeight:
+                                                    //           FontWeight.bold,
+                                                    //       color: Color.fromARGB(
+                                                    //           255, 255, 217, 0)),
                                                     // ),
-                                                  ),
-                                                  Text(
-                                                    state.countdown > 86400
-                                                        ? formatDaysTime(
-                                                            time.toInt())
-                                                        : formatHoursTime(
-                                                            time.toInt()),
-                                                    // formatHoursTime(time.toInt()),
-                                                    style: GoogleFonts
-                                                        .playfairDisplay(
-                                                      textStyle: TextStyle(
+                                                    Text(
+                                                      "BROADCAST in",
+                                                      style: TextStyle(
                                                           color: Color.fromARGB(
                                                               255,
                                                               255,
-                                                              254,
-                                                              254),
-                                                          fontSize: 25,
+                                                              255,
+                                                              255),
+                                                          fontSize:
+                                                              width > height
+                                                                  ? width / 17
+                                                                  : height / 17,
                                                           fontWeight:
-                                                              FontWeight.w100,
-                                                          letterSpacing: 5),
+                                                              FontWeight.bold,
+                                                          fontFamily:
+                                                              'MyCustomFont',
+                                                          letterSpacing: 0),
+                                                      // ),
                                                     ),
-                                                    // style: TextStyle(
-                                                    //     fontSize: 25,
-                                                    //     fontWeight:
-                                                    //         FontWeight.bold,
-                                                    //     color: const Color.fromARGB(255, 255, 255, 255)),
-                                                  ),
-                                                ],
+                                                    Text(
+                                                      state.countdown > 86400
+                                                          ? formatDaysTime(
+                                                              time.toInt())
+                                                          : formatHoursTime(
+                                                              time.toInt()),
+                                                      // formatHoursTime(time.toInt()),
+                                                      style: GoogleFonts
+                                                          .playfairDisplay(
+                                                        textStyle: TextStyle(
+                                                            color: Color
+                                                                .fromARGB(
+                                                                    255,
+                                                                    255,
+                                                                    254,
+                                                                    254),
+                                                            fontSize: 25,
+                                                            fontWeight:
+                                                                FontWeight.w100,
+                                                            letterSpacing: 5),
+                                                      ),
+                                                      // style: TextStyle(
+                                                      //     fontSize: 25,
+                                                      //     fontWeight:
+                                                      //         FontWeight.bold,
+                                                      //     color: const Color.fromARGB(255, 255, 255, 255)),
+                                                    ),
+                                                  ],
+                                                ),
+                                                interval: Duration(seconds: 1),
+                                                onFinished: () {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                          'BROADCAST LIVE'),
+                                                    ),
+                                                  );
+                                                },
                                               ),
-                                              interval: Duration(seconds: 1),
-                                              onFinished: () {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    content:
-                                                        Text('BROADCAST LIVE'),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                              // return Center(
+                              //     child: Column(
+                              //   mainAxisAlignment: MainAxisAlignment.center,
+                              // children: [
+                              //   Container(
+                              //       height: height / 3,
+                              //       width: width / 3.5,
+                              //       child: Lottie.asset('assets/Shoes.json')),
+                              //   Countdown(
+                              //     // controller: _controller,
+                              //     seconds: state.countdown,
+                              //     build: (_, double time) => Column(
+                              //       children: [
+                              //         Text(
+                              //           "NEXT IN",
+                              //           style: TextStyle(
+                              //               letterSpacing: 18,
+                              //               fontSize: 18,
+                              //               fontWeight: FontWeight.bold,
+                              //               color:
+                              //                   Color.fromARGB(255, 255, 217, 0)),
+                              //         ),
+                              //         Text(
+                              //           formatTime(time.toInt()),
+                              //           style: TextStyle(
+                              //               fontSize: 25,
+                              //               fontWeight: FontWeight.bold,
+                              //               color: Colors.blue),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //     interval: Duration(seconds: 1),
+                              //     onFinished: () {
+                              //       ScaffoldMessenger.of(context).showSnackBar(
+                              //         SnackBar(
+                              //           content: Text('BROADCAST LIVE'),
+                              //         ),
+                              //       );
+                              //     },
+                              //   ),
+                              // ],
+                              // ));
+                            }
+                            return Container(
+                              // color: Colors.blue,
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              child: Center(
+                                child: LoadingWidget(height, width),
+                                // child: Container(
+                                //     height: height / 3,
+                                //     width: width / 3.5,
+                                //     child: Lottie.asset('assets/Shoes.json')),
                               ),
                             );
-                            // return Center(
-                            //     child: Column(
-                            //   mainAxisAlignment: MainAxisAlignment.center,
-                            // children: [
-                            //   Container(
-                            //       height: height / 3,
-                            //       width: width / 3.5,
-                            //       child: Lottie.asset('assets/Shoes.json')),
-                            //   Countdown(
-                            //     // controller: _controller,
-                            //     seconds: state.countdown,
-                            //     build: (_, double time) => Column(
-                            //       children: [
-                            //         Text(
-                            //           "NEXT IN",
-                            //           style: TextStyle(
-                            //               letterSpacing: 18,
-                            //               fontSize: 18,
-                            //               fontWeight: FontWeight.bold,
-                            //               color:
-                            //                   Color.fromARGB(255, 255, 217, 0)),
-                            //         ),
-                            //         Text(
-                            //           formatTime(time.toInt()),
-                            //           style: TextStyle(
-                            //               fontSize: 25,
-                            //               fontWeight: FontWeight.bold,
-                            //               color: Colors.blue),
-                            //         ),
-                            //       ],
-                            //     ),
-                            //     interval: Duration(seconds: 1),
-                            //     onFinished: () {
-                            //       ScaffoldMessenger.of(context).showSnackBar(
-                            //         SnackBar(
-                            //           content: Text('BROADCAST LIVE'),
-                            //         ),
-                            //       );
-                            //     },
-                            //   ),
-                            // ],
-                            // ));
-                          }
-                          return Container(
-                            // color: Colors.blue,
-                            color: const Color.fromARGB(255, 0, 0, 0),
-                            child: Center(
-                              child: LoadingWidget(height, width),
-                              // child: Container(
-                              //     height: height / 3,
-                              //     width: width / 3.5,
-                              //     child: Lottie.asset('assets/Shoes.json')),
-                            ),
-                          );
-                        },
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-                BlocConsumer<LayoutblocBloc, LayoutblocState>(
-                  listener: (context, state) {},
-                  builder: (context, state) {
-                    if (state is DisplayButton) {
-                      return Visibility(
-                        visible: state.isvisible,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 50),
-                          child: Align(
-                            child: InkWell(
-                              child: Container(
-                                height: 35,
-                                width: width / 6.5,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color:
-                                        const Color.fromARGB(255, 65, 51, 51)),
-                                child: Center(
-                                    child: Text(
-                                  "Logout",
-                                  style: TextStyle(color: Colors.white),
-                                )),
+                  BlocConsumer<LayoutblocBloc, LayoutblocState>(
+                    listener: (context, state) {},
+                    builder: (context, state) {
+                      if (state is DisplayButton) {
+                        return Visibility(
+                          visible: state.isvisible,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 50),
+                            child: Align(
+                              child: InkWell(
+                                child: Container(
+                                  height: 35,
+                                  width: width / 6.5,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: const Color.fromARGB(
+                                          255, 65, 51, 51)),
+                                  child: Center(
+                                      child: Text(
+                                    "Logout",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                                ),
+                                onTap: () {
+                                  showMyDialog(context);
+                                },
                               ),
-                              onTap: () {
-                                showMyDialog(context);
-                              },
+                              // child: ElevatedButton(
+                              //     onPressed: () {
+                              //       showMyDialog(context);
+                              //     },
+                              //     child: Text("Logout")),
+                              alignment: Alignment.bottomCenter,
                             ),
-                            // child: ElevatedButton(
-                            //     onPressed: () {
-                            //       showMyDialog(context);
-                            //     },
-                            //     child: Text("Logout")),
-                            alignment: Alignment.bottomCenter,
                           ),
-                        ),
-                      );
-                    }
-                    return Center();
-                  },
-                ),
-                // if (isShrink)
-                //   Positioned(
-                //     // right: 10,
-                //     left: width,
-                //     // right: width,
-                //     width: width,
-                //     bottom: height * 0.1,
-                //     child: Row(
-                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //       children: [
-                //         ElevatedButton(
-                //           onPressed: () {
-                //             setState(() {
-                //               isShrink = false;
-                //             });
-                //           },
-                //           child: Text('Button 1'),
-                //         ),
-                //         SizedBox(height: 10),
-                //         ElevatedButton(
-                //           onPressed: () {
-                //             // Handle button 2 press
-                //           },
-                //           child: Text('Button 2'),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-              ],
+                        );
+                      }
+                      return Center();
+                    },
+                  ),
+
+                  BlocConsumer<LayoutblocBloc, LayoutblocState>(
+                    listener: (context, state) {},
+                    buildWhen: (previous, current) {
+                      return current is DownloadProgressState;
+                    },
+                    builder: (context, state) {
+                      print("INSIDE DOWNLOAD PROGRESS STATE");
+                      if (state is DownloadProgressState && state.isVisible) {
+                        return Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Container(
+                              height: 100,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                              
+                                  Container(
+                              
+                               
+                                child: Text(state.markerText,style: TextStyle(color: Colors.amber,fontSize: 18),)
+                              ),
+                              
+                              
+                              
+                                  LinearProgressBar(
+                                    maxSteps: 100,
+                                    progressType: LinearProgressBar
+                                        .progressTypeLinear, // Use Linear progress
+                                    currentStep: state.progress,
+                                    progressColor:
+                                        const Color.fromARGB(255, 255, 0, 128),
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 255, 255, 255),
+                                    borderRadius: BorderRadius.circular(10), //  NEW
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return Center();
+                      }
+                    },
+                  )
+                  // if (isShrink)
+                  //   Positioned(
+                  //     // right: 10,
+                  //     left: width,
+                  //     // right: width,
+                  //     width: width,
+                  //     bottom: height * 0.1,
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //       children: [
+                  //         ElevatedButton(
+                  //           onPressed: () {
+                  //             setState(() {
+                  //               isShrink = false;
+                  //             });
+                  //           },
+                  //           child: Text('Button 1'),
+                  //         ),
+                  //         SizedBox(height: 10),
+                  //         ElevatedButton(
+                  //           onPressed: () {
+                  //             // Handle button 2 press
+                  //           },
+                  //           child: Text('Button 2'),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                ],
+              ),
             ),
           ),
         ),
@@ -511,7 +593,10 @@ class _LyoutScreenState extends State<LaunchingScreen> {
       StaggeredGridTile tile = StaggeredGridTile.count(
         crossAxisCellCount: zonedata.widthPercent,
         mainAxisCellCount: zonedata.heightPercent / factor,
-        child: SingleZoneController(zonedata: zonedata,broadcast_id:layoutdata.id.toString(),),
+        child: SingleZoneController(
+          zonedata: zonedata,
+          broadcast_id: layoutdata.id.toString(),
+        ),
       );
 
       staggeredList.add(tile);

@@ -72,6 +72,12 @@ dependencies:
   display_metrics: 
   fire_tv_listener: 
   youtube_player_iframe: ^5.2.1
+  screenshot: ^3.0.0
+  mime: ^1.0.4
+  path_provider: ^2.1.5
+
+  widgets_to_image: ^1.0.0
+  linear_progress_bar: ^1.2.0
 
   
   

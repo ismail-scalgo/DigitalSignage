@@ -34,7 +34,10 @@ class RegisterRepository {
     print("enteringggggggggggggg");
     String status;
     final apiUrl = '$BASEURL/api/generate-screen-code/';
-    var response = await http.post(Uri.parse(apiUrl), body: request.toMap());
+    var req_body = request.toMap();
+    
+    print(req_body);
+    var response = await http.post(Uri.parse(apiUrl), body: req_body);
     print("response data = ${response.statusCode}");
     print("body = ${response.body}");
     print("body = ${response}");

@@ -30,7 +30,7 @@ class _ControllerscreenState extends State<Controllerscreen> {
   void nextScreen() async {
       FlutterNativeSplash.remove();
     await Future.delayed(Duration(seconds: 1));
-    print("TIME PERIOD COMPLETED");
+
 
     if (await Permission.systemAlertWindow.isGranted) {
   

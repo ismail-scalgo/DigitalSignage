@@ -1,13 +1,17 @@
+import 'dart:io';
+
+import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/UI/VIDEOLOCK.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:native_video_player/native_video_player.dart';
 
 class AndroidVideoPlayer extends StatefulWidget {
-  final String url;
+  final String url;  //JUST ONLY FOR PRINT URL
   final String filepath;
 
-  AndroidVideoPlayer({required this.url, required this.filepath});
+  AndroidVideoPlayer(
+      {required this.url, required this.filepath, required super.key});
 
   @override
   State<AndroidVideoPlayer> createState() => _AndroidVideoPlayerState();
@@ -84,16 +88,32 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
 
   Future<void> _loadVideoSource() async {
     print("url2 = ${widget.url}");
+    
     final videoSource = await _createVideoSource();
+
+   
     await _controller?.loadVideoSource(videoSource);
   }
 
   Future<VideoSource> _createVideoSource() async {
     print("FILE PATH OF VIDEOOOOOOOOOOO");
     print(widget.filepath);
+
+    var file = await DefaultCacheManager().getSingleFile(widget.url);
+
+    // final file = File(widget.filepath);
+
+    // if (!(await file.exists())) {
+    //   print("Androidvideplayer.dart");
+    //   print("FILE PATH CORRUPTED");
+    //   print("DOWNLOAD AGAIN");
+    //   await DefaultCacheManager().removeFile(widget.url);
+    //   filepath = (await DefaultCacheManager().getSingleFile(widget.url)).path;
+    // }
+
     // var file1 = await DefaultCacheManager().downloadFile(widget.url);
     return VideoSource.init(
-      path: widget.filepath,
+      path: file.path,
       type: VideoSourceType.file,
     );
   }

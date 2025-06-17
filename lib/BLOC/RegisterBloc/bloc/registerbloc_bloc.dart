@@ -34,8 +34,10 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
 
   bool isfirsttime = true;
   BuildContext? context;
+  bool isWebSocketConnected = false;
 
   RegisterblocBloc() : super(RegisterblocInitial()) {
+    print("REGISTRATION BLOC INITIALISED");
     on<RegisterblocEvent>((event, emit) async {
       print("BLOC CALLED WITH EVENT");
       print(event);
@@ -56,6 +58,9 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
       }
 
       if (event is CheckDeviceStatusEvent) {
+        print("from reg bloc");
+        print("CheckDeviceStatusEvent");
+
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
         String? screenCode = prefs.getString('NewScreenCode');
@@ -118,8 +123,9 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
               Position position = await determinePosition();
               latitude = position.latitude.toString();
               longitude = position.longitude.toString();
-              location =
-                  await fetchLocation(position.latitude, position.longitude);
+              // location =
+              //     await fetchLocation(position.latitude, position.longitude);
+              location = "Unknown";
             }
 
             type = (await detectDevice()) ?? "Unknown";
@@ -150,8 +156,12 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
                 await RegisterRepository().fetchScreenCode(requestModel);
             screenCode != null ? saveNewScreenCode(screenCode) : print('');
 
-            connect(screenCode!);
-            emit(DisplayScreenCodeState(screenCode: screenCode));
+            if (!isWebSocketConnected) {
+              connect(screenCode!);
+              isWebSocketConnected = true;
+            }
+
+            emit(DisplayScreenCodeState(screenCode: screenCode!));
           } catch (e) {
             print(e);
           }
@@ -161,7 +171,11 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         if (await isOffline()) {
           add(OfflineEvent());
         } else {
-          connect(event.screenCode);
+          if (!isWebSocketConnected) {
+            connect(event.screenCode!);
+            isWebSocketConnected = true;
+          }
+          // connect(event.screenCode);
           // print("emitting old");
           // emit(DisplayOldScreenCode(screenCode: event.screenCode));
           // connect(event.screenCode);
@@ -189,7 +203,10 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         }
       }
       if (event is ConnectSocket) {
-        connect(event.screenCode);
+        if (!isWebSocketConnected) {
+          connect(event.screenCode!);
+          isWebSocketConnected = true;
+        }
       }
       if (event is OfflineEvent) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -225,6 +242,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
   }
 
   void connect(String screencode) async {
+    print("WEB SOCKET CONNECTION ON REG SCREEN CALLED");
     final socket = WebSocket(Uri.parse(SOCKET_ADDRESS));
     globalConnection = socket;
     socket.messages.listen((message) async {
@@ -274,7 +292,8 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
     if (globalConnection != null) {
       try {
         globalConnection.close();
-        print("WebSocket connection closed.");
+        isWebSocketConnected = false;
+        print("WEB SOCKET CONNECTION CLOSED ON REG SCREEN CALLED");
       } catch (e) {
         print("Error while closing WebSocket: $e");
       }

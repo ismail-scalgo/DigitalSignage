@@ -231,7 +231,7 @@ Future addtoRecordFromBufferOnEnd() async {
           //ALREADY BROADCAST ADDED ALSO CONTENT ADDED
           else if (recorded_data.containsKey(content_name)) {
           print("ALREADY BROADCAST ADDED ALSO CONTENT ADDED");
-            double past_duration = recorded_data[content_name][CONTENT_DURATION_KEY];
+            double past_duration = ((recorded_data[content_name][CONTENT_DURATION_KEY])).toDouble();
             int past_count=recorded_data[content_name][CONTENT_COUNT_KEY];
             int current_duration = dateTimeNow.difference(start_time).inSeconds;
             double updated_duration = past_duration + current_duration;

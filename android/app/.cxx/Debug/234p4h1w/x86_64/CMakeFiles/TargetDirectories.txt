@@ -1,0 +1,2 @@
+/home/scalgo/SCALGO/DIGITAL SIGNAGE/APR 15/DigitalSignage/android/app/.cxx/Debug/234p4h1w/x86_64/CMakeFiles/edit_cache.dir
+/home/scalgo/SCALGO/DIGITAL SIGNAGE/APR 15/DigitalSignage/android/app/.cxx/Debug/234p4h1w/x86_64/CMakeFiles/rebuild_cache.dir

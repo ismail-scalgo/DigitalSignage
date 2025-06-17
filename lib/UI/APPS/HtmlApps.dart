@@ -16,6 +16,7 @@ class _HtmlAppsState extends State<HtmlApps> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: InAppWebView(
+          
       //  initialData: InAppWebViewInitialData(data: htmlContent),
       initialUrlRequest: URLRequest(url: WebUri(widget.htmlUrl)),
     ));
