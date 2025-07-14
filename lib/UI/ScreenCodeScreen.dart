@@ -139,7 +139,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                   height: 40,
                 ),
                 Text(
-                  "1. Login into https://test-sgdsignage.scalgo.net",
+                  "1. Login into https://test-studio.zignflix.com",
                   style: TextStyle(
                       color: const Color.fromARGB(255, 190, 190, 190),
                       fontSize: 20,

@@ -40,6 +40,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
   StreamSubscription<FileResponse>? lastDownloadingFile;
 
+  int? systemToServerTimeDifference;
+
   // final downloadController = StreamController<LayoutData>();
 
   int lastdownloadprogress = 0;
@@ -81,17 +83,20 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           } else {
             print("there is data");
             if (broadCastData?.currentBroadCast != null) {
-              saveTimedifference(
+              await saveTimedifference(
                   (broadCastData?.currentBroadCast!.currentDatetime)!);
+              systemToServerTimeDifference = await gettimedifference();
             }
             LayoutData? layoutdata = broadCastData?.currentBroadCast;
             current_broadcast = layoutdata;
             next_broadcast = broadCastData?.NextBroadCast;
             String currentTime = getFormattedCurrentDateTime();
             int startTimeDifference =
-                timeDifference(current_broadcast!.startDateTime!, currentTime);
+                timeDifference(current_broadcast!.startDateTime!, currentTime) +
+                    (systemToServerTimeDifference ?? 0);
             int endTimeDifference =
-                timeDifference(current_broadcast!.endDateTime!, currentTime);
+                timeDifference(current_broadcast!.endDateTime!, currentTime) +
+                    (systemToServerTimeDifference ?? 0);
 
             if (currentBroadcastInString !=
                     broadCastData?.currentBroadCast?.stringData ||
@@ -174,7 +179,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         emit(TakeScreenState());
       }
       if (event is UploadScreenShootEvent) {
-        String? signedurl = await LayoutRepository().generateSignedUrlForAws();
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        String secretkey = await prefs.getString('secretKey')!;
+        String? signedurl =
+            await LayoutRepository().generateSignedUrlForAws(secretkey);
         print("signed url = " + signedurl!);
         final tempDir = await getTemporaryDirectory();
         File file = await File('${tempDir.path}/image.png').create();
@@ -184,7 +192,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
         String cleanUrl = signedurl.split('?')[0];
 
-        await LayoutRepository().updateScreenShotToDb(screen_code!, cleanUrl);
+        await LayoutRepository()
+            .updateScreenShotToDb(screen_code!, cleanUrl, secretkey);
 
         print("SCREEN SHOOT UPLOAD SUCEESFULLY");
         print(cleanUrl);
@@ -290,7 +299,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     });
   }
 
-  void saveTimedifference(String servertime) async {
+  Future saveTimedifference(String servertime) async {
     DateTime now = DateTime.now();
     DateTime serverDateTime = DateTime.parse(servertime);
 
@@ -359,7 +368,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           if (HARDCODEPLATFORM != 'WEB') {
             add(MediaLoadingEvent());
             int end_difference =
-                timeDifference(current_broadcast!.endDateTime!, currentTime);
+                timeDifference(current_broadcast!.endDateTime!, currentTime) +
+                    (systemToServerTimeDifference ?? 0);
             if (next_broadcast != null) {
               preloadContents(next_broadcast!);
             }
@@ -417,14 +427,20 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     }
 
     String currentTime = getFormattedCurrentDateTime();
+    print("current");
+    print(currentTime);
+
     int start_difference =
-        timeDifference(layoutdata.startDateTime!, currentTime);
+        timeDifference(layoutdata.startDateTime!, currentTime) +
+            (systemToServerTimeDifference ?? 0);
+
     int end_difference = 0;
     if (start_difference < 0) {
-      end_difference = timeDifference(layoutdata.endDateTime!, currentTime);
+      end_difference = timeDifference(layoutdata.endDateTime!, currentTime) +
+          (systemToServerTimeDifference ?? 0);
     } else {
       end_difference =
-          timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!);
+          timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!) - (systemToServerTimeDifference ?? 0);
     }
     print("END TIME =  ${layoutdata.startDateTime}");
     print("END TIME =  ${layoutdata.endDateTime}");
@@ -592,7 +608,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     String currentTime = getFormattedCurrentDateTime();
     int startTimeDifference =
-        timeDifference(current_broadcast!.startDateTime!, currentTime);
+        timeDifference(current_broadcast!.startDateTime!, currentTime) +
+            (systemToServerTimeDifference ?? 0);
 
     int quick_broadcast_count = 0;
 

@@ -10,6 +10,7 @@ import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/ContentModel.dart';
 import 'package:digitalsignange/MODELS/RequestModel.dart';
 import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
+import 'package:digitalsignange/MODELS/ScreenCodeModel.dart';
 
 import 'package:digitalsignange/REPOSITORIES/RegisterRepo.dart';
 import 'package:digitalsignange/UI/Utils.dart';
@@ -152,16 +153,16 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
               width: width,
               type: type);
           try {
-            String? screenCode =
+            FetchScreenCodeModel? screenCodeModel =
                 await RegisterRepository().fetchScreenCode(requestModel);
-            screenCode != null ? saveNewScreenCode(screenCode) : print('');
+            screenCodeModel!.screenCode != null ? saveNewScreenCode(screenCodeModel.screenCode!,screenCodeModel.secretKey!) : print('');
 
             if (!isWebSocketConnected) {
-              connect(screenCode!);
+              connect(screenCodeModel.screenCode!);
               isWebSocketConnected = true;
             }
 
-            emit(DisplayScreenCodeState(screenCode: screenCode!));
+            emit(DisplayScreenCodeState(screenCode: screenCodeModel.screenCode!));
           } catch (e) {
             print(e);
           }
@@ -229,9 +230,10 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
     });
   }
 
-  void saveNewScreenCode(String screenCode) async {
+  void saveNewScreenCode(String screenCode,String secretKey) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('NewScreenCode', screenCode);
+     await prefs.setString('secretKey', secretKey);
     await prefs.setBool('isRegistered', false);
   }
 

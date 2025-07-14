@@ -4,6 +4,7 @@ import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/ContentModel.dart';
 import 'package:digitalsignange/MODELS/RequestModel.dart';
 import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
+import 'package:digitalsignange/MODELS/ScreenCodeModel.dart';
 import 'package:digitalsignange/MODELS/ZoneModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -30,12 +31,12 @@ class RegisterRepository {
     }
   }
 
-  Future<String?> fetchScreenCode(RequestModel request) async {
+  Future<FetchScreenCodeModel?> fetchScreenCode(RequestModel request) async {
     print("enteringggggggggggggg");
     String status;
     final apiUrl = '$BASEURL/api/generate-screen-code/';
     var req_body = request.toMap();
-    
+
     print(req_body);
     var response = await http.post(Uri.parse(apiUrl), body: req_body);
     print("response data = ${response.statusCode}");
@@ -44,7 +45,10 @@ class RegisterRepository {
     if (response.statusCode == 201) {
       print("respose body = ${response.body}");
       final jsonData = json.decode(response.body);
-      return jsonData["screen_code"];
+      return FetchScreenCodeModel(
+          screenCode: jsonData["screen_code"],
+          secretKey: jsonData["secret_key"]);
+    
     } else {
       print("error");
     }

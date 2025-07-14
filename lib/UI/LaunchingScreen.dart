@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:digitalsignange/Costants.dart';
 import 'package:digitalsignange/MODELS/XCompositionModel.dart';
@@ -47,9 +48,9 @@ class LaunchingScreen extends StatefulWidget {
 
 class _LyoutScreenState extends State<LaunchingScreen> {
   double factor = 1.59;
-  // ScreenshotController screenshotController = ScreenshotController();
+  ScreenshotController screenshotController = ScreenshotController();
 
-  WidgetsToImageController controller = WidgetsToImageController();
+  // WidgetsToImageController controller = WidgetsToImageController();
 
   bool isLoad = true;
   bool isButtonVisible = true;
@@ -100,38 +101,39 @@ class _LyoutScreenState extends State<LaunchingScreen> {
       // },
       child: Scaffold(
         key: drawerKey,
-        endDrawer: Drawer(
-          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-          child: ListView(
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 0, 0, 0),
-                ),
-                curve: Curves.fastOutSlowIn,
-                child: Center(
-                  child: Text(
-                    "${widget.screenCode}",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Center(
-                    child: Text(
-                  'Logout',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 0, 0, 0)),
-                )),
-                onTap: () {
-                  showMyDialog(context);
-                },
-              ),
-            ],
-          ),
-        ),
+        backgroundColor: Colors.black,
+        // endDrawer: Drawer(
+        //   backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        //   child: ListView(
+        //     children: [
+        //       DrawerHeader(
+        //         decoration: BoxDecoration(
+        //           color: Color.fromARGB(255, 0, 0, 0),
+        //         ),
+        //         curve: Curves.fastOutSlowIn,
+        //         child: Center(
+        //           child: Text(
+        //             "${widget.screenCode}",
+        //             style: TextStyle(
+        //                 color: Colors.white, fontWeight: FontWeight.bold),
+        //           ),
+        //         ),
+        //       ),
+        //       ListTile(
+        //         title: Center(
+        //             child: Text(
+        //           'Logout',
+        //           style: TextStyle(
+        //               fontWeight: FontWeight.bold,
+        //               color: const Color.fromARGB(255, 0, 0, 0)),
+        //         )),
+        //         onTap: () {
+        //           showMyDialog(context);
+        //         },
+        //       ),
+        //     ],
+        //   ),
+        // ),
         body: GestureDetector(
           onLongPress: () {
             drawerKey.currentState?.openEndDrawer();
@@ -140,8 +142,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
             //   apiBloc.add(visibleButton(isvisible: false));
             // });
           },
-          child: WidgetsToImage(
-            controller: controller,
+          child: Screenshot(
+            controller: screenshotController,
             child: Container(
               color: Colors.transparent,
               width: width,
@@ -155,7 +157,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       child: Center(
                         child: BlocConsumer<LayoutblocBloc, LayoutblocState>(
                           buildWhen: (previous, current) {
-                            if (current is TakeScreenState || current is DownloadProgressState) {
+                            if (current is TakeScreenState ||
+                                current is DownloadProgressState) {
                               return false;
                             }
 
@@ -176,12 +179,25 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             if (state is TakeScreenState) {
                               print("TAKE SCREEN SHOT CALLED ON LISTENER");
 
-                              controller.capture().then((capturedImage) async {
-                                apiBloc.add(UploadScreenShootEvent(
-                                    capturedimage: capturedImage!));
-                              }).catchError((onError) {
-                                print(onError);
-                              });
+
+          await screenshotController.capture(delay: const Duration(milliseconds: 500)).then((Uint8List? image) async {
+      if (image != null) {
+      
+
+     apiBloc.add(UploadScreenShootEvent(
+                                    capturedimage: image));
+       
+      }
+    });
+                              
+
+                              // controller.capture().then((capturedImage) async {
+                              //   print("screen shot taked sucessfully");
+                              //   apiBloc.add(UploadScreenShootEvent(
+                              //       capturedimage: capturedImage!));
+                              // }).catchError((onError) {
+                              //   print(onError);
+                              // });
                             }
                             // if (state is MediaLoadingState) {
                             //   MaterialPageRoute(
@@ -520,15 +536,12 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                              
                                   Container(
-                              
-                               
-                                child: Text(state.markerText,style: TextStyle(color: Colors.amber,fontSize: 18),)
-                              ),
-                              
-                              
-                              
+                                      child: Text(
+                                    state.markerText,
+                                    style: TextStyle(
+                                        color: Colors.amber, fontSize: 18),
+                                  )),
                                   LinearProgressBar(
                                     maxSteps: 100,
                                     progressType: LinearProgressBar
@@ -536,9 +549,10 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                     currentStep: state.progress,
                                     progressColor:
                                         const Color.fromARGB(255, 255, 0, 128),
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(10), //  NEW
+                                    backgroundColor: const Color.fromARGB(
+                                        255, 255, 255, 255),
+                                    borderRadius:
+                                        BorderRadius.circular(10), //  NEW
                                   ),
                                 ],
                               ),
