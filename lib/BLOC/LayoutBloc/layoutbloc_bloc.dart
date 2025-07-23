@@ -40,14 +40,16 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
   StreamSubscription<FileResponse>? lastDownloadingFile;
 
-  final downloadController = StreamController<LayoutData>();
+  int? systemToServerTimeDifference;
+
+  // final downloadController = StreamController<LayoutData>();
 
   int lastdownloadprogress = 0;
   //if any time it is reloaded then any timer scheduled will not work
   //it will check usig reload variable
   int RELOAD_FLAG_COUNT = 0;
 
-  int CURRENT_FILE_DOWNLOAD_BROADCAST_ID = 0;
+  int QUICK_BROADCAST_COUNT = 0;
 
   LayoutblocBloc() : super(LayoutblocInitial()) {
     print("LAYOUT BLOC CALLEDDDDDDDDD");
@@ -81,17 +83,20 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           } else {
             print("there is data");
             if (broadCastData?.currentBroadCast != null) {
-              saveTimedifference(
+              await saveTimedifference(
                   (broadCastData?.currentBroadCast!.currentDatetime)!);
+              systemToServerTimeDifference = await gettimedifference();
             }
             LayoutData? layoutdata = broadCastData?.currentBroadCast;
             current_broadcast = layoutdata;
             next_broadcast = broadCastData?.NextBroadCast;
             String currentTime = getFormattedCurrentDateTime();
             int startTimeDifference =
-                timeDifference(current_broadcast!.startDateTime!, currentTime);
+                timeDifference(current_broadcast!.startDateTime!, currentTime) +
+                    (systemToServerTimeDifference ?? 0);
             int endTimeDifference =
-                timeDifference(current_broadcast!.endDateTime!, currentTime);
+                timeDifference(current_broadcast!.endDateTime!, currentTime) +
+                    (systemToServerTimeDifference ?? 0);
 
             if (currentBroadcastInString !=
                     broadCastData?.currentBroadCast?.stringData ||
@@ -171,10 +176,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         }
       }
       if (event is TakeScreenShotEvent) {
-        emit(TakeScreenState());
+        emit(TakeScreenState(screenshoot_id: event.screenshoot_id));
       }
       if (event is UploadScreenShootEvent) {
-        String? signedurl = await LayoutRepository().generateSignedUrlForAws();
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        String secretkey = await prefs.getString('secretKey')!;
+        String? signedurl =
+            await LayoutRepository().generateSignedUrlForAws(secretkey);
         print("signed url = " + signedurl!);
         final tempDir = await getTemporaryDirectory();
         File file = await File('${tempDir.path}/image.png').create();
@@ -184,7 +192,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
         String cleanUrl = signedurl.split('?')[0];
 
-        await LayoutRepository().updateScreenShotToDb(screen_code!, cleanUrl);
+        await LayoutRepository()
+            .updateScreenShotToDb(screen_code!, cleanUrl, secretkey,event.screenshoot_id);
 
         print("SCREEN SHOOT UPLOAD SUCEESFULLY");
         print(cleanUrl);
@@ -290,7 +299,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     });
   }
 
-  void saveTimedifference(String servertime) async {
+  Future saveTimedifference(String servertime) async {
     DateTime now = DateTime.now();
     DateTime serverDateTime = DateTime.parse(servertime);
 
@@ -359,7 +368,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           if (HARDCODEPLATFORM != 'WEB') {
             add(MediaLoadingEvent());
             int end_difference =
-                timeDifference(current_broadcast!.endDateTime!, currentTime);
+                timeDifference(current_broadcast!.endDateTime!, currentTime) +
+                    (systemToServerTimeDifference ?? 0);
             if (next_broadcast != null) {
               preloadContents(next_broadcast!);
             }
@@ -417,14 +427,21 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     }
 
     String currentTime = getFormattedCurrentDateTime();
+    print("current");
+    print(currentTime);
+
     int start_difference =
-        timeDifference(layoutdata.startDateTime!, currentTime);
+        timeDifference(layoutdata.startDateTime!, currentTime) +
+            (systemToServerTimeDifference ?? 0);
+
     int end_difference = 0;
     if (start_difference < 0) {
-      end_difference = timeDifference(layoutdata.endDateTime!, currentTime);
+      end_difference = timeDifference(layoutdata.endDateTime!, currentTime) +
+          (systemToServerTimeDifference ?? 0);
     } else {
       end_difference =
-          timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!);
+          timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!) -
+              (systemToServerTimeDifference ?? 0);
     }
     print("END TIME =  ${layoutdata.startDateTime}");
     print("END TIME =  ${layoutdata.endDateTime}");
@@ -507,9 +524,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       log("socket response = $jsonresponce");
       log("socket updated time = ${jsonresponce['updated_at']}");
       log("laaaaaaaaaaaaaaaaaaaast updated = $lastUpdateTime");
+      print("screen shot id");
+      print(jsonresponce);
       if (lastUpdateTime != jsonresponce['updated_at']) {
         if (jsonresponce["status"] == "take screenshot") {
-          add(TakeScreenShotEvent());
+          int id = jsonresponce["screenshot_id"];
+          add(TakeScreenShotEvent(screenshoot_id: id));
         } else {
           log("Time changeddddddddddddddddddddddddddddddddddddddddddd");
           lastUpdateTime = jsonresponce['updated_at'];
@@ -568,11 +588,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   //   });
   // }
 
-  void activateDownloadcontroller() {
-    downloadController.stream.listen((event) async{
-         await  preloadContents(event);
-    });
-  }
+// void activateDownloadcontroller(){
+
+// downloadController.stream.listen((event) {
+//     preloadContents(broadcastData)
+//   });
+
+// }
 
   Future preloadContents(LayoutData broadcastData) async {
     int totalFiles = 0;
@@ -588,43 +610,62 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     print("cacheiggg");
 
+    String currentTime = getFormattedCurrentDateTime();
+    int startTimeDifference =
+        timeDifference(current_broadcast!.startDateTime!, currentTime) +
+            (systemToServerTimeDifference ?? 0);
+
+    int quick_broadcast_count = 0;
+
+    print("TIME DIFFERENCE");
+    print(startTimeDifference);
+
+    if (startTimeDifference <= 10) {
+      QUICK_BROADCAST_COUNT = QUICK_BROADCAST_COUNT + 1;
+      quick_broadcast_count = QUICK_BROADCAST_COUNT;
+      print("QUICK BROADCAST ADDED");
+    }
+
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
         if (content.fileUrl != '' && content.contentType == 'media') {
           currentCount++;
-          lastDownloadingFile = DefaultCacheManager()
-              .getFileStream(content.fileUrl, withProgress: true)
-              .listen((response) {
-            if (response is DownloadProgress) {
-              double percent =
-                  (response.downloaded / response.totalSize!.toInt()) * 100;
-              print("percent $percent");
 
-              if (lastdownloadprogress != percent.toInt()) {
-                lastdownloadprogress = percent.toInt();
-                print("add DownloadfeedbackEvent");
-                if (percent.toInt() < 99) {
-                  add(DownloadFeedbackEvent(
-                      progress: lastdownloadprogress,
-                      isVisible: true,
-                      markerText:
-                          "Downloading file $currentCount/$totalFiles"));
-                } else {
-                  print("else block of 100 percent");
-                  lastdownloadprogress = 0;
-                  add(DownloadFeedbackEvent(
-                      progress: 50,
-                      isVisible: false,
-                      markerText: "${currentCount / totalFiles}"));
+          if (quick_broadcast_count == QUICK_BROADCAST_COUNT) {
+            lastDownloadingFile = DefaultCacheManager()
+                .getFileStream(content.fileUrl, withProgress: true)
+                .listen((response) {
+              if (response is DownloadProgress) {
+                double percent =
+                    (response.downloaded / response.totalSize!.toInt()) * 100;
+                // print("percent $percent");
+
+                if (lastdownloadprogress != percent.toInt()) {
+                  lastdownloadprogress = percent.toInt();
+                  // print("add DownloadfeedbackEvent");
+                  if (percent.toInt() < 99) {
+                    add(DownloadFeedbackEvent(
+                        progress: lastdownloadprogress,
+                        isVisible: true,
+                        markerText:
+                            "Downloading file $currentCount/$totalFiles"));
+                  } else {
+                    print("else block of 100 percent");
+                    lastdownloadprogress = 0;
+                    add(DownloadFeedbackEvent(
+                        progress: 50,
+                        isVisible: false,
+                        markerText: "${currentCount / totalFiles}"));
+                  }
                 }
-              }
 
-              print(
-                  'Downloading: ${response.downloaded}/${response.totalSize}');
-            } else if (response is FileInfo) {
-              print('File ready: ${response.file.path}');
-            }
-          });
+                print(
+                    'Downloading: ${response.downloaded}/${response.totalSize}');
+              } else if (response is FileInfo) {
+                print('File ready: ${response.file.path}');
+              }
+            });
+          }
 
           var file = await DefaultCacheManager()
               .getSingleFile(BASEURLMEDIA + content.fileUrl);

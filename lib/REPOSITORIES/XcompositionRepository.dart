@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:mime/mime.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // String dummyresponce="""{
 //     "data": {
@@ -277,12 +278,18 @@ class LayoutRepository {
     return broadCastData;
   }
 
-  Future<String?> generateSignedUrlForAws() async {
+  Future<String?> generateSignedUrlForAws(String secretkey) async {
+    print("API KEY");
+    print(secretkey);
     // String status;
     final apiUrl =
-        '$BASEURL/api/s3-upload/?file_name=abs.png&content_type=image/png';
+        '$BASEURL/api/s3-upload/?file_name=screenshot.png&content_type=image/png';
 
-    var response = await http.get(Uri.parse(apiUrl));
+    var response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {'X-Api-Key': secretkey},
+    );
+    print("respose body = ${response.body}");
 
     if (response.statusCode == 200) {
       print("respose body = ${response.body}");
@@ -313,23 +320,26 @@ class LayoutRepository {
     }
   }
 
-  Future updateScreenShotToDb(String scrrencode,String url) async {
+  Future updateScreenShotToDb(
+      String scrrencode, String url, String secretkey,int screenshoot_id) async {
     print("enteringggggggggggggg");
     String status;
     final apiUrl = '$BASEURL/api/store-screenshot/';
     var req_body = {
       "screen_code": scrrencode,
-      "file_upload": url
+      "file_upload": url,
+      "screenshot_id":screenshoot_id.toString(),
+      "device_type" : runDevice=="firetv" ? "Fire_TV": "normal"
     };
 
     print(req_body);
-    var response = await http.post(Uri.parse(apiUrl), body: req_body);
+    var response = await http.post(Uri.parse(apiUrl),
+        headers: {'X-Api-Key': secretkey}, body: req_body);
     print("response data = ${response.statusCode}");
 
     print("body = ${response}");
     if (response.statusCode == 201) {
       print("respose body = ${response.body}");
-     
     } else {
       print("error");
     }

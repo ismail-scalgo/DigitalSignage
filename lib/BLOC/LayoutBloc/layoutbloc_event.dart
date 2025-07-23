@@ -61,12 +61,16 @@ class OfflineEvent extends LayoutblocEvent {}
 
 class MediaLoadingEvent extends LayoutblocEvent {}
 
-class TakeScreenShotEvent extends LayoutblocEvent {}
+class TakeScreenShotEvent extends LayoutblocEvent {
+  int screenshoot_id;
+  TakeScreenShotEvent({required this.screenshoot_id});
+}
 
 class UploadScreenShootEvent extends LayoutblocEvent {
   Uint8List capturedimage;
+  int screenshoot_id;
 
-  UploadScreenShootEvent({required this.capturedimage});
+  UploadScreenShootEvent({required this.capturedimage,required this.screenshoot_id});
 }
 
 class DownloadFeedbackEvent extends LayoutblocEvent {
@@ -74,5 +78,8 @@ class DownloadFeedbackEvent extends LayoutblocEvent {
   bool isVisible;
   String markerText;
 
-  DownloadFeedbackEvent({required this.progress, required this.isVisible,required this.markerText});
+  DownloadFeedbackEvent(
+      {required this.progress,
+      required this.isVisible,
+      required this.markerText});
 }
