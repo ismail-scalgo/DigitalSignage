@@ -1,11 +1,13 @@
 // ignore_for_file: body_might_complete_normally_nullable
 
-import 'package:digitalsignange/Costants.dart';
-import 'package:digitalsignange/MODELS/RequestModel.dart';
-import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
-import 'package:digitalsignange/MODELS/ZoneModel.dart';
+import 'package:player/Costants.dart';
+import 'package:player/MODELS/RequestModel.dart';
+import 'package:player/MODELS/ResponseDataModel.dart';
+import 'package:player/MODELS/ZoneModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:player/Utils.dart';
 
 class LoginRepository {
   Future<String?> fetchLogin(String screenCode) async {
@@ -24,7 +26,7 @@ class LoginRepository {
     } else {
       final jsonData = json.decode(response.body);
       status = jsonData['message'];
-      print(jsonData['message']);
+      DebugPrint(jsonData['message']);
       throw Exception(status);
     }
   }

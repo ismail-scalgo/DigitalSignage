@@ -1,1 +1,0 @@
-/home/scalgo/SCALGO/DIGITAL SIGNAGE/JUN  04/DigitalSignage/build/app/intermediates/cxx/RelWithDebInfo/5s542s10/obj/arm64-v8a

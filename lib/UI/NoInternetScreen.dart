@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:digitalsignange/Costants.dart';
+import 'package:player/Costants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:player/Utils.dart';
 
 class NoInternetScreen extends StatelessWidget {
   const NoInternetScreen({super.key});
@@ -46,7 +47,7 @@ class _MediaDownloadingScreenState extends State<MediaDownloadingScreen> {
   @override
   void initState() {
     super.initState();
-    print("media listeningggggggg");
+    DebugPrint("media listeningggggggg");
     connectivitySubscription =
         connectivity.onConnectivityChanged.listen(updateConnectionStatus);
   }

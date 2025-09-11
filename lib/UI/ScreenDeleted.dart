@@ -1,5 +1,5 @@
-import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
-import 'package:display_metrics/display_metrics.dart';
+import 'package:player/UI/ScreenCodeScreen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:lottie/lottie.dart';
@@ -38,21 +38,21 @@ class _ScreenDeletedScreenState extends State<ScreenDeletedScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 "SCREEN DELETED",
-                style: TextStyle(color: Colors.white, fontSize: 22,fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold),
               ),
             ),
-          Lottie.asset('assets/deletedscreen.json',fit: BoxFit.cover,height: 200),
-
-           Padding(
+            Lottie.asset('assets/deletedscreen.json',
+                fit: BoxFit.cover, height: 200),
+            Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 "Cache cleaning...",
                 style: TextStyle(color: Colors.white, fontSize: 22),
-              ),)
-        
-        
-        
-        
+              ),
+            )
           ],
         ),
       ),

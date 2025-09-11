@@ -1,7 +1,7 @@
 // ignore_for_file: unused_import
 
-import 'package:digitalsignange/Costants.dart';
-import 'package:digitalsignange/MODELS/LogModels.dart';
+import 'package:player/Costants.dart';
+import 'package:player/MODELS/LogModels.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

@@ -1,4 +1,4 @@
-import 'package:digitalsignange/MODELS/ZoneModel.dart';
+import 'package:player/MODELS/ZoneModel.dart';
 
 class Data {
   String name;

@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names, avoid_print, prefer_interpolation_to_compose_strings, prefer_const_constructors, unused_import
+// ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names, avoid_DebugPrint, prefer_interpolation_to_compose_strings, prefer_const_constructors, unused_import
 
 import 'dart:async';
 import 'dart:convert';
@@ -6,16 +6,18 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
-import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
-import 'package:digitalsignange/CONTENTLOG.dart';
-import 'package:digitalsignange/Costants.dart';
-import 'package:digitalsignange/LOGS.dart';
-import 'package:digitalsignange/MODELS/BroadCastModel.dart';
-import 'package:digitalsignange/MODELS/XCompositionModel.dart';
-import 'package:digitalsignange/REPOSITORIES/XcompositionRepository.dart';
-import 'package:digitalsignange/UI/NoInternetScreen.dart';
+import 'package:player/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
+import 'package:player/CONTENTLOG.dart';
+import 'package:player/Costants.dart';
+import 'package:player/LOGS.dart';
+import 'package:player/MODELS/BroadCastModel.dart';
+import 'package:player/MODELS/XCompositionModel.dart';
+import 'package:player/REPOSITORIES/XcompositionRepository.dart';
+import 'package:player/UI/NoInternetScreen.dart';
 
-import 'package:digitalsignange/UI/Utils.dart';
+import 'package:player/UI/Utils.dart';
+import 'package:player/Utils.dart';
+import 'package:player/WebViewCache.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:intl/intl.dart';
@@ -23,6 +25,7 @@ import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_client/web_socket_client.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 part 'layoutbloc_event.dart';
 part 'layoutbloc_state.dart';
@@ -52,15 +55,15 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   int QUICK_BROADCAST_COUNT = 0;
 
   LayoutblocBloc() : super(LayoutblocInitial()) {
-    print("LAYOUT BLOC CALLEDDDDDDDDD");
+    DebugPrint("LAYOUT BLOC CALLEDDDDDDDDD");
     log_of_start_stop();
 
     on<LayoutblocEvent>((event, emit) async {
-      print("LAYOU BLOCK EVENT");
-      print(event);
+      DebugPrint("LAYOU BLOCK EVENT");
+      DebugPrint(event);
       if (event is FetchApi) {
         log("fetch api event called");
-        print("fetch api event called");
+        DebugPrint("fetch api event called");
 
         if (isFirstLoad) {
           await init();
@@ -73,6 +76,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           BroadCastModel? broadCastData =
               await LayoutRepository().newFetchData(event.screenCode);
 
+          refactorBroadcastModelForQuickSchedule(broadCastData);
+
           if (broadCastData?.message == "Screen Code doesn't exist") {
             add(LogoutEvent());
           }
@@ -81,7 +86,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
             emit(NoBroadcastState());
           } else {
-            print("there is data");
+            DebugPrint("there is data");
             if (broadCastData?.currentBroadCast != null) {
               await saveTimedifference(
                   (broadCastData?.currentBroadCast!.currentDatetime)!);
@@ -108,7 +113,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 //     .timeout(Duration(seconds: endTimeDifference));
                 //IT CHECK ALL FILES ARE CACHED IF ANY MISSING THEN IT RETURN FALSE
                 bool isCached = await allCached(current_broadcast!);
-                print("cachdeeeeeeeeeeeeed = $isCached");
+                DebugPrint("cachdeeeeeeeeeeeeed = $isCached");
 
                 lastDownloadingFile?.cancel();
                 add(DownloadFeedbackEvent(
@@ -138,7 +143,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 String stringResponce =
                     jsonEncode(broadCastData!.toJsonBroadCastModel());
 
-                print("STRING RESPONCE FOR CACHING IS >>>>>>>>>>" +
+                DebugPrint("STRING RESPONCE FOR CACHING IS >>>>>>>>>>" +
                     stringResponce);
 
                 // FOR OFFLINE ACCESSIBILITY
@@ -153,12 +158,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
               //  add(TrasnsitionEvent());
               await Future.delayed(Duration(seconds: 1));
-              print("data changingggggggggg");
+              DebugPrint("data changingggggggggg");
               RELOAD_FLAG_COUNT++;
               currentBroadcastInString =
                   broadCastData!.currentBroadCast?.stringData!;
               nextBroadcastInString = broadCastData.NextBroadCast?.stringData!;
-              print("update = ${layoutdata!.lastUpdatedAt}");
+              DebugPrint("update = ${layoutdata!.lastUpdatedAt}");
               lastUpdateTime = layoutdata.lastUpdatedAt!;
               manageBroadcast(current_broadcast!);
             }
@@ -183,7 +188,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         String secretkey = await prefs.getString('secretKey')!;
         String? signedurl =
             await LayoutRepository().generateSignedUrlForAws(secretkey);
-        print("signed url = " + signedurl!);
+        DebugPrint("signed url = " + signedurl!);
         final tempDir = await getTemporaryDirectory();
         File file = await File('${tempDir.path}/image.png').create();
         file.writeAsBytesSync(event.capturedimage);
@@ -192,11 +197,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
         String cleanUrl = signedurl.split('?')[0];
 
-        await LayoutRepository()
-            .updateScreenShotToDb(screen_code!, cleanUrl, secretkey,event.screenshoot_id);
+        await LayoutRepository().updateScreenShotToDb(
+            screen_code!, cleanUrl, secretkey, event.screenshoot_id);
 
-        print("SCREEN SHOOT UPLOAD SUCEESFULLY");
-        print(cleanUrl);
+        DebugPrint("SCREEN SHOOT UPLOAD SUCEESFULLY");
+        DebugPrint(cleanUrl);
       }
       if (event is StartEvent) {
         emit(DisplayLayout(layoutdata: event.layoutdata));
@@ -240,7 +245,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         emit(DisplayLayout(layoutdata: event.layoutData));
       }
       if (event is LogoutEvent) {
-        print("logoutttttttttttttttttttt");
+        DebugPrint("logoutttttttttttttttttttt");
         clearData();
         currentBroadcastInString = "";
         isFirstLoad = true;
@@ -255,7 +260,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         emit(OfflineState());
       }
       if (event is DownloadFeedbackEvent) {
-        print("DownloadFeedbackEvent");
+        DebugPrint("DownloadFeedbackEvent");
         emit(DownloadProgressState(
             progress: event.progress,
             isVisible: event.isVisible,
@@ -263,7 +268,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
 
       if (event is currentBroadCastEnds) {
-        print("CURRENT BROADCAST ENDS");
+        DebugPrint("CURRENT BROADCAST ENDS");
         if (next_broadcast == null) {
           add(NoBroadCastEvent());
         } else {
@@ -301,16 +306,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
   Future saveTimedifference(String servertime) async {
     DateTime now = DateTime.now();
-    DateTime serverDateTime = DateTime.parse(servertime);
+    // DateTime serverDateTime = DateTime.parse(servertime);
 
+    DateTime serverDateTime = now;
     Duration difference = now.difference(serverDateTime);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setInt('time_difference', difference.inSeconds);
 
-    // To demonstrate, we'll print the difference
-    print("R: ${difference.inSeconds}");
+    // To demonstrate, we'll DebugPrint the difference
+    DebugPrint("R: ${difference.inSeconds}");
   }
 
   Future<int> gettimedifference() async {
@@ -336,11 +342,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     String? cache_responce = prefs.getString('cached_responce');
 
     if (cache_responce == null) {
-      print("cache responce is empty");
+      DebugPrint("cache responce is empty");
       add(OfflineEvent());
     } else {
-      print("CACHE SAVED MESSAGE");
-      print(cache_responce);
+      DebugPrint("CACHE SAVED MESSAGE");
+      DebugPrint(cache_responce);
       BroadCastModel? broadCastData =
           await LayoutRepository().fetchDataFromStorage(cache_responce);
 
@@ -353,10 +359,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
       if (broadCastData?.currentBroadCast == null) {
         RELOAD_FLAG_COUNT++;
-        print("no dataaaaaaaaa");
+        DebugPrint("no dataaaaaaaaa");
         add(NoBroadCastEvent());
       } else {
-        print("there is data");
+        DebugPrint("there is data");
         LayoutData? layoutdata = broadCastData?.currentBroadCast;
         current_broadcast = layoutdata;
         next_broadcast = broadCastData?.NextBroadCast;
@@ -389,12 +395,29 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     }
   }
 
+  void refactorBroadcastModelForQuickSchedule(BroadCastModel? broadcastdata) {
+    if (broadcastdata != null) {
+      if (broadcastdata.currentBroadCast != null) {
+        if (broadcastdata.currentBroadCast!.broadcast_type == "QUICK") {
+          broadcastdata.currentBroadCast!.startDateTime =
+              DateTime.now().toString();
+
+          DebugPrint("refactored current time");
+          DebugPrint(DateTime.now().toString());
+
+          broadcastdata.currentBroadCast!.endDateTime =
+              DateTime.now().add(Duration(days: 200)).toString();
+        }
+      }
+    }
+  }
+
   Future<bool> havePath(LayoutData layoutdata) async {
     bool path = true;
     for (var zoneData in layoutdata.zoneData!) {
       for (var content in zoneData.compositionModels) {
-        print(content.fileFormat);
-        print("path = ${content.localstoragepath}");
+        DebugPrint(content.fileFormat);
+        DebugPrint("path = ${content.localstoragepath}");
         if (content.localstoragepath == null ||
             content.localstoragepath.isEmpty) {
           // add(NoBroadCastEvent());
@@ -413,22 +436,22 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   }
 
   void manageBroadcast(LayoutData layoutdata) async {
-    print("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
+    DebugPrint("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
     log("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
 
     bool online = await InternetConnection().hasInternetAccess;
     if (!online) {
       bool path = await havePath(layoutdata);
       if (!path) {
-        print("there is no pathhhhhhhhhhhhhhhh");
+        DebugPrint("there is no pathhhhhhhhhhhhhhhh");
         add(NoBroadCastEvent());
         return;
       }
     }
 
     String currentTime = getFormattedCurrentDateTime();
-    print("current");
-    print(currentTime);
+    DebugPrint("current");
+    DebugPrint(currentTime);
 
     int start_difference =
         timeDifference(layoutdata.startDateTime!, currentTime) +
@@ -443,10 +466,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!) -
               (systemToServerTimeDifference ?? 0);
     }
-    print("END TIME =  ${layoutdata.startDateTime}");
-    print("END TIME =  ${layoutdata.endDateTime}");
-    print("START TIME DIFFERENCEEEEEEEEEEEEEE  $start_difference");
-    print("END TIME DIFFERENCEEEEEEEEEEEEEE  $end_difference");
+    DebugPrint("END TIME =  ${layoutdata.startDateTime}");
+    DebugPrint("END TIME =  ${layoutdata.endDateTime}");
+    DebugPrint("START TIME DIFFERENCEEEEEEEEEEEEEE  $start_difference");
+    DebugPrint("END TIME DIFFERENCEEEEEEEEEEEEEE  $end_difference");
 
     int current_reload_flag_count = RELOAD_FLAG_COUNT;
 
@@ -462,15 +485,15 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       });
 
       await Future.delayed(Duration(seconds: end_difference), () {
-        print("broadcast ended");
+        DebugPrint("broadcast ended");
         if (current_reload_flag_count == RELOAD_FLAG_COUNT) {
-          print("new event added1");
+          DebugPrint("new event added1");
           add(currentBroadCastEnds(current_datetime: layoutdata.endDateTime!));
           log_end_broadcast(layoutdata.id!);
         }
       });
     } else if (start_difference <= 0 && end_difference > 0) {
-      print("new event added2");
+      DebugPrint("new event added2");
       add(DisplayBroadcastEvent(layoutData: layoutdata));
       log_start_broadcast(layoutdata.id!);
       await Future.delayed(Duration(seconds: end_difference), () {
@@ -485,7 +508,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   }
 
   Future<bool> allCached(LayoutData broadcastData) async {
-    print("check cachinggg");
+    DebugPrint("check cachinggg");
     bool isAllCached = true;
     var cachedFile;
 
@@ -497,18 +520,18 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             await cacheManager.getFileFromCache(BASEURLMEDIA + content.fileUrl);
 
         if (cachedFile == null) {
-          print("ONE FILE IS NOT CACHED");
-          print(BASEURLMEDIA + content.fileUrl);
+          DebugPrint("ONE FILE IS NOT CACHED");
+          DebugPrint(BASEURLMEDIA + content.fileUrl);
           isAllCached = false;
           break;
         }
       }
       if (!isAllCached) {
-        print("ALL FILES ARE NOT CACHED ALREADY");
+        DebugPrint("ALL FILES ARE NOT CACHED ALREADY");
         break;
       }
     }
-    print("ALL FILES ARE CACHED ALREADY");
+    DebugPrint("ALL FILES ARE CACHED ALREADY");
     return isAllCached;
   }
 
@@ -517,19 +540,23 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     globalConnection = socket;
 
     socket.messages.listen((message) async {
-      print("socket message = $message");
+      DebugPrint("socket message = $message");
       var jsonresponce = jsonDecode(message);
-      print("socket response = $jsonresponce");
-      print("socket updated time = ${jsonresponce['updated_at']}");
+      DebugPrint("socket response = $jsonresponce");
+      DebugPrint("socket updated time = ${jsonresponce['updated_at']}");
       log("socket response = $jsonresponce");
       log("socket updated time = ${jsonresponce['updated_at']}");
       log("laaaaaaaaaaaaaaaaaaaast updated = $lastUpdateTime");
-      print("screen shot id");
-      print(jsonresponce);
+      DebugPrint("screen shot id");
+      DebugPrint(jsonresponce);
       if (lastUpdateTime != jsonresponce['updated_at']) {
         if (jsonresponce["status"] == "take screenshot") {
           int id = jsonresponce["screenshot_id"];
           add(TakeScreenShotEvent(screenshoot_id: id));
+        }
+        if (jsonresponce['status'] == 'plan expired') {
+          currentBroadcastInString = '';
+          add(NoBroadCastEvent());
         } else {
           log("Time changeddddddddddddddddddddddddddddddddddddddddddd");
           lastUpdateTime = jsonresponce['updated_at'];
@@ -542,32 +569,32 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     socket.connection.listen(
       (connectionState) {
         if (connectionState is Connecting) {
-          print("CONNECTING");
+          DebugPrint("CONNECTING");
         }
         if (connectionState is Connected) {
-          print("CONNECTED");
+          DebugPrint("CONNECTED");
           String formattedScreenCode = '"' + screencode + '"';
-          print('{"screen_code" : $formattedScreenCode}');
+          DebugPrint('{"screen_code" : $formattedScreenCode}');
           socket.send(
               '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}');
         }
         if (connectionState is Disconnected) {
-          print("DISCONNECTED");
+          DebugPrint("DISCONNECTED");
         }
         if (connectionState is Reconnecting) {
-          print("RECONNECTING");
+          DebugPrint("RECONNECTING");
         }
         if (connectionState is Reconnected) {
-          print("RECONNECTED");
+          DebugPrint("RECONNECTED");
           String formattedScreenCode = '"' + screencode + '"';
-          print('{"screen_code" : $formattedScreenCode}');
+          DebugPrint('{"screen_code" : $formattedScreenCode}');
           socket.send(
               '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}');
           sync_data_to_server_when_online();
           add(FetchApi(screenCode: screencode));
           addToServer();
         }
-        print(connectionState.toString());
+        DebugPrint(connectionState.toString());
       },
     );
   }
@@ -580,7 +607,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   }
 
   // void preloadContents(LayoutData broadcastData) async {
-  //   print("cacheiggg");
+  //   DebugPrint("cacheiggg");
   //   broadcastData.zoneData!.forEach((zonedata) {
   //     zonedata.compositionModels.forEach((content) {
   //       DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
@@ -608,7 +635,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     int currentCount = 0;
 
-    print("cacheiggg");
+    DebugPrint("cacheiggg");
 
     String currentTime = getFormattedCurrentDateTime();
     int startTimeDifference =
@@ -617,18 +644,20 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     int quick_broadcast_count = 0;
 
-    print("TIME DIFFERENCE");
-    print(startTimeDifference);
+    DebugPrint("TIME DIFFERENCE");
+    DebugPrint(startTimeDifference);
 
     if (startTimeDifference <= 10) {
       QUICK_BROADCAST_COUNT = QUICK_BROADCAST_COUNT + 1;
       quick_broadcast_count = QUICK_BROADCAST_COUNT;
-      print("QUICK BROADCAST ADDED");
+      DebugPrint("QUICK BROADCAST ADDED");
     }
 
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
-        if (content.fileUrl != '' && content.contentType == 'media') {
+        if (content.fileUrl != '' &&
+            content.contentType == 'media' &&
+            content.fileFormat != '.html') {
           currentCount++;
 
           if (quick_broadcast_count == QUICK_BROADCAST_COUNT) {
@@ -638,11 +667,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
               if (response is DownloadProgress) {
                 double percent =
                     (response.downloaded / response.totalSize!.toInt()) * 100;
-                // print("percent $percent");
+                // DebugPrint("percent $percent");
 
                 if (lastdownloadprogress != percent.toInt()) {
                   lastdownloadprogress = percent.toInt();
-                  // print("add DownloadfeedbackEvent");
+                  // DebugPrint("add DownloadfeedbackEvent");
                   if (percent.toInt() < 99) {
                     add(DownloadFeedbackEvent(
                         progress: lastdownloadprogress,
@@ -650,7 +679,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                         markerText:
                             "Downloading file $currentCount/$totalFiles"));
                   } else {
-                    print("else block of 100 percent");
+                    DebugPrint("else block of 100 percent");
                     lastdownloadprogress = 0;
                     add(DownloadFeedbackEvent(
                         progress: 50,
@@ -659,10 +688,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                   }
                 }
 
-                print(
+                DebugPrint(
                     'Downloading: ${response.downloaded}/${response.totalSize}');
               } else if (response is FileInfo) {
-                print('File ready: ${response.file.path}');
+                DebugPrint('File ready: ${response.file.path}');
               }
             });
           }
@@ -671,12 +700,95 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
               .getSingleFile(BASEURLMEDIA + content.fileUrl);
           content.localstoragepath = file.path;
 
-          print("PRELOAD CONTENTS CALLED");
-          print("CONTENT PATH ==" + file.path);
+          DebugPrint("PRELOAD CONTENTS CALLED");
+          DebugPrint("CONTENT PATH ==" + file.path);
+        }
+
+        if (content.fileUrl != '' &&
+            content.contentType == 'media' &&
+            content.fileFormat == '.html') {
+          // currentCount++;
+          // var file = await DefaultCacheManager()
+          //     .getSingleFile(BASEURLMEDIA + content.fileUrl);
+
+          // DebugPrint("HTML FILE START DOWNLOAD");
+          // await preloadHtMlContents(file);
+          // DebugPrint("HTML FILE FINISH DOWNLOAD");
         }
       }
       ;
     }
     ;
+
+    DebugPrint("preload_completed");
   }
+
+  Future<void> preloadHtMlContents(File file) async {
+    final completer = Completer<void>();
+    String urlx = '';
+
+    WebViewController controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            // Update loading bar.
+            DebugPrint(progress);
+          },
+          onPageStarted: (String url) {},
+          onPageFinished: (String url) {
+            DebugPrint("page finished");
+            urlx = url;
+            completer.complete();
+          },
+          onHttpError: (HttpResponseError error) {},
+          onWebResourceError: (WebResourceError error) {},
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadFile(file.path);
+    await completer.future;
+
+    WEBVIEWCACHE[urlx] = controller;
+
+    DebugPrint("WEB DOWNLOAD FINISHED");
+    DebugPrint(urlx);
+
+    return;
+  }
+
+  // Future<void> preloadHtMlContents(String url) async {
+  //   final completer = Completer<void>();
+
+  //   WebViewController controller = WebViewController()
+  //     ..setJavaScriptMode(JavaScriptMode.unrestricted)
+  //     ..setNavigationDelegate(
+  //       NavigationDelegate(
+  //         onProgress: (int progress) {
+  //           add(DownloadFeedbackEvent(
+  //               progress: progress,
+  //               isVisible: true,
+  //               markerText: "Downloading htmlfile"));
+
+  //           // Update loading bar.
+  //           DebugPrint(progress);
+  //         },
+  //         onPageStarted: (String url) {},
+  //         onPageFinished: (String url) {
+  //           DebugPrint("page finished");
+  //           completer.complete();
+  //         },
+  //         onHttpError: (HttpResponseError error) {},
+  //         onWebResourceError: (WebResourceError error) {},
+  //         onNavigationRequest: (NavigationRequest request) {
+  //           return NavigationDecision.navigate;
+  //         },
+  //       ),
+  //     )
+  //     ..loadRequest(Uri.parse(url));
+
+  //   return await completer.future;
+  // }
 }

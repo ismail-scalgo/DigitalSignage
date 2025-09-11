@@ -1,13 +1,15 @@
 // ignore_for_file: body_might_complete_normally_nullable
 
-import 'package:digitalsignange/Costants.dart';
-import 'package:digitalsignange/MODELS/ContentModel.dart';
-import 'package:digitalsignange/MODELS/RequestModel.dart';
-import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
-import 'package:digitalsignange/MODELS/ScreenCodeModel.dart';
-import 'package:digitalsignange/MODELS/ZoneModel.dart';
+import 'package:player/Costants.dart';
+import 'package:player/MODELS/ContentModel.dart';
+import 'package:player/MODELS/RequestModel.dart';
+import 'package:player/MODELS/ResponseDataModel.dart';
+import 'package:player/MODELS/ScreenCodeModel.dart';
+import 'package:player/MODELS/ZoneModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:player/Utils.dart';
 
 class RegisterRepository {
   Future<String?> registerScreen(RequestModel request) async {
@@ -15,64 +17,63 @@ class RegisterRepository {
     String status;
     final apiUrl = '$BASEURL/api/signage-screen/';
     var response = await http.post(Uri.parse(apiUrl), body: request.toMap());
-    print("response data = ${response.statusCode}");
-    // print("body = ${response.body}");
+    DebugPrint("response data = ${response.statusCode}");
+    // DebugPrint("body = ${response.body}");
     if (response.statusCode == 201) {
-      print("respose body = ${response.body}");
+      DebugPrint("respose body = ${response.body}");
       status = "success";
       return status;
     } else {
-      print("error");
+      DebugPrint("error");
       final jsonData = json.decode(response.body);
-      print("error body = $jsonData");
+      DebugPrint("error body = $jsonData");
       status = jsonData['message'];
-      print(jsonData['message']);
+      DebugPrint(jsonData['message']);
       throw Exception(status);
     }
   }
 
   Future<FetchScreenCodeModel?> fetchScreenCode(RequestModel request) async {
-    print("enteringggggggggggggg");
+    DebugPrint("enteringggggggggggggg");
     String status;
     final apiUrl = '$BASEURL/api/generate-screen-code/';
     var req_body = request.toMap();
 
-    print(req_body);
+    DebugPrint(req_body);
     var response = await http.post(Uri.parse(apiUrl), body: req_body);
-    print("response data = ${response.statusCode}");
-    print("body = ${response.body}");
-    print("body = ${response}");
+    DebugPrint("response data = ${response.statusCode}");
+    DebugPrint("body = ${response.body}");
+    DebugPrint("body = ${response}");
     if (response.statusCode == 201) {
-      print("respose body = ${response.body}");
+      DebugPrint("respose body = ${response.body}");
       final jsonData = json.decode(response.body);
       return FetchScreenCodeModel(
           screenCode: jsonData["screen_code"],
           secretKey: jsonData["secret_key"]);
-    
     } else {
-      print("error");
+      DebugPrint("error");
     }
   }
 
   Future<ScreenCodeModel?> checkScreenCode(String screenCode) async {
     ScreenCodeModel ScreenCodeResponse;
-    print("enteringggggggggggggg = $screenCode");
+    DebugPrint("enteringggggggggggggg = $screenCode");
     // String status;
     final apiUrl = '$BASEURL/api/status-screen-code/?screen_code=$screenCode';
 
     var response = await http.get(Uri.parse(apiUrl));
-    print("response data = ${response.statusCode}");
-    print("body = ${response.body}");
-    print("body = ${response}");
+    DebugPrint("response data = ${response.statusCode}");
+    DebugPrint("body = ${response.body}");
+    DebugPrint("body = ${response}");
     if (response.statusCode == 200) {
-      print("respose body = ${response.body}");
+      DebugPrint("respose body = ${response.body}");
       final jsonData = json.decode(response.body);
       ScreenCodeResponse = ScreenCodeModel.fromJson(jsonData['data']);
-      print("code = $ScreenCodeResponse");
+      DebugPrint("code = $ScreenCodeResponse");
       return ScreenCodeResponse;
     } else {
-      print("error");
-      print("respose body = ${response.body}");
+      DebugPrint("error");
+      DebugPrint("respose body = ${response.body}");
       final jsonData = json.decode(response.body);
       ScreenCodeResponse = ScreenCodeModel.fromJson(jsonData['data']);
       return ScreenCodeResponse;

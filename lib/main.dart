@@ -3,18 +3,19 @@
 import 'dart:developer';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:digitalsignange/ControllerWidget.dart';
-import 'package:digitalsignange/UI/ControllerScreen.dart';
-import 'package:digitalsignange/UI/LaunchingScreen.dart';
-import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
+import 'package:player/ControllerWidget.dart';
+import 'package:player/UI/ControllerScreen.dart';
+import 'package:player/UI/LaunchingScreen.dart';
+import 'package:player/BLOC/LayoutBloc/layoutbloc_bloc.dart';
 
-import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
-import 'package:digitalsignange/UI/ScreenDeleted.dart';
-import 'package:digitalsignange/UI/SplashScreen.dart';
-import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
-import 'package:digitalsignange/packagetest.dart';
-import 'package:digitalsignange/test.dart';
-import 'package:display_metrics/display_metrics.dart';
+import 'package:player/UI/ScreenCodeScreen.dart';
+import 'package:player/UI/ScreenDeleted.dart';
+import 'package:player/UI/SplashScreen.dart';
+import 'package:player/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
+import 'package:player/Utils.dart';
+import 'package:player/packagetest.dart';
+import 'package:player/test.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fullscreen_window/fullscreen_window.dart';
@@ -40,18 +41,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("MAIN METHOD CALLEDDD");
+    DebugPrint("MAIN METHOD CALLEDDD");
     return MaterialApp(
         home: AnimatedSplashScreen(
-              splash: SplashScreen(),
-              // nextScreen: ScreenCodeScreen(),
-              nextScreen: Controllerscreen(),
-              backgroundColor: Colors.black,
-              duration: 3000,
-              splashTransition: SplashTransition.fadeTransition,
-            )
-            );
+      splash: SplashScreen(),
+      // nextScreen: ScreenCodeScreen(),
+      nextScreen: Controllerscreen(),
+      backgroundColor: Colors.black,
+      duration: 3000,
+      splashTransition: SplashTransition.fadeTransition,
+    ));
 
-   // return MaterialApp(home: ScreenDeletedScreen());
+    // return MaterialApp(home: ScreenDeletedScreen());
   }
 }

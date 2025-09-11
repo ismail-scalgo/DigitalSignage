@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "digitalsignange" "\0"
+            VALUE "CompanyName", "com.zignflix" "\0"
+            VALUE "FileDescription", "player" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "digitalsignange" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "digitalsignange.exe" "\0"
-            VALUE "ProductName", "digitalsignange" "\0"
+            VALUE "InternalName", "player" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.zignflix. All rights reserved." "\0"
+            VALUE "OriginalFilename", "player.exe" "\0"
+            VALUE "ProductName", "player" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

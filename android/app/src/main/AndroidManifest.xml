@@ -1,24 +1,23 @@
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
         <!-- Declare permission for accessing media store on Android 10+ -->
-        <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" android:maxSdkVersion="29"/>
-        <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" android:maxSdkVersion="33"/>
-        <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" android:maxSdkVersion="33"/>
-        <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" android:maxSdkVersion="33"/>
+<!-- <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" android:maxSdkVersion="29"/>
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" android:maxSdkVersion="33"/>
+<uses-permission android:name="android.permission.READ_MEDIA_VIDEO" android:maxSdkVersion="33"/>
+<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" android:maxSdkVersion="33"/> -->
     <application
-        android:label="ZignFlixQA"
+        android:label="ZignFlix"
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher">
         <receiver
             android:name=".BootReceiver"
@@ -55,8 +54,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-            <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="YOUR KEY HERE"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

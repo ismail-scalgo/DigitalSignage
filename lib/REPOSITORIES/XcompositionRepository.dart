@@ -3,16 +3,18 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
-import 'package:digitalsignange/Costants.dart';
-import 'package:digitalsignange/MODELS/BroadCastModel.dart';
-import 'package:digitalsignange/MODELS/XCompositionModel.dart';
+import 'package:player/BLOC/LayoutBloc/layoutbloc_bloc.dart';
+import 'package:player/Costants.dart';
+import 'package:player/MODELS/BroadCastModel.dart';
+import 'package:player/MODELS/XCompositionModel.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:mime/mime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:player/Utils.dart';
 
 // String dummyresponce="""{
 //     "data": {
@@ -188,17 +190,25 @@ String dummyresponce = """{
 
 class LayoutRepository {
   Future<BroadCastModel?> newFetchData(String code) async {
-    print("enteringggg");
+    DebugPrint("enteringggg");
     LayoutData? currentBroadcastData;
     LayoutData? nextBroadcastData;
-    String data_url = '$BASEURL/api/launch-signage-screen/?code=$code';
+
+    // Format separately
+    DateTime now = DateTime.now();
+
+    String current_date = DateFormat('yyyy-MM-dd').format(now);
+    String current_time = DateFormat('HH:mm:ss').format(now);
+
+    String data_url = '$BASEURL/api/launch-signage-screen/?code=$code' +
+        '&current_date=${current_date}&current_time=${current_time}';
     var response = await http.get(Uri.parse(data_url));
     // BroadCastModel? broadCastData;
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       // var jsonData = json.decode(responce);
       String? screenStatus = jsonData["message"];
-      print("data1 = ${jsonData["data"]["first_broadcast_data"]}");
+      DebugPrint("data1 = ${jsonData["data"]["first_broadcast_data"]}");
       if (jsonData["data"]["first_broadcast_data"]['message'] ==
           "Live Broadcast") {
         currentBroadcastData =
@@ -226,8 +236,8 @@ class LayoutRepository {
       // });
       return broadCastData;
     } else {
-      print(" irresponse error");
-      print(response.body);
+      DebugPrint(" irresponse error");
+      DebugPrint(response.body);
       var jsonData = json.decode(response.body);
       log("message1 = ${jsonData["message"]}");
       // String screenStatus = jsonData["message"];
@@ -248,7 +258,7 @@ class LayoutRepository {
 
     var jsonData = json.decode(responce);
     String? screenStatus = jsonData["message"];
-    print("data1 = ${jsonData["data"]["first_broadcast_data"]}");
+    DebugPrint("data1 = ${jsonData["data"]["first_broadcast_data"]}");
     if (jsonData["data"]["first_broadcast_data"]['message'] ==
         "Live Broadcast") {
       currentBroadcastData =
@@ -279,8 +289,8 @@ class LayoutRepository {
   }
 
   Future<String?> generateSignedUrlForAws(String secretkey) async {
-    print("API KEY");
-    print(secretkey);
+    DebugPrint("API KEY");
+    DebugPrint(secretkey);
     // String status;
     final apiUrl =
         '$BASEURL/api/s3-upload/?file_name=screenshot.png&content_type=image/png';
@@ -289,10 +299,10 @@ class LayoutRepository {
       Uri.parse(apiUrl),
       headers: {'X-Api-Key': secretkey},
     );
-    print("respose body = ${response.body}");
+    DebugPrint("respose body = ${response.body}");
 
     if (response.statusCode == 200) {
-      print("respose body = ${response.body}");
+      DebugPrint("respose body = ${response.body}");
       final jsonData = json.decode(response.body);
 
       return jsonData['url'];
@@ -314,34 +324,34 @@ class LayoutRepository {
     );
 
     if (response.statusCode == 200) {
-      print('Upload successful');
+      DebugPrint('Upload successful');
     } else {
-      print('Upload failed: ${response.statusCode}');
+      DebugPrint('Upload failed: ${response.statusCode}');
     }
   }
 
-  Future updateScreenShotToDb(
-      String scrrencode, String url, String secretkey,int screenshoot_id) async {
-    print("enteringggggggggggggg");
+  Future updateScreenShotToDb(String scrrencode, String url, String secretkey,
+      int screenshoot_id) async {
+    DebugPrint("enteringggggggggggggg");
     String status;
     final apiUrl = '$BASEURL/api/store-screenshot/';
     var req_body = {
       "screen_code": scrrencode,
       "file_upload": url,
-      "screenshot_id":screenshoot_id.toString(),
-      "device_type" : runDevice=="firetv" ? "Fire_TV": "normal"
+      "screenshot_id": screenshoot_id.toString(),
+      "device_type": runDevice == "firetv" ? "Fire_TV" : "normal"
     };
 
-    print(req_body);
+    DebugPrint(req_body);
     var response = await http.post(Uri.parse(apiUrl),
         headers: {'X-Api-Key': secretkey}, body: req_body);
-    print("response data = ${response.statusCode}");
+    DebugPrint("response data = ${response.statusCode}");
 
-    print("body = ${response}");
+    DebugPrint("body = ${response}");
     if (response.statusCode == 201) {
-      print("respose body = ${response.body}");
+      DebugPrint("respose body = ${response.body}");
     } else {
-      print("error");
+      DebugPrint("error");
     }
   }
 }

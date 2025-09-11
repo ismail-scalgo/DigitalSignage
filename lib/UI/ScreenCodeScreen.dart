@@ -1,13 +1,14 @@
-import 'package:digitalsignange/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
+import 'package:player/BLOC/RegisterBloc/bloc/registerbloc_bloc.dart';
 
-import 'package:digitalsignange/UI/LaunchingScreen.dart';
-import 'package:digitalsignange/UI/NoInternetScreen.dart';
+import 'package:player/UI/LaunchingScreen.dart';
+import 'package:player/UI/NoInternetScreen.dart';
 import 'package:display_metrics/display_metrics.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+import 'package:player/Utils.dart';
 
 class PreScreenCodeScreen extends StatefulWidget {
   const PreScreenCodeScreen({super.key});
@@ -43,7 +44,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
   @override
   void initState() {
     super.initState();
-    print("screen code screeeeeeeeeeeeen");
+    DebugPrint("screen code screeeeeeeeeeeeen");
 
     registerBloc = BlocProvider.of<RegisterblocBloc>(context);
     registerBloc.add(AddContext(context: context));
@@ -139,7 +140,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                   height: 40,
                 ),
                 Text(
-                  "1. Login into https://test-studio.zignflix.com",
+                  "1. Login into https://studio.zignflix.com",
                   style: TextStyle(
                       color: const Color.fromARGB(255, 190, 190, 190),
                       fontSize: 20,

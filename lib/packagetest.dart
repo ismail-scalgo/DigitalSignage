@@ -3,7 +3,6 @@ import 'package:fire_tv_listener/fire_tv_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 class PackageTest extends StatefulWidget {
   const PackageTest({Key? key}) : super(key: key);
 
@@ -44,7 +43,7 @@ class _PackageTestState extends State<PackageTest> {
       onRew: () => pressed = 'REW',
       onPlayPause: () => pressed = 'PLAY/PAUSE',
       // onBack: () => back = true, // back sends android back key
-     
+
       focusNode: fn,
       child: Scaffold(
         body: Center(child: Text(pressed, style: TextStyle(fontSize: 60))),

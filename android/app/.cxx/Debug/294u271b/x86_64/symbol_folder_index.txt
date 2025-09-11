@@ -1,1 +1,0 @@
-/home/scalgo/SCALGO/DIGITAL SIGNAGE/FROM GIT JUL 15/DigitalSignage/build/app/intermediates/cxx/Debug/294u271b/obj/x86_64

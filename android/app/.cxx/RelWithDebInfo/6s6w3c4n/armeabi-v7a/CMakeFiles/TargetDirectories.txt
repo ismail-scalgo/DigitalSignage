@@ -1,2 +1,0 @@
-/home/scalgo/SCALGO/DIGITAL SIGNAGE/Feb 11/DigitalSignage/android/app/.cxx/RelWithDebInfo/6s6w3c4n/armeabi-v7a/CMakeFiles/edit_cache.dir
-/home/scalgo/SCALGO/DIGITAL SIGNAGE/Feb 11/DigitalSignage/android/app/.cxx/RelWithDebInfo/6s6w3c4n/armeabi-v7a/CMakeFiles/rebuild_cache.dir

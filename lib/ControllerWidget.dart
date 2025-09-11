@@ -1,9 +1,10 @@
-import 'package:digitalsignange/UI/LaunchingScreen.dart';
-import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
+import 'package:player/UI/LaunchingScreen.dart';
+import 'package:player/UI/ScreenCodeScreen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:player/Utils.dart';
 
 class ControllerWidget extends StatefulWidget {
   const ControllerWidget({super.key});
@@ -20,12 +21,12 @@ class _ControllerWidgetState extends State<ControllerWidget> {
   void initState() {
     super.initState();
     getScreenCode();
-    print("code = $screenCode");
+    DebugPrint("code = $screenCode");
   }
 
   @override
   Widget build(BuildContext context) {
-    print("screencode = $screenCode");
+    DebugPrint("screencode = $screenCode");
     return isLoad
         ? Center(child: Lottie.asset('assets/Shoes.json'))
         : (screenCode != null

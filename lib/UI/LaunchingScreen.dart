@@ -5,23 +5,23 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:digitalsignange/Costants.dart';
-import 'package:digitalsignange/MODELS/XCompositionModel.dart';
-import 'package:digitalsignange/UI/ELEMENTS/COMMON/ImageView.dart';
-import 'package:digitalsignange/BLOC/LayoutBloc/layoutbloc_bloc.dart';
-import 'package:digitalsignange/REPOSITORIES/LayoutRepo.dart';
-import 'package:digitalsignange/MODELS/MediaDetailModel.dart';
-import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
-import 'package:digitalsignange/MODELS/ZoneModel.dart';
+import 'package:player/Costants.dart';
+import 'package:player/MODELS/XCompositionModel.dart';
+import 'package:player/UI/ELEMENTS/COMMON/ImageView.dart';
+import 'package:player/BLOC/LayoutBloc/layoutbloc_bloc.dart';
+import 'package:player/REPOSITORIES/LayoutRepo.dart';
+import 'package:player/MODELS/MediaDetailModel.dart';
+import 'package:player/MODELS/ResponseDataModel.dart';
+import 'package:player/MODELS/ZoneModel.dart';
 
-import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
-import 'package:digitalsignange/UI/NoBroadCastScreen.dart';
+import 'package:player/UI/ScreenCodeScreen.dart';
+import 'package:player/UI/NoBroadCastScreen.dart';
 
-import 'package:digitalsignange/UI/NoInternetScreen.dart';
-import 'package:digitalsignange/UI/ScreenDeleted.dart';
+import 'package:player/UI/NoInternetScreen.dart';
+import 'package:player/UI/ScreenDeleted.dart';
 
-import 'package:digitalsignange/UI/SingleZoneController.dart';
-import 'package:digitalsignange/UI/Utils.dart';
+import 'package:player/UI/SingleZoneController.dart';
+import 'package:player/UI/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +32,7 @@ import 'package:lottie/lottie.dart';
 import 'package:screenshot/screenshot.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:player/Utils.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 import 'package:toastification/toastification.dart';
 
@@ -61,9 +62,9 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   void initState() {
     super.initState();
     checkConnectivity();
-    // print(Theme.of(context).platform);
+    // DebugPrint(Theme.of(context).platform);
     // if (Theme.of(context).platform == TargetPlatform.android) {
-    //       print(Theme.of(context).platform);
+    //       DebugPrint(Theme.of(context).platform);
     //     }
     WakelockPlus.enable();
     apiBloc = BlocProvider.of<LayoutblocBloc>(context);
@@ -81,23 +82,23 @@ class _LyoutScreenState extends State<LaunchingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
+    DebugPrint("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
     if (Theme.of(context).platform == TargetPlatform.android) {
-      print(Theme.of(context).platform);
+      DebugPrint(Theme.of(context).platform);
     }
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    print("width = $width");
-    print("height = $height");
+    DebugPrint("width = $width");
+    DebugPrint("height = $height");
     factor = width / height;
     final GlobalKey<ScaffoldState> drawerKey = GlobalKey<ScaffoldState>();
     return PopScope(
       // onPopInvokedWithResult: (didPop, result) {
       //   _onWillPop(context);
-      //   print("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
+      //   DebugPrint("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
       // },
       // onPopInvoked: (didPop) {
-      //   print("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
+      //   DebugPrint("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
       // },
       child: Scaffold(
         key: drawerKey,
@@ -177,26 +178,25 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             }
 
                             if (state is TakeScreenState) {
-                              print("TAKE SCREEN SHOT CALLED ON LISTENER");
+                              DebugPrint("TAKE SCREEN SHOT CALLED ON LISTENER");
 
-
-          await screenshotController.capture(delay: const Duration(milliseconds: 500)).then((Uint8List? image) async {
-      if (image != null) {
-      
-
-     apiBloc.add(UploadScreenShootEvent(
-                                    capturedimage: image,screenshoot_id: state.screenshoot_id));
-       
-      }
-    });
-                              
+                              await screenshotController
+                                  .capture(
+                                      delay: const Duration(milliseconds: 500))
+                                  .then((Uint8List? image) async {
+                                if (image != null) {
+                                  apiBloc.add(UploadScreenShootEvent(
+                                      capturedimage: image,
+                                      screenshoot_id: state.screenshoot_id));
+                                }
+                              });
 
                               // controller.capture().then((capturedImage) async {
-                              //   print("screen shot taked sucessfully");
+                              //   DebugPrint("screen shot taked sucessfully");
                               //   apiBloc.add(UploadScreenShootEvent(
                               //       capturedimage: capturedImage!));
                               // }).catchError((onError) {
-                              //   print(onError);
+                              //   DebugPrint(onError);
                               // });
                             }
                             // if (state is MediaLoadingState) {
@@ -205,8 +205,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             // }
                           },
                           builder: (context, state) {
-                            print("Builder called in UI");
-                            print(state);
+                            DebugPrint("Builder called in UI");
+                            DebugPrint(state);
                             if (state is NoBroadcastState) {
                               // return Center(child: Text("no broad"));
                               return NoBroadCastScreen();
@@ -217,7 +217,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             if (state is MediaLoadingState) {
                               return MediaDownloadingScreen();
                             }
-                            print("state is $state");
+                            DebugPrint("state is $state");
                             if (state is DisplayLayout) {
                               // connectivitySubscription.cancel();
                               if (state.layoutdata.oreintationAngle == 0 ||
@@ -524,7 +524,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       return current is DownloadProgressState;
                     },
                     builder: (context, state) {
-                      print("INSIDE DOWNLOAD PROGRESS STATE");
+                      DebugPrint("INSIDE DOWNLOAD PROGRESS STATE");
                       if (state is DownloadProgressState && state.isVisible) {
                         return Align(
                           alignment: Alignment.bottomCenter,
@@ -655,7 +655,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                         color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () {
-                    print("logout presseed");
+                    DebugPrint("logout presseed");
                     apiBloc.add(LogoutEvent());
                     // clearData();
                     // Navigator.pushAndRemoveUntil(
@@ -749,11 +749,11 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   }
 
   void loadLayout() async {
-    print("loaded");
+    DebugPrint("loaded");
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // return
-    print("code = ${prefs.getString('screenCode')}");
-    print("fetch api added");
+    DebugPrint("code = ${prefs.getString('screenCode')}");
+    DebugPrint("fetch api added");
     apiBloc.add(FetchApi(screenCode: widget.screenCode));
   }
 

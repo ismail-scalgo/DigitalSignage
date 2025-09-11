@@ -1,5 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
-import 'package:digitalsignange/MODELS/XCompositionModel.dart';
+import 'package:player/MODELS/XCompositionModel.dart';
 
 class BroadCastModel {
   String? message;

@@ -70,7 +70,8 @@ class UploadScreenShootEvent extends LayoutblocEvent {
   Uint8List capturedimage;
   int screenshoot_id;
 
-  UploadScreenShootEvent({required this.capturedimage,required this.screenshoot_id});
+  UploadScreenShootEvent(
+      {required this.capturedimage, required this.screenshoot_id});
 }
 
 class DownloadFeedbackEvent extends LayoutblocEvent {

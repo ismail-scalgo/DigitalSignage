@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:player/Utils.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class Iframeyoutubeplayer extends StatefulWidget {
@@ -15,7 +16,7 @@ class _IframeyoutubeplayerState extends State<Iframeyoutubeplayer> {
 
   @override
   void initState() {
-    print("URL ID IS " + widget.url);
+    DebugPrint("URL ID IS " + widget.url);
     // _controller = YoutubePlayerController.fromVideoId(
     //   videoId: YoutubePlayerController.convertUrlToId(widget.url)!,
     //   // videoId: "sWMPlQ3-97c",
@@ -48,7 +49,6 @@ class _IframeyoutubeplayerState extends State<Iframeyoutubeplayer> {
     _controller.setVolume(100);
     _controller.setLoop(loopPlaylists: true);
     _controller.exitFullScreen(lock: true);
-   
 
     // TODO: implement initState
     super.initState();

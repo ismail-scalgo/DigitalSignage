@@ -6,15 +6,16 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
-import 'package:digitalsignange/Costants.dart';
-import 'package:digitalsignange/MODELS/ContentModel.dart';
-import 'package:digitalsignange/MODELS/RequestModel.dart';
-import 'package:digitalsignange/MODELS/ResponseDataModel.dart';
-import 'package:digitalsignange/MODELS/ScreenCodeModel.dart';
+import 'package:player/Costants.dart';
+import 'package:player/MODELS/ContentModel.dart';
+import 'package:player/MODELS/RequestModel.dart';
+import 'package:player/MODELS/ResponseDataModel.dart';
+import 'package:player/MODELS/ScreenCodeModel.dart';
 
-import 'package:digitalsignange/REPOSITORIES/RegisterRepo.dart';
-import 'package:digitalsignange/UI/Utils.dart';
+import 'package:player/REPOSITORIES/RegisterRepo.dart';
+import 'package:player/UI/Utils.dart';
 import 'package:display_metrics/display_metrics.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +25,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:meta/meta.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:player/Utils.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
 part 'registerbloc_event.dart';
@@ -38,12 +40,12 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
   bool isWebSocketConnected = false;
 
   RegisterblocBloc() : super(RegisterblocInitial()) {
-    print("REGISTRATION BLOC INITIALISED");
+    DebugPrint("REGISTRATION BLOC INITIALISED");
     on<RegisterblocEvent>((event, emit) async {
-      print("BLOC CALLED WITH EVENT");
-      print(event);
+      DebugPrint("BLOC CALLED WITH EVENT");
+      DebugPrint(event);
       if (event is AddContext) {
-        print("ADD CONTEXT CALLLEDDDDDDDDDDDDDDDDDD");
+        DebugPrint("ADD CONTEXT CALLLEDDDDDDDDDDDDDDDDDD");
         context = event.context;
       }
 
@@ -59,8 +61,8 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
       }
 
       if (event is CheckDeviceStatusEvent) {
-        print("from reg bloc");
-        print("CheckDeviceStatusEvent");
+        DebugPrint("from reg bloc");
+        DebugPrint("CheckDeviceStatusEvent");
 
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -75,7 +77,7 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
         } else if (!isRegistered) {
           add(DisplayScreenCode(screenCode: screenCode));
         } else {
-          print("got it");
+          DebugPrint("got it");
           updateScreenCodeStatus(screenCode);
           add(LaunchSignage(screenCode: screenCode));
         }
@@ -105,8 +107,8 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           final metrics = DisplayMetrics.of(context!);
           height = metrics.resolution.height.toString();
           width = metrics.resolution.width.toString();
-          print(metrics.resolution.height);
-          print(metrics.resolution.width);
+          DebugPrint(metrics.resolution.height);
+          DebugPrint(metrics.resolution.width);
 
           if (HARDCODEPLATFORM == "WEB") {
             PlatformData? platformInfo = await initPlatformState();
@@ -115,15 +117,22 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             Position position = await determinePosition();
             latitude = position.latitude.toString();
             longitude = position.longitude.toString();
-            location =
-                await fetchLocation(position.latitude, position.longitude);
+            location = await fetchLocation(
+              position.latitude,
+              position.longitude,
+            );
           }
           if (HARDCODEPLATFORM == "ANDROIDTV") {
             bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
             if (serviceEnabled) {
-              Position position = await determinePosition();
-              latitude = position.latitude.toString();
-              longitude = position.longitude.toString();
+            
+              try {
+                Position position = await determinePosition();
+                latitude = position.latitude.toString();
+                longitude = position.longitude.toString();
+              } catch (e) {}
+
               // location =
               //     await fetchLocation(position.latitude, position.longitude);
               location = "Unknown";
@@ -139,32 +148,40 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
           }
 
           RequestModel requestModel = RequestModel(
-              agentId: agentId,
-              name: name,
-              browser: browser,
-              browserVersion: browserVersion,
-              location: location,
-              latitude: latitude,
-              longitude: longitude,
-              orientation: orientation,
-              platform: platform,
-              osVersion: osVersion,
-              height: height,
-              width: width,
-              type: type);
+            agentId: agentId,
+            name: name,
+            browser: browser,
+            browserVersion: browserVersion,
+            location: location,
+            latitude: latitude,
+            longitude: longitude,
+            orientation: orientation,
+            platform: platform,
+            osVersion: osVersion,
+            height: height,
+            width: width,
+            type: type,
+          );
           try {
-            FetchScreenCodeModel? screenCodeModel =
-                await RegisterRepository().fetchScreenCode(requestModel);
-            screenCodeModel!.screenCode != null ? saveNewScreenCode(screenCodeModel.screenCode!,screenCodeModel.secretKey!) : print('');
+            FetchScreenCodeModel? screenCodeModel = await RegisterRepository()
+                .fetchScreenCode(requestModel);
+            screenCodeModel!.screenCode != null
+                ? saveNewScreenCode(
+                  screenCodeModel.screenCode!,
+                  screenCodeModel.secretKey!,
+                )
+                : DebugPrint('');
 
             if (!isWebSocketConnected) {
               connect(screenCodeModel.screenCode!);
               isWebSocketConnected = true;
             }
 
-            emit(DisplayScreenCodeState(screenCode: screenCodeModel.screenCode!));
+            emit(
+              DisplayScreenCodeState(screenCode: screenCodeModel.screenCode!),
+            );
           } catch (e) {
-            print(e);
+            DebugPrint(e);
           }
         }
       }
@@ -177,19 +194,20 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             isWebSocketConnected = true;
           }
           // connect(event.screenCode);
-          // print("emitting old");
+          // DebugPrint("emitting old");
           // emit(DisplayOldScreenCode(screenCode: event.screenCode));
           // connect(event.screenCode);
           try {
             final RegisterRepository registerRepo = RegisterRepository();
-            print("requestinggg");
-            ScreenCodeModel? data =
-                await registerRepo.checkScreenCode(event.screenCode);
-            print("data = ${data?.agentId}");
-            print("data = ${data?.isRegistered}");
-            print("data = ${data?.message}");
+            DebugPrint("requestinggg");
+            ScreenCodeModel? data = await registerRepo.checkScreenCode(
+              event.screenCode,
+            );
+            DebugPrint("data = ${data?.agentId}");
+            DebugPrint("data = ${data?.isRegistered}");
+            DebugPrint("data = ${data?.message}");
             if (!data!.isRegistered!) {
-              print("emitting old");
+              DebugPrint("emitting old");
               emit(DisplayScreenCodeState(screenCode: event.screenCode));
             }
             if (data.isRegistered!) {
@@ -230,10 +248,10 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
     });
   }
 
-  void saveNewScreenCode(String screenCode,String secretKey) async {
+  void saveNewScreenCode(String screenCode, String secretKey) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('NewScreenCode', screenCode);
-     await prefs.setString('secretKey', secretKey);
+    await prefs.setString('secretKey', secretKey);
     await prefs.setBool('isRegistered', false);
   }
 
@@ -244,50 +262,53 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
   }
 
   void connect(String screencode) async {
-    print("WEB SOCKET CONNECTION ON REG SCREEN CALLED");
+    DebugPrint("WEB SOCKET CONNECTION ON REG SCREEN CALLED");
     final socket = WebSocket(Uri.parse(SOCKET_ADDRESS));
     globalConnection = socket;
-    socket.messages.listen((message) async {
-      print("socket message = $message");
-      var jsonresponce = jsonDecode(message);
-      print("socket response = $jsonresponce");
-      add(DisplayScreenCode(screenCode: screencode));
-    }, onError: (error) {
-      print("Error receiving message: $error");
-    });
-
-    socket.send('ping');
-    socket.connection.listen(
-      (connectionState) {
-        if (connectionState is Connecting) {
-          print("CONNECTING");
-        }
-        if (connectionState is Connected) {
-          print("CONNECTED");
-          String formattedScreenCode = '"' + screencode + '"';
-          print('{"screen_code" : $formattedScreenCode}');
-          socket.send(
-              // '{"screen_code" : $formattedScreenCode, "client_type" : "device"}'
-              '{"client_type":"device","screen_code":$formattedScreenCode,"is_registered":"false"}');
-          print("sended");
-        }
-        if (connectionState is Disconnected) {
-          print("DISCONNECTED");
-        }
-        if (connectionState is Reconnecting) {
-          print("RECONNECTING");
-        }
-        if (connectionState is Reconnected) {
-          print("RECONNECTED");
-          String formattedScreenCode = '"' + screencode + '"';
-          print('{"screen_code" : $formattedScreenCode}');
-          socket.send(
-              '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"false"}');
-          add(DisplayScreenCode(screenCode: screencode));
-        }
-        print("connection state ${connectionState.toString()}");
+    socket.messages.listen(
+      (message) async {
+        DebugPrint("socket message = $message");
+        var jsonresponce = jsonDecode(message);
+        DebugPrint("socket response = $jsonresponce");
+        add(DisplayScreenCode(screenCode: screencode));
+      },
+      onError: (error) {
+        DebugPrint("Error receiving message: $error");
       },
     );
+
+    socket.send('ping');
+    socket.connection.listen((connectionState) {
+      if (connectionState is Connecting) {
+        DebugPrint("CONNECTING");
+      }
+      if (connectionState is Connected) {
+        DebugPrint("CONNECTED");
+        String formattedScreenCode = '"' + screencode + '"';
+        DebugPrint('{"screen_code" : $formattedScreenCode}');
+        socket.send(
+          // '{"screen_code" : $formattedScreenCode, "client_type" : "device"}'
+          '{"client_type":"device","screen_code":$formattedScreenCode,"is_registered":"false"}',
+        );
+        DebugPrint("sended");
+      }
+      if (connectionState is Disconnected) {
+        DebugPrint("DISCONNECTED");
+      }
+      if (connectionState is Reconnecting) {
+        DebugPrint("RECONNECTING");
+      }
+      if (connectionState is Reconnected) {
+        DebugPrint("RECONNECTED");
+        String formattedScreenCode = '"' + screencode + '"';
+        DebugPrint('{"screen_code" : $formattedScreenCode}');
+        socket.send(
+          '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"false"}',
+        );
+        add(DisplayScreenCode(screenCode: screencode));
+      }
+      DebugPrint("connection state ${connectionState.toString()}");
+    });
   }
 
   void closeConnection() {
@@ -295,18 +316,19 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
       try {
         globalConnection.close();
         isWebSocketConnected = false;
-        print("WEB SOCKET CONNECTION CLOSED ON REG SCREEN CALLED");
+        DebugPrint("WEB SOCKET CONNECTION CLOSED ON REG SCREEN CALLED");
       } catch (e) {
-        print("Error while closing WebSocket: $e");
+        DebugPrint("Error while closing WebSocket: $e");
       }
     } else {
-      print("WebSocket is not initialized or already closed.");
+      DebugPrint("WebSocket is not initialized or already closed.");
     }
   }
 
   void interNetConnectionManger() {
-    internetlistener =
-        InternetConnection().onStatusChange.listen((InternetStatus status) {
+    internetlistener = InternetConnection().onStatusChange.listen((
+      InternetStatus status,
+    ) {
       switch (status) {
         case InternetStatus.connected:
           add(CheckDeviceStatusEvent());

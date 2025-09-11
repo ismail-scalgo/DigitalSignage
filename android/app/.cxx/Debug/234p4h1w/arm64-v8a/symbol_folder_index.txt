@@ -1,1 +1,0 @@
-/home/scalgo/SCALGO/DIGITAL SIGNAGE/APR 15/DigitalSignage/build/app/intermediates/cxx/Debug/234p4h1w/obj/arm64-v8a

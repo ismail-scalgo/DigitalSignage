@@ -1,19 +1,21 @@
-import 'package:digitalsignange/CONTENTLOG.dart';
-import 'package:digitalsignange/Costants.dart';
-import 'package:digitalsignange/MODELS/XCompositionModel.dart';
-import 'package:digitalsignange/UI/APPS/HtmlApps.dart';
-import 'package:digitalsignange/UI/APPS/ScrollText.dart';
-import 'package:digitalsignange/UI/ELEMENTS/ANDROID/AndroidVideoPlayer.dart';
-import 'package:digitalsignange/UI/ELEMENTS/ANDROID/IframeYouTubePlayer.dart';
-import 'package:digitalsignange/UI/ELEMENTS/COMMON/ImageView.dart';
-import 'package:digitalsignange/UI/ELEMENTS/COMMON/PdfView.dart';
+import 'package:player/CONTENTLOG.dart';
+import 'package:player/Costants.dart';
+import 'package:player/MODELS/XCompositionModel.dart';
+import 'package:player/UI/APPS/HtmlApps.dart';
+import 'package:player/UI/APPS/ScrollText.dart';
+import 'package:player/UI/ELEMENTS/ANDROID/AndroidVideoPlayer.dart';
+import 'package:player/UI/ELEMENTS/ANDROID/IframeYouTubePlayer.dart';
+import 'package:player/UI/ELEMENTS/ANDROID/MyWebView.dart';
+import 'package:player/UI/ELEMENTS/COMMON/ImageView.dart';
+import 'package:player/UI/ELEMENTS/COMMON/PdfView.dart';
+import 'package:player/Utils.dart';
+import 'package:player/main.dart';
 import 'package:flutter/material.dart';
-
-
 
 class SingleZoneController extends StatefulWidget {
   ZoneData zonedata;
   String broadcast_id;
+
   SingleZoneController({required this.zonedata, required this.broadcast_id});
   @override
   State<SingleZoneController> createState() => _SingleZoneControllerState();
@@ -39,7 +41,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
 
   @override
   void dispose() {
-    print("zone disposing");
+    DebugPrint("zone disposing");
     isdisposed = true;
 
     // TODO: implement dispose
@@ -79,17 +81,18 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
           (gheight * widget.zonedata.heightPercent);
       // return CustomVideoPlayer(url: fullUrl);
       // return MediaKitWebPlayer(url: fullUrl);
-      print("url1 = ${fullUrl}");
-      print("file path = ${compositiondata.localstoragepath}");
+      DebugPrint("url1 = ${fullUrl}");
+      DebugPrint("file path = ${compositiondata.localstoragepath}");
       return AndroidVideoPlayer(
         url: fullUrl,
         filepath: compositiondata.localstoragepath,
-        key: Key(fullUrl),
+        hasVolume: widget.zonedata.isMuted,
+        key: Key(fullUrl + widget.zonedata.isMuted.toString()),
       );
 
 //        url2 = https://web-dev-sgdsignage.scalgo.net/media/uploads/4.%20Sooraj/ForBiggerEscapes_pHCKvHE.mp4
 //        I/flutter (27480): FILE PATH OF VIDEOOOOOOOOOOO
-//        I/flutter (27480): /data/user/0/com.example.digitalsignange/cache/libCachedImageData/e31063c0-a727-11ef-8641-cd3ad725e104.mp4
+//        I/flutter (27480): /data/user/0/com.example.player/cache/libCachedImageData/e31063c0-a727-11ef-8641-cd3ad725e104.mp4
 //        D/VRI[]   (27480): vri.reportDrawFinished
       // return Mymediakitvideoplayer(url: fullUrl);
       // return FlutterVideoPlayer(url: fullUrl);
@@ -106,11 +109,16 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
         key: Key(fullUrl),
       );
     } else if (compositiondata.fileFormat == ".html") {
-      print("HTML APP CALLED  URL ${compositiondata.fileUrl}");
+      DebugPrint("HTML APP CALLED  URL ${compositiondata.fileUrl}");
 
       if (compositiondata.appType == 'Youtube') {
         return Iframeyoutubeplayer(url: compositiondata.youtube_url);
       } else {
+       // return AppWebView(url: BASEURLMEDIA + compositiondata.fileUrl,key: Key(BASEURLMEDIA + compositiondata.fileUrl),);
+        // return AppWebView(
+        //   url: BASEURLMEDIA + compositiondata.fileUrl,
+        //   key: Key(compositiondata.fileUrl),
+        // );
         return HtmlApps(
           htmlUrl: BASEURLMEDIA + compositiondata.fileUrl,
           key: Key(compositiondata.fileUrl),
@@ -143,7 +151,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       currentIndex = 0;
     }
 
-    print(
+    DebugPrint(
         "durrrrrrrrrrrrrrrrr = ${widget.zonedata.compositionModels[currentIndex].fileDuration}");
     Future.delayed(
         Duration(

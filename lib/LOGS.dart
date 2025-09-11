@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:digitalsignange/REPOSITORIES/LogRepository.dart';
+import 'package:player/REPOSITORIES/LogRepository.dart';
 import 'package:hive/hive.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:player/Utils.dart';
 
 bool ISFIRST_LAUNCH = true;
 late Box box;
@@ -158,7 +159,7 @@ Future sync_data_to_server_when_online() async {
   var logs = box.values;
   Map last_exit_time = {};
   List datalist = logs.toList();
-  print("logs1  = $datalist");
+  DebugPrint("logs1  = $datalist");
   if (datalist.length > 1) {
     int last_exit_time_index = -1;
     Map last_application_exit = {};
@@ -170,7 +171,7 @@ Future sync_data_to_server_when_online() async {
     }
     if (last_exit_time_index > -1) {
       datalist.removeAt(last_exit_time_index);
-      print("logs2  = $datalist");
+      DebugPrint("logs2  = $datalist");
       final LogsRepository logRepo = LogsRepository();
       logRepo.sendLogs(datalist);
       box.clear();
@@ -182,24 +183,24 @@ Future sync_data_to_server_when_online() async {
 Future sync_data_to_server_onLaunch() async {
   var logs = box.values;
   List datalist = logs.toList();
-  print("datalist = $datalist");
+  DebugPrint("datalist = $datalist");
   if (datalist.length > 0) {
     update_to_server(datalist);
     await box.clear();
   }
-  print("LOGGGGGGGGGGGGGG");
+  DebugPrint("LOGGGGGGGGGGGGGG");
   // Timer.periodic(Duration(seconds: 30), (time) {
   //   var logs = box.values;
 
   //   List datalist = logs.toList();
-  //   print("LOGGGGGGGGGGGGGG");
-  //   print(datalist);
+  //   DebugPrint("LOGGGGGGGGGGGGGG");
+  //   DebugPrint(datalist);
   // });
 }
 
 Future update_to_server(List updatelist) async {
-  print("list = $updatelist");
-  print("server updating");
+  DebugPrint("list = $updatelist");
+  DebugPrint("server updating");
   final LogsRepository logRepo = LogsRepository();
   logRepo.sendLogs(updatelist);
 }

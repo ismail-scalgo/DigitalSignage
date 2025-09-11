@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:player/Utils.dart';
+
 class CompositionModel {
   final String fileUrl;
   String filename;
@@ -20,8 +22,7 @@ class CompositionModel {
       required this.appType,
       required this.appdata,
       required this.contentType,
-      required this.youtube_url
-      });
+      required this.youtube_url});
 
   // Convert JSON to CompositionModel
   factory CompositionModel.fromJson(Map<String, dynamic> json) {
@@ -35,12 +36,11 @@ class CompositionModel {
         appType: json["app_type"],
         appdata: json['appdata'] == null ? {} : json['appdata'],
         contentType: json['content_type'],
-        youtube_url: json['youtube_url'] ==null ? '' : json['youtube_url']
-        );
+        youtube_url: json['youtube_url'] == null ? '' : json['youtube_url']);
   }
 
   Map toJson() {
-    print(
+    DebugPrint(
         "TO JSON OF COMPOSITION MODEL CALLED WITH LOCALSTORAGE PATH $localstoragepath");
 
     return {
@@ -63,17 +63,19 @@ class ZoneData {
   final int heightPercent;
   final int xPercent;
   final int yPercent;
+  final bool isMuted;
+
   final List<CompositionModel> compositionModels;
 
-  ZoneData({
-    required this.id,
-    required this.name,
-    required this.widthPercent,
-    required this.heightPercent,
-    required this.xPercent,
-    required this.yPercent,
-    required this.compositionModels,
-  });
+  ZoneData(
+      {required this.id,
+      required this.name,
+      required this.widthPercent,
+      required this.heightPercent,
+      required this.xPercent,
+      required this.yPercent,
+      required this.compositionModels,
+      required this.isMuted});
 
   // Convert JSON to ZoneData
   factory ZoneData.fromJson(Map<String, dynamic> json) {
@@ -84,7 +86,7 @@ class ZoneData {
     List<CompositionModel> compositionModelsList = [];
     CompositionModelsJson.forEach((element) {
       if (element['file_format'] == "app") {
-        print("FILE TYPE IS HTML");
+        DebugPrint("FILE TYPE IS HTML");
 
         Map<String, dynamic> formatteddata = {};
 
@@ -97,12 +99,12 @@ class ZoneData {
         compositionModelsList.add(CompositionModel.fromJson(formatteddata));
 
         // localstoragepath:
-        //     json['localstoragepath'] == null ? '' : json['localstoragepath'],
+        //     json['localstoragepath'] == null ? '' : jsonk['localstoragepath'],
 
         //  filename: json['content_name'],
         //  appdata: json['appdata'] == null ? {} : json['appdata']
       } else {
-        print("FILE TYPE IS NORMAL DATA TYPE");
+        DebugPrint("FILE TYPE IS NORMAL DATA TYPE");
         compositionModelsList.add(CompositionModel.fromJson(element));
       }
     });
@@ -114,6 +116,7 @@ class ZoneData {
       heightPercent: json['heightPercent'] as int,
       xPercent: json['xPercent'] as int,
       yPercent: json['yPercent'] as int,
+      isMuted: json['is_muted'],
       compositionModels: compositionModelsList,
     );
   }
@@ -136,13 +139,14 @@ class LayoutData {
   final String? name;
   final String? message;
   String? currentDatetime;
-  final String? startDateTime;
-  final String? endDateTime;
+  String? startDateTime;
+  String? endDateTime;
   final int? zoneCount;
   final List<ZoneData>? zoneData;
   final int oreintationAngle;
   final String? lastUpdatedAt;
   String? stringData;
+  String? broadcast_type;
 
   LayoutData(
       {this.id,
@@ -155,14 +159,15 @@ class LayoutData {
       this.zoneData,
       required this.oreintationAngle,
       this.lastUpdatedAt,
-      this.stringData});
+      this.stringData,
+      this.broadcast_type});
 
   // Convert JSON to LayoutData
   factory LayoutData.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic> jsonCopy = Map.from(json);
     jsonCopy.remove("current_datetime");
-    print("from  layout");
-    print(json['orientation_angle']);
+    DebugPrint("from  layout");
+    DebugPrint(json['orientation_angle']);
     var zoneDataJson = json['zone_data'] as List;
     List<ZoneData> zoneDataList =
         zoneDataJson.map((i) => ZoneData.fromJson(i)).toList();
@@ -178,13 +183,14 @@ class LayoutData {
         zoneData: zoneDataList,
         lastUpdatedAt: json['updated_datetime'],
         oreintationAngle: json['orientation_angle'] as int,
+        broadcast_type: json['broadcast_type'] as String,
         stringData: jsonEncode(jsonCopy));
   }
 
   Map toJson() {
-    print("LAYOUT DATA TO JSON CALLED");
+    DebugPrint("LAYOUT DATA TO JSON CALLED");
 
-    print(message);
+    DebugPrint(message);
 
     if (message == "Live Broadcast") {
       return {

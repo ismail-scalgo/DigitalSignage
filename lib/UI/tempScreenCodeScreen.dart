@@ -163,18 +163,18 @@
 //     if (isRegistered == null) {
 //       isRegistered = false;
 //     }
-//     print("code = $screenCode");
-//     print("register = $isRegistered");
+//     DebugPrint("code = $screenCode");
+//     DebugPrint("register = $isRegistered");
 //        await checkConnectivity();
 //     if (screenCode == null) {
-//       print("null code");
+//       DebugPrint("null code");
 
 //       requestScreenCode();
 //     } else if (!isRegistered) {
 
 //       registerBloc.add(DisplayScreenCode(screenCode: screenCode));
 //     } else {
-//       print("got it");
+//       DebugPrint("got it");
 //       registerBloc.add(LaunchSignage(screenCode: screenCode));
 //     }
 //   }
@@ -189,13 +189,13 @@
 //     request = RequestModel(
 //         width: MediaQuery.of(context).size.width.toInt().toString(),
 //         height: MediaQuery.of(context).size.height.toInt().toString());
-//     print("adding event");
+//     DebugPrint("adding event");
 //     registerBloc.add(GetScreenCode(request: request));
 //   }
 
 //  Future checkConnectivity() async {
 //     if (await isOffline()) {
-//       print("adding offline event");
+//       DebugPrint("adding offline event");
 //       registerBloc.add(OfflineEvent());
 //       showToast(context, "No Internet Connection");
 //     }

@@ -1,6 +1,6 @@
-import 'package:digitalsignange/UI/AutoStartPermissionScreen.dart';
-import 'package:digitalsignange/UI/ScreenCodeScreen.dart';
-import 'package:display_metrics/display_metrics.dart';
+import 'package:player/UI/AutoStartPermissionScreen.dart';
+import 'package:player/UI/ScreenCodeScreen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -28,15 +28,10 @@ class _ControllerscreenState extends State<Controllerscreen> {
   }
 
   void nextScreen() async {
-      FlutterNativeSplash.remove();
+    FlutterNativeSplash.remove();
     await Future.delayed(Duration(seconds: 1));
 
-
     if (await Permission.systemAlertWindow.isGranted) {
-  
-
-     
-
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
@@ -50,12 +45,8 @@ class _ControllerscreenState extends State<Controllerscreen> {
           transitionDuration: Duration(seconds: 2),
         ),
       );
-
-     
     } else {
-     
-
-        Navigator.of(context).pushReplacement(
+      Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
               AutoStartPermissionScreen(),
@@ -68,7 +59,6 @@ class _ControllerscreenState extends State<Controllerscreen> {
           transitionDuration: Duration(seconds: 2),
         ),
       );
-     
     }
   }
 }

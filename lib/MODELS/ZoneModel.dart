@@ -1,4 +1,4 @@
-import 'package:digitalsignange/MODELS/ContentModel.dart';
+import 'package:player/MODELS/ContentModel.dart';
 
 class Zone {
   int id;
