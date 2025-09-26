@@ -4,6 +4,7 @@ import 'package:player/UI/ScreenCodeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:player/Utils.dart';
 
 class Controllerscreen extends StatefulWidget {
   const Controllerscreen({super.key});
@@ -30,8 +31,10 @@ class _ControllerscreenState extends State<Controllerscreen> {
   void nextScreen() async {
     FlutterNativeSplash.remove();
     await Future.delayed(Duration(seconds: 1));
+    bool tvMode = await PlatformTVCheck.isTV();
 
-    if (await Permission.systemAlertWindow.isGranted) {
+
+    if (await Permission.systemAlertWindow.isGranted || tvMode) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>

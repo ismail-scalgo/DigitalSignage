@@ -21,8 +21,8 @@ class _MywebviewState extends State<AppWebView> {
   @override
   void initState() {
     DebugPrint("init called");
-    DebugPrint(widget.url);
-    // loadMedia();
+    // DebugPrint(widget.url);
+    loadMedia();
     // loadWebPage(widget.url);
 
     super.initState();
@@ -55,15 +55,15 @@ class _MywebviewState extends State<AppWebView> {
 
   @override
   Widget build(BuildContext context) {
-    return WebViewWidget(controller: WEBVIEWCACHE[widget.url]!);
-    // return iscompleted
-    //     ? WebViewWidget(controller: controller)
-    //     : Center(
-    //         child: Text(
-    //           "DOWNLOAD PROGRESS",
-    //           style: TextStyle(color: Colors.white, fontSize: 30),
-    //         ),
-    //       );
+   // return WebViewWidget(controller: WEBVIEWCACHE[widget.url]!);
+    return iscompleted
+        ? WebViewWidget(controller: controller)
+        : Center(
+            child: Text(
+              "DOWNLOAD PROGRESS",
+              style: TextStyle(color: Colors.white, fontSize: 30),
+            ),
+          );
   }
 
   Future<void> loadWebPage(String url) async {

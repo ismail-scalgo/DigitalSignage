@@ -123,10 +123,14 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             );
           }
           if (HARDCODEPLATFORM == "ANDROIDTV") {
-            bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+            bool tvMode = await PlatformTVCheck.isTV();
+            bool serviceEnabled = false;
+            if (!tvMode) {
+              serviceEnabled = await Geolocator.isLocationServiceEnabled();
+            }
+            
 
             if (serviceEnabled) {
-            
               try {
                 Position position = await determinePosition();
                 latitude = position.latitude.toString();
