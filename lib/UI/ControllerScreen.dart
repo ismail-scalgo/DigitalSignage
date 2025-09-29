@@ -23,27 +23,21 @@ class _ControllerscreenState extends State<Controllerscreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 
   void nextScreen() async {
     FlutterNativeSplash.remove();
     await Future.delayed(Duration(seconds: 1));
-    bool tvMode = await PlatformTVCheck.isTV();
 
-
-    if (await Permission.systemAlertWindow.isGranted || tvMode) {
+    bool isTv = await PlatformTVCheck.isTV();
+    if (await Permission.systemAlertWindow.isGranted || isTv) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              PreScreenCodeScreen(),
+          pageBuilder:
+              (context, animation, secondaryAnimation) => PreScreenCodeScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: Duration(seconds: 2),
         ),
@@ -51,13 +45,11 @@ class _ControllerscreenState extends State<Controllerscreen> {
     } else {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              AutoStartPermissionScreen(),
+          pageBuilder:
+              (context, animation, secondaryAnimation) =>
+                  AutoStartPermissionScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: Duration(seconds: 2),
         ),

@@ -32,7 +32,6 @@ import 'package:lottie/lottie.dart';
 import 'package:screenshot/screenshot.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:player/Utils.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 import 'package:toastification/toastification.dart';
 
@@ -62,9 +61,9 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   void initState() {
     super.initState();
     checkConnectivity();
-    // DebugPrint(Theme.of(context).platform);
+    // print(Theme.of(context).platform);
     // if (Theme.of(context).platform == TargetPlatform.android) {
-    //       DebugPrint(Theme.of(context).platform);
+    //       print(Theme.of(context).platform);
     //     }
     WakelockPlus.enable();
     apiBloc = BlocProvider.of<LayoutblocBloc>(context);
@@ -82,23 +81,23 @@ class _LyoutScreenState extends State<LaunchingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    DebugPrint("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
+    print("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
     if (Theme.of(context).platform == TargetPlatform.android) {
-      DebugPrint(Theme.of(context).platform);
+      print(Theme.of(context).platform);
     }
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    DebugPrint("width = $width");
-    DebugPrint("height = $height");
+    print("width = $width");
+    print("height = $height");
     factor = width / height;
     final GlobalKey<ScaffoldState> drawerKey = GlobalKey<ScaffoldState>();
     return PopScope(
       // onPopInvokedWithResult: (didPop, result) {
       //   _onWillPop(context);
-      //   DebugPrint("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
+      //   print("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
       // },
       // onPopInvoked: (didPop) {
-      //   DebugPrint("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
+      //   print("platfoooooooooooooooooooooooorm = ${Theme.of(context).platform}");
       // },
       child: Scaffold(
         key: drawerKey,
@@ -178,25 +177,26 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             }
 
                             if (state is TakeScreenState) {
-                              DebugPrint("TAKE SCREEN SHOT CALLED ON LISTENER");
+                              print("TAKE SCREEN SHOT CALLED ON LISTENER");
 
-                              await screenshotController
-                                  .capture(
-                                      delay: const Duration(milliseconds: 500))
-                                  .then((Uint8List? image) async {
-                                if (image != null) {
-                                  apiBloc.add(UploadScreenShootEvent(
-                                      capturedimage: image,
-                                      screenshoot_id: state.screenshoot_id));
-                                }
-                              });
+
+          await screenshotController.capture(delay: const Duration(milliseconds: 500)).then((Uint8List? image) async {
+      if (image != null) {
+      
+
+     apiBloc.add(UploadScreenShootEvent(
+                                    capturedimage: image,screenshoot_id: state.screenshoot_id));
+       
+      }
+    });
+                              
 
                               // controller.capture().then((capturedImage) async {
-                              //   DebugPrint("screen shot taked sucessfully");
+                              //   print("screen shot taked sucessfully");
                               //   apiBloc.add(UploadScreenShootEvent(
                               //       capturedimage: capturedImage!));
                               // }).catchError((onError) {
-                              //   DebugPrint(onError);
+                              //   print(onError);
                               // });
                             }
                             // if (state is MediaLoadingState) {
@@ -205,8 +205,8 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             // }
                           },
                           builder: (context, state) {
-                            DebugPrint("Builder called in UI");
-                            DebugPrint(state);
+                            print("Builder called in UI");
+                            print(state);
                             if (state is NoBroadcastState) {
                               // return Center(child: Text("no broad"));
                               return NoBroadCastScreen();
@@ -217,7 +217,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             if (state is MediaLoadingState) {
                               return MediaDownloadingScreen();
                             }
-                            DebugPrint("state is $state");
+                            print("state is $state");
                             if (state is DisplayLayout) {
                               // connectivitySubscription.cancel();
                               if (state.layoutdata.oreintationAngle == 0 ||
@@ -524,7 +524,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                       return current is DownloadProgressState;
                     },
                     builder: (context, state) {
-                      DebugPrint("INSIDE DOWNLOAD PROGRESS STATE");
+                      print("INSIDE DOWNLOAD PROGRESS STATE");
                       if (state is DownloadProgressState && state.isVisible) {
                         return Align(
                           alignment: Alignment.bottomCenter,
@@ -609,6 +609,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
         mainAxisCellCount: zonedata.heightPercent / factor,
         child: SingleZoneController(
           zonedata: zonedata,
+        
           broadcast_id: layoutdata.id.toString(),
         ),
       );
@@ -655,7 +656,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                         color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () {
-                    DebugPrint("logout presseed");
+                    print("logout presseed");
                     apiBloc.add(LogoutEvent());
                     // clearData();
                     // Navigator.pushAndRemoveUntil(
@@ -749,11 +750,11 @@ class _LyoutScreenState extends State<LaunchingScreen> {
   }
 
   void loadLayout() async {
-    DebugPrint("loaded");
+    print("loaded");
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // return
-    DebugPrint("code = ${prefs.getString('screenCode')}");
-    DebugPrint("fetch api added");
+    print("code = ${prefs.getString('screenCode')}");
+    print("fetch api added");
     apiBloc.add(FetchApi(screenCode: widget.screenCode));
   }
 

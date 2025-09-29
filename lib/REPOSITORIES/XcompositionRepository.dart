@@ -200,8 +200,11 @@ class LayoutRepository {
     String current_date = DateFormat('yyyy-MM-dd').format(now);
     String current_time = DateFormat('HH:mm:ss').format(now);
 
-    String data_url = '$BASEURL/api/launch-signage-screen/?code=$code' +
+    String data_url =
+        '$BASEURL/api/launch-signage-screen/?code=$code' +
         '&current_date=${current_date}&current_time=${current_time}';
+    DebugPrint("PAYLOAD_DATA_FOR_FETCH_SCREEN");
+    DebugPrint(data_url);
     var response = await http.get(Uri.parse(data_url));
     // BroadCastModel? broadCastData;
     if (response.statusCode == 200) {
@@ -211,25 +214,28 @@ class LayoutRepository {
       DebugPrint("data1 = ${jsonData["data"]["first_broadcast_data"]}");
       if (jsonData["data"]["first_broadcast_data"]['message'] ==
           "Live Broadcast") {
-        currentBroadcastData =
-            LayoutData.fromJson(jsonData["data"]["first_broadcast_data"]);
+        currentBroadcastData = LayoutData.fromJson(
+          jsonData["data"]["first_broadcast_data"],
+        );
       } else {
         currentBroadcastData = null;
       }
 
       if (jsonData["data"]["second_broadcast_data"]['message'] ==
           "Live Broadcast") {
-        nextBroadcastData =
-            LayoutData.fromJson(jsonData["data"]["second_broadcast_data"]);
+        nextBroadcastData = LayoutData.fromJson(
+          jsonData["data"]["second_broadcast_data"],
+        );
       } else {
         nextBroadcastData = null;
       }
 
       BroadCastModel broadCastData = BroadCastModel(
-          message: screenStatus,
-          currentBroadCast: currentBroadcastData,
-          NextBroadCast: nextBroadcastData,
-          layoutrespInString: response.body);
+        message: screenStatus,
+        currentBroadCast: currentBroadcastData,
+        NextBroadCast: nextBroadcastData,
+        layoutrespInString: response.body,
+      );
       // layoutdata.zoneData!.forEach((element) {
       //   element.compositionModels
       //       .removeWhere((content) => content.fileDuration == '0.0');
@@ -261,25 +267,28 @@ class LayoutRepository {
     DebugPrint("data1 = ${jsonData["data"]["first_broadcast_data"]}");
     if (jsonData["data"]["first_broadcast_data"]['message'] ==
         "Live Broadcast") {
-      currentBroadcastData =
-          LayoutData.fromJson(jsonData["data"]["first_broadcast_data"]);
+      currentBroadcastData = LayoutData.fromJson(
+        jsonData["data"]["first_broadcast_data"],
+      );
     } else {
       currentBroadcastData = null;
     }
 
     if (jsonData["data"]["second_broadcast_data"]['message'] ==
         "Live Broadcast") {
-      nextBroadcastData =
-          LayoutData.fromJson(jsonData["data"]["second_broadcast_data"]);
+      nextBroadcastData = LayoutData.fromJson(
+        jsonData["data"]["second_broadcast_data"],
+      );
     } else {
       nextBroadcastData = null;
     }
 
     BroadCastModel broadCastData = BroadCastModel(
-        message: screenStatus,
-        currentBroadCast: currentBroadcastData,
-        NextBroadCast: nextBroadcastData,
-        layoutrespInString: responce);
+      message: screenStatus,
+      currentBroadCast: currentBroadcastData,
+      NextBroadCast: nextBroadcastData,
+      layoutrespInString: responce,
+    );
 
     // layoutdata.zoneData!.forEach((element) {
     //   element.compositionModels
@@ -317,9 +326,7 @@ class LayoutRepository {
 
     final response = await http.put(
       Uri.parse(presignedUrl),
-      headers: {
-        'Content-Type': contentType,
-      },
+      headers: {'Content-Type': contentType},
       body: fileBytes,
     );
 
@@ -330,8 +337,12 @@ class LayoutRepository {
     }
   }
 
-  Future updateScreenShotToDb(String scrrencode, String url, String secretkey,
-      int screenshoot_id) async {
+  Future updateScreenShotToDb(
+    String scrrencode,
+    String url,
+    String secretkey,
+    int screenshoot_id,
+  ) async {
     DebugPrint("enteringggggggggggggg");
     String status;
     final apiUrl = '$BASEURL/api/store-screenshot/';
@@ -339,12 +350,15 @@ class LayoutRepository {
       "screen_code": scrrencode,
       "file_upload": url,
       "screenshot_id": screenshoot_id.toString(),
-      "device_type": runDevice == "firetv" ? "Fire_TV" : "normal"
+      "device_type": runDevice == "firetv" ? "Fire_TV" : "normal",
     };
 
     DebugPrint(req_body);
-    var response = await http.post(Uri.parse(apiUrl),
-        headers: {'X-Api-Key': secretkey}, body: req_body);
+    var response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {'X-Api-Key': secretkey},
+      body: req_body,
+    );
     DebugPrint("response data = ${response.statusCode}");
 
     DebugPrint("body = ${response}");

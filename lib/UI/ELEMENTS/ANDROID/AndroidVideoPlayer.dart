@@ -2,10 +2,9 @@ import 'package:player/UI/VIDEOLOCK.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:native_video_player/native_video_player.dart';
-import 'package:player/Utils.dart';
 
 class AndroidVideoPlayer extends StatefulWidget {
-  final String url; //JUST ONLY FOR DebugPrint URL
+  final String url; //JUST ONLY FOR PRINT URL
   final String filepath;
   final bool hasVolume;
 
@@ -29,7 +28,7 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
   void didUpdateWidget(AndroidVideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     // if (oldWidget.url != widget.url) {
-    DebugPrint("URL CHANGEDDDDDDDDDDDDDDD");
+    print("URL CHANGEDDDDDDDDDDDDDDD");
     checklockandchange();
     // }
   }
@@ -77,26 +76,33 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
   }
 
   @override
-  void dispose() async {
-    super.dispose();
-    try {
-      await _controller?.stop();
-    } catch (e) {}
+  void dispose() async{
+        super.dispose();
+        try{   
+          await _controller?.stop();
 
-    try {
-      _controller?. //
-          onPlaybackReady
-          .removeListener(_onPlaybackReady);
-      _controller?. //
-          onPlaybackEnded
-          .removeListener(_onPlaybackEnded);
-    } catch (e) {}
+        }catch(e){}
+
+                try{   
+          _controller?. //
+        onPlaybackReady
+        .removeListener(_onPlaybackReady);
+    _controller?. //
+        onPlaybackEnded
+        .removeListener(_onPlaybackEnded);
+
+        }catch(e){}
+
+   
+   
 
     _controller = null;
+
+
   }
 
   Future<void> _loadVideoSource() async {
-    DebugPrint("url2 = ${widget.url}");
+    print("url2 = ${widget.url}");
 
     final videoSource = await _createVideoSource();
 
@@ -104,17 +110,17 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
   }
 
   Future<VideoSource> _createVideoSource() async {
-    DebugPrint("FILE PATH OF VIDEOOOOOOOOOOO");
-    DebugPrint(widget.filepath);
+    print("FILE PATH OF VIDEOOOOOOOOOOO");
+    print(widget.filepath);
 
     var file = await DefaultCacheManager().getSingleFile(widget.url);
 
     // final file = File(widget.filepath);
 
     // if (!(await file.exists())) {
-    //   DebugPrint("Androidvideplayer.dart");
-    //   DebugPrint("FILE PATH CORRUPTED");
-    //   DebugPrint("DOWNLOAD AGAIN");
+    //   print("Androidvideplayer.dart");
+    //   print("FILE PATH CORRUPTED");
+    //   print("DOWNLOAD AGAIN");
     //   await DefaultCacheManager().removeFile(widget.url);
     //   filepath = (await DefaultCacheManager().getSingleFile(widget.url)).path;
     // }

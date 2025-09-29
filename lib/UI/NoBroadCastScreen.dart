@@ -23,7 +23,8 @@ class _NoBroadCastScreenState extends State<NoBroadCastScreen> {
 
   @override
   Widget build(BuildContext context) {
-    controller.add({'event': "broadcast_end_event"});
+
+    controller.add({'event':"broadcast_end_event"});
 
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;

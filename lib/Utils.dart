@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 
 void DebugPrint(Object? text) {
-  // print(text);
+  print(text);
 }
 
 class PlatformTVCheck {
@@ -9,6 +9,8 @@ class PlatformTVCheck {
 
   static Future<bool> isTV() async {
     final bool isTV = await _channel.invokeMethod('isTV');
+    DebugPrint("IS_TV");
+    print(isTV);
     return isTV;
   }
 }

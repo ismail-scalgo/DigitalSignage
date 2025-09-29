@@ -38,21 +38,21 @@ class _ScreenDeletedScreenState extends State<ScreenDeletedScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 "SCREEN DELETED",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontSize: 22,fontWeight: FontWeight.bold),
               ),
             ),
-            Lottie.asset('assets/deletedscreen.json',
-                fit: BoxFit.cover, height: 200),
-            Padding(
+          Lottie.asset('assets/deletedscreen.json',fit: BoxFit.cover,height: 200),
+
+           Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 "Cache cleaning...",
                 style: TextStyle(color: Colors.white, fontSize: 22),
-              ),
-            )
+              ),)
+        
+        
+        
+        
           ],
         ),
       ),

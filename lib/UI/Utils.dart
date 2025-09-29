@@ -10,7 +10,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:platform_detector/enums.dart';
 import 'package:platform_detector/platform_detector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:player/Utils.dart';
 
 void setScreenCode(String screenCode) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -41,11 +40,11 @@ Future<Position> determinePosition() async {
 }
 
 Future<String> fetchLocation(double lat, double long) async {
-  DebugPrint(
+  print(
       'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$long&format=json&addressdetails=1');
   var response = await http.get(Uri.parse(
       'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$long&format=json&addressdetails=1'));
-  DebugPrint("response = $response");
+  print("response = $response");
   var data = json.decode(response.body);
   var address = data["display_name"];
   return address;
@@ -86,7 +85,7 @@ Future<PlatformData?> initPlatformState() async {
         return PlatformData("Unknown", "Unknown", "Unknown");
     }
   } on PlatformException {
-    DebugPrint("'Error:': 'Failed to get platform version.'");
+    print("'Error:': 'Failed to get platform version.'");
     return PlatformData("Unknown", "Unknown", "Unknown");
   }
 }
@@ -106,7 +105,7 @@ Future<String?> detectDevice() async {
         deviceType = "Desktop";
         return deviceType;
       } else if (webInfo.userAgent!.contains("Linux")) {
-        DebugPrint("browser info = ${webInfo.userAgent}");
+        print("browser info = ${webInfo.userAgent}");
         deviceType = "Desktop";
         return deviceType;
       } else if (webInfo.userAgent!.contains("Windows")) {
@@ -120,7 +119,7 @@ Future<String?> detectDevice() async {
       final PlatformType currentPlatformType = PlatformDetector.platform.type;
       if (Platform.isAndroid) {
         final androidInfo = await deviceInfoPlugin.androidInfo;
-        DebugPrint("typeeeeeeeeeeeeee= ${androidInfo.model.toLowerCase()}");
+        print("typeeeeeeeeeeeeee= ${androidInfo.model.toLowerCase()}");
         if (androidInfo.systemFeatures.contains('android.software.leanback') ||
             androidInfo.model.toLowerCase().contains('tv')) {
           deviceType = "TV";
@@ -133,26 +132,26 @@ Future<String?> detectDevice() async {
       return deviceType;
     }
   } catch (e) {
-    DebugPrint("device type error");
+    print("device type error");
     deviceType = "Unknown";
     return deviceType;
   }
 }
 
-String getPlatform() {
+String getPlatform()  {
   var deviceData = <String, dynamic>{};
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   String platform;
 
   try {
     if (kIsWeb) {
-      DebugPrint("web");
+      print("web");
       // deviceData = _readWebBrowserInfo(await deviceInfoPlugin.webBrowserInfo);
-      //  WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
-      // DebugPrint(deviceData);
-      // DebugPrint("platform = ${deviceData['platform']}");
-      //  platform = webBrowserInfo.platform!;
-      DebugPrint("platform = $deviceData['platform']");
+    //  WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+      // print(deviceData);
+      // print("platform = ${deviceData['platform']}");
+    //  platform = webBrowserInfo.platform!;
+      print("platform = $deviceData['platform']");
       // request.platform = platform;
       // PLATFORM = deviceData['platform'];
       return "Web";
@@ -170,7 +169,7 @@ String getPlatform() {
       } else {
         platform = 'Unknown';
       }
-      // DebugPrint("platform = $platform");
+      // print("platform = $platform");
       // request.platform = platform;
       return platform;
     }
@@ -181,13 +180,13 @@ String getPlatform() {
     //   'Error:': 'Failed to get platform version.'
     // };
   } catch (e) {
-    DebugPrint("platform error");
+    print("platform error");
     platform = 'Unknown';
   }
   // if (!mounted) platform = 'Unknown';
   // setState(() {
   //   deviceData = deviceData;
-  //   // DebugPrint("platform = ${deviceData}");
+  //   // print("platform = ${deviceData}");
   // });
   return platform;
 }
@@ -218,7 +217,7 @@ void clearData() async {
   prefs.remove('screenCode');
   prefs.remove('NewScreenCode');
   prefs.remove('isRegistered');
-  DebugPrint("logedout code = ${prefs.getString('screenCode')}");
-  DebugPrint("logedout code = ${prefs.getString('NewScreenCode')}");
-  DebugPrint("logedout code = ${prefs.getString('isRegistered')}");
+  print("logedout code = ${prefs.getString('screenCode')}");
+  print("logedout code = ${prefs.getString('NewScreenCode')}");
+  print("logedout code = ${prefs.getString('isRegistered')}");
 }

@@ -3,7 +3,6 @@ import 'package:fire_tv_listener/fire_tv_listener.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
-import 'package:player/Utils.dart';
 
 class AutoStartPermissionScreen extends StatefulWidget {
   @override
@@ -17,7 +16,7 @@ class _AutoStartPermissionScreenState extends State<AutoStartPermissionScreen>
 
   late double height;
   late double width;
-  final fn = FocusNode();
+    final fn = FocusNode();
 
   @override
   void initState() {
@@ -51,14 +50,14 @@ class _AutoStartPermissionScreenState extends State<AutoStartPermissionScreen>
         );
 
         //navigate to screen
-        DebugPrint("NAVIGATEDD   TO  SCREEN");
+        print("NAVIGATEDD   TO  SCREEN");
       }
 
       // App returned to foreground (from settings)
       // setState(() {
       //   returnedFromSettings = true;
       // });
-      DebugPrint("Returned from settings");
+      print("Returned from settings");
     }
   }
 
@@ -66,7 +65,7 @@ class _AutoStartPermissionScreenState extends State<AutoStartPermissionScreen>
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-
+   
     return Scaffold(
       //  appBar: AppBar(title: Text('Home Page')),
       // body: Center(
@@ -103,8 +102,8 @@ class _AutoStartPermissionScreenState extends State<AutoStartPermissionScreen>
   Widget permissionScreen() {
     return FireTVRemoteListener(
       focusNode: fn,
-      onUp: () {
-        Navigator.of(context).pushReplacement(
+        onUp: () {
+           Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
                 PreScreenCodeScreen(),
@@ -118,7 +117,8 @@ class _AutoStartPermissionScreenState extends State<AutoStartPermissionScreen>
             transitionDuration: Duration(seconds: 2),
           ),
         );
-      },
+
+        },
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

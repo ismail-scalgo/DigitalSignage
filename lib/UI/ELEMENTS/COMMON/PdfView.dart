@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:pdfx/pdfx.dart';
-import 'package:player/Utils.dart';
 
 class CustomPdf extends StatefulWidget {
   String url;
@@ -56,7 +55,7 @@ class _CustomPdfState extends State<CustomPdf> {
       });
       animation();
     } catch (e) {
-      DebugPrint('Error loading PDF: $e');
+      print('Error loading PDF: $e');
     }
   }
 
@@ -71,8 +70,8 @@ class _CustomPdfState extends State<CustomPdf> {
   void animation() async {
     await Future.delayed(Duration(seconds: 3));
 
-    DebugPrint("PAGES==========");
-    DebugPrint(pdfPinchController.pagesCount);
+    print("PAGES==========");
+    print(pdfPinchController.pagesCount);
     if (pdfPinchController.pagesCount! > 1) {
       //may be it is scheduled before dispose that is why it is checked before animate to another page
       if (!isdisposed) {
@@ -81,10 +80,12 @@ class _CustomPdfState extends State<CustomPdf> {
 
         if (page == pdfPinchController.pagesCount) {
           page = 0;
-        } else {
-          page++;
         }
-
+        else
+        {
+page++;
+        }
+        
         animation();
       }
     }

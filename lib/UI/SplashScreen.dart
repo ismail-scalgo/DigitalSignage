@@ -5,7 +5,6 @@ import 'package:player/UI/ScreenCodeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:player/Utils.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -90,10 +89,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void nextScreen() async {
     await Future.delayed(Duration(seconds: 4));
-    DebugPrint("TIME PERIOD COMPLETED");
+    print("TIME PERIOD COMPLETED");
+
+   
 
     if (await Permission.systemAlertWindow.isGranted) {
-      FlutterNativeSplash.remove();
+
+        FlutterNativeSplash.remove();
 
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
@@ -108,8 +110,12 @@ class _SplashScreenState extends State<SplashScreen> {
           transitionDuration: Duration(seconds: 2),
         ),
       );
+
+
+     
     } else {
-      FlutterNativeSplash.remove();
+
+       FlutterNativeSplash.remove();
 
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
@@ -124,6 +130,12 @@ class _SplashScreenState extends State<SplashScreen> {
           transitionDuration: Duration(seconds: 2),
         ),
       );
+      
     }
+
   }
+
+  
 }
+
+

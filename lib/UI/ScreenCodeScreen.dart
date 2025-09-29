@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
-import 'package:player/Utils.dart';
 
 class PreScreenCodeScreen extends StatefulWidget {
   const PreScreenCodeScreen({super.key});
@@ -20,11 +19,7 @@ class PreScreenCodeScreen extends StatefulWidget {
 class _PreScreenCodeScreenState extends State<PreScreenCodeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: DisplayMetricsWidget(
-        child: ScreenCodeScreen(),
-      ),
-    );
+    return Scaffold(body: DisplayMetricsWidget(child: ScreenCodeScreen()));
   }
 }
 
@@ -44,7 +39,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
   @override
   void initState() {
     super.initState();
-    DebugPrint("screen code screeeeeeeeeeeeen");
+    print("screen code screeeeeeeeeeeeen");
 
     registerBloc = BlocProvider.of<RegisterblocBloc>(context);
     registerBloc.add(AddContext(context: context));
@@ -66,28 +61,30 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-          child: BlocConsumer<RegisterblocBloc, RegisterblocState>(
-        listener: (context, state) {
-          // TODO: implement listener
-          if (state is LaunchScreen) {
-            Navigator.pushAndRemoveUntil(
+        child: BlocConsumer<RegisterblocBloc, RegisterblocState>(
+          listener: (context, state) {
+            // TODO: implement listener
+            if (state is LaunchScreen) {
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        LaunchingScreen(screenCode: state.code)),
-                (route) => false);
-          }
-        },
-        builder: (context, state) {
-          if (state is DisplayScreenCodeState) {
-            return pairDeviceWidget(state.screenCode);
-          }
-          if (state is OfflineState) {
-            return NoInternetScreen();
-          }
-          return LoadingWidget(height, width);
-        },
-      )),
+                  builder: (context) => LaunchingScreen(screenCode: state.code),
+                ),
+                (route) => false,
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is DisplayScreenCodeState) {
+              return pairDeviceWidget(state.screenCode);
+            }
+            if (state is OfflineState) {
+              return NoInternetScreen();
+            }
+            return LoadingWidget(height, width);
+          },
+        ),
+      ),
     );
   }
 
@@ -117,9 +114,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            height: height / 15,
-          ),
+          SizedBox(height: height / 15),
           Container(
             // color: Colors.white,
             height: height / 1.2,
@@ -131,43 +126,41 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                 Text(
                   "Pair device",
                   style: TextStyle(
-                      color: const Color.fromARGB(255, 190, 190, 190),
-                      fontSize: 25,
-                      // fontSize: width / 45,
-                      fontWeight: FontWeight.bold),
+                    color: const Color.fromARGB(255, 190, 190, 190),
+                    fontSize: 25,
+                    // fontSize: width / 45,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                SizedBox(
-                  height: 40,
-                ),
+                SizedBox(height: 40),
                 Text(
-                  "1. Login into https://studio.zignflix.com",
+                  "1. Login into www.zignflix.com",
                   style: TextStyle(
-                      color: const Color.fromARGB(255, 190, 190, 190),
-                      fontSize: 20,
-                      // fontSize: width / 50,
-                      fontWeight: FontWeight.bold),
+                    color: const Color.fromARGB(255, 190, 190, 190),
+                    fontSize: 20,
+                    // fontSize: width / 50,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                SizedBox(
-                  height: 40,
-                ),
+                SizedBox(height: 40),
                 Text(
                   "2. Click 'Add Screen' and enter the below screen code",
                   style: TextStyle(
-                      color: const Color.fromARGB(255, 190, 190, 190),
-                      fontSize: 20,
-                      // fontSize: width / 50,
-                      fontWeight: FontWeight.bold),
+                    color: const Color.fromARGB(255, 190, 190, 190),
+                    fontSize: 20,
+                    // fontSize: width / 50,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                SizedBox(
-                  height: 50,
-                ),
+                SizedBox(height: 50),
                 Text(
                   screencode,
                   style: TextStyle(
-                      color: const Color.fromARGB(255, 190, 190, 190),
-                      fontSize: 50,
-                      // fontSize: width / 20,
-                      fontWeight: FontWeight.bold),
+                    color: const Color.fromARGB(255, 190, 190, 190),
+                    fontSize: 50,
+                    // fontSize: width / 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -179,9 +172,11 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
 
   Widget LoadingWidget(double height, double width) {
     return Center(
-        child: Container(
-            width: width / 10,
-            height: width / 10,
-            child: Lottie.asset('assets/loading3.json')));
+      child: Container(
+        width: width / 10,
+        height: width / 10,
+        child: Lottie.asset('assets/loading3.json'),
+      ),
+    );
   }
 }
