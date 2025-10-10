@@ -37,6 +37,7 @@ import 'package:toastification/toastification.dart';
 
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class LaunchingScreen extends StatefulWidget {
   String screenCode;
@@ -352,45 +353,73 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                                     //           255, 255, 217, 0)),
                                                     // ),
                                                     Text(
-                                                      "BROADCAST in",
-                                                      style: TextStyle(
-                                                          color: Color.fromARGB(
-                                                              255,
-                                                              255,
-                                                              255,
-                                                              255),
-                                                          fontSize:
-                                                              width > height
-                                                                  ? width / 17
-                                                                  : height / 17,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontFamily:
-                                                              'MyCustomFont',
-                                                          letterSpacing: 0),
+                                                      "BROADCAST IN",
+                                                      style:GoogleFonts.protestStrike(
+                  textStyle: TextStyle(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      fontSize: width / 17,
+                      letterSpacing: 3),
+                ),
+                                                      // style: TextStyle(
+                                                      //     color: Color.fromARGB(
+                                                      //         255,
+                                                      //         255,
+                                                      //         255,
+                                                      //         255),
+                                                      //     fontSize:
+                                                      //         width > height
+                                                      //             ? width / 17
+                                                      //             : height / 17,
+                                                      //     fontWeight:
+                                                      //         FontWeight.bold,
+                                                      //     fontFamily:
+                                                      //         'MyCustomFont',
+                                                      //     letterSpacing: 0),
                                                       // ),
                                                     ),
-                                                    Text(
-                                                      state.countdown > 86400
-                                                          ? formatDaysTime(
-                                                              time.toInt())
-                                                          : formatHoursTime(
-                                                              time.toInt()),
-                                                      // formatHoursTime(time.toInt()),
-                                                      style: GoogleFonts
-                                                          .playfairDisplay(
-                                                        textStyle: TextStyle(
-                                                            color: Color
-                                                                .fromARGB(
-                                                                    255,
-                                                                    255,
-                                                                    254,
-                                                                    254),
-                                                            fontSize: 25,
-                                                            fontWeight:
-                                                                FontWeight.w100,
-                                                            letterSpacing: 5),
-                                                      ),
+                                                    
+                                                Container(
+      // Fix the size to avoid movement of the widget itself
+      width: width,
+      child: Center(
+        child: AutoSizeText(
+          state.countdown > 86400
+              ? formatDaysTime(time.toInt())
+              : formatHoursTime(time.toInt()),
+        
+          style: GoogleFonts.robotoMono(
+            textStyle: TextStyle(
+              color: Color.fromARGB(255, 255, 255, 255),
+              fontSize: width / 17,
+              fontWeight: FontWeight.bold,
+              fontFeatures: [FontFeature.tabularFigures()],
+              letterSpacing: 1,
+            ),
+          ),
+          maxFontSize: (width / 17).floorToDouble(), // or round to nearest 0.5
+        stepGranularity: 0.5,
+          maxLines: 1,
+          minFontSize: 10,
+          // maxFontSize: width / 17,
+          // stepGranularity: 0.5,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    
+                                                      // style: GoogleFonts
+                                                      //     .playfairDisplay(
+                                                      //   textStyle: TextStyle(
+                                                      //       color: Color
+                                                      //           .fromARGB(
+                                                      //               255,
+                                                      //               255,
+                                                      //               254,
+                                                      //               254),
+                                                      //       fontSize: 25,
+                                                      //       fontWeight:
+                                                      //           FontWeight.w100,
+                                                      //       letterSpacing: 5),
+                                                      // ),
                                                       // style: TextStyle(
                                                       //     fontSize: 25,
                                                       //     fontWeight:

@@ -162,8 +162,8 @@ class RegisterblocBloc extends Bloc<RegisterblocEvent, RegisterblocState> {
             orientation: orientation,
             platform: platform,
             osVersion: osVersion,
-            height: height,
-            width: width,
+            height: width,
+            width: height,
             type: type,
           );
           try {

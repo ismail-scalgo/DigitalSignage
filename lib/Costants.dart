@@ -17,26 +17,12 @@ String SOCKET_ADDRESS = 'wss://test-api.zignflix.com/ws/';
 // String SOCKET_ADDRESS = 'ws://192.168.0.98:8765';
 //  String SOCKET_ADDRESS = 'ws://192.168.0.102:8765';
 
-
-
-
-
-
-
-
-
-
-
-
 String BASEURLMEDIA = "";
 List<String> mediaTypes = ["jpeg", "mp4"];
 String PLATFORM = 'WEB';
 String HARDCODEPLATFORM = 'ANDROIDTV';
 double gheight = 0;
 double gwidth = 0;
-
-
-
 
 Future<bool> isOffline() async {
   final connectivityResult = await Connectivity().checkConnectivity();
