@@ -194,3 +194,21 @@ I/flutter (25471): data changingggggggggg
 
 
 
+
+
+
+
+
+                    ------- CHANGES OCT 13 -------
+//IMPLEMENTATION FOR SCREEN STATUS //
+
+added when broadcast started
+      if (event is StartEvent) {
+        emit(DisplayLayout(layoutdata: event.layoutdata));
+        Map data = {
+          "screen_code": screen_code,
+          "client_type": "device",
+          "is_live": "true",
+        };
+        sendDataToSocket(data);
+      }

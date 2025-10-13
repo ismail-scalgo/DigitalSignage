@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
@@ -70,8 +71,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
         if (result) {
           screen_code = event.screenCode;
-          BroadCastModel? broadCastData =
-              await LayoutRepository().newFetchData(event.screenCode);
+          BroadCastModel? broadCastData = await LayoutRepository().newFetchData(
+            event.screenCode,
+          );
 
           refactorBroadcastModelForQuickSchedule(broadCastData);
 
@@ -82,11 +84,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             RELOAD_FLAG_COUNT++;
 
             emit(NoBroadcastState());
+              sendLiveDataToSocket(false);
           } else {
             print("there is data");
             if (broadCastData?.currentBroadCast != null) {
               await saveTimedifference(
-                  (broadCastData?.currentBroadCast!.currentDatetime)!);
+                (broadCastData?.currentBroadCast!.currentDatetime)!,
+              );
               systemToServerTimeDifference = await gettimedifference();
             }
             LayoutData? layoutdata = broadCastData?.currentBroadCast;
@@ -95,10 +99,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             String currentTime = getFormattedCurrentDateTime();
             int startTimeDifference =
                 timeDifference(current_broadcast!.startDateTime!, currentTime) +
-                    (systemToServerTimeDifference ?? 0);
+                (systemToServerTimeDifference ?? 0);
             int endTimeDifference =
                 timeDifference(current_broadcast!.endDateTime!, currentTime) +
-                    (systemToServerTimeDifference ?? 0);
+                (systemToServerTimeDifference ?? 0);
 
             if (currentBroadcastInString !=
                     broadCastData?.currentBroadCast?.stringData ||
@@ -113,16 +117,22 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 print("cachdeeeeeeeeeeeeed = $isCached");
 
                 lastDownloadingFile?.cancel();
-                add(DownloadFeedbackEvent(
-                    progress: 50, isVisible: false, markerText: ""));
+                add(
+                  DownloadFeedbackEvent(
+                    progress: 50,
+                    isVisible: false,
+                    markerText: "",
+                  ),
+                );
 
                 if (isCached) {
                   await preloadContents(current_broadcast!);
                 } else {
                   try {
                     add(MediaLoadingEvent());
-                    await preloadContents(current_broadcast!)
-                        .timeout(Duration(seconds: endTimeDifference));
+                    await preloadContents(
+                      current_broadcast!,
+                    ).timeout(Duration(seconds: endTimeDifference));
                   } on TimeoutException {
                     log("Preloading timed out!");
                     add(FetchApi(screenCode: event.screenCode));
@@ -137,11 +147,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 //   add(FetchApi(screenCode: event.screenCode));
                 // }
 
-                String stringResponce =
-                    jsonEncode(broadCastData!.toJsonBroadCastModel());
+                String stringResponce = jsonEncode(
+                  broadCastData!.toJsonBroadCastModel(),
+                );
 
-                print("STRING RESPONCE FOR CACHING IS >>>>>>>>>>" +
-                    stringResponce);
+                print(
+                  "STRING RESPONCE FOR CACHING IS >>>>>>>>>>" + stringResponce,
+                );
 
                 // FOR OFFLINE ACCESSIBILITY
                 saveResponce(stringResponce);
@@ -183,8 +195,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is UploadScreenShootEvent) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         String secretkey = await prefs.getString('secretKey')!;
-        String? signedurl =
-            await LayoutRepository().generateSignedUrlForAws(secretkey);
+        String? signedurl = await LayoutRepository().generateSignedUrlForAws(
+          secretkey,
+        );
         print("signed url = " + signedurl!);
         final tempDir = await getTemporaryDirectory();
         File file = await File('${tempDir.path}/image.png').create();
@@ -195,16 +208,22 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         String cleanUrl = signedurl.split('?')[0];
 
         await LayoutRepository().updateScreenShotToDb(
-            screen_code!, cleanUrl, secretkey, event.screenshoot_id);
+          screen_code!,
+          cleanUrl,
+          secretkey,
+          event.screenshoot_id,
+        );
 
         print("SCREEN SHOOT UPLOAD SUCEESFULLY");
         print(cleanUrl);
       }
       if (event is StartEvent) {
+        print("START_EVENT");
         emit(DisplayLayout(layoutdata: event.layoutdata));
       }
       if (event is EndEvent) {
         emit(NoBroadcastState());
+          sendLiveDataToSocket(false);
       }
       if (event is visibleButton) {
         emit(DisplayButton(isvisible: event.isvisible));
@@ -224,6 +243,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         // emit(DefaultScreen(countdown: event.countdown));
         if (event.countdown > 604800) {
           emit(NoBroadcastState());
+            sendLiveDataToSocket(false);
           return;
         }
         if (event.countdown <= 3) {
@@ -237,9 +257,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       if (event is NoBroadCastEvent) {
         emit(NoBroadcastState());
+         sendLiveDataToSocket(false);
+
       }
       if (event is DisplayBroadcastEvent) {
         emit(DisplayLayout(layoutdata: event.layoutData));
+
+        sendLiveDataToSocket(true);
       }
       if (event is LogoutEvent) {
         print("logoutttttttttttttttttttt");
@@ -258,10 +282,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       if (event is DownloadFeedbackEvent) {
         print("DownloadFeedbackEvent");
-        emit(DownloadProgressState(
+        emit(
+          DownloadProgressState(
             progress: event.progress,
             isVisible: event.isVisible,
-            markerText: event.markerText));
+            markerText: event.markerText,
+          ),
+        );
       }
 
       if (event is currentBroadCastEnds) {
@@ -275,8 +302,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         bool connectionresult = await InternetConnection().hasInternetAccess;
         if (connectionresult) {
           await Future.delayed(Duration(seconds: 2));
-          BroadCastModel? broadCastData =
-              await LayoutRepository().newFetchData(screen_code!);
+          BroadCastModel? broadCastData = await LayoutRepository().newFetchData(
+            screen_code!,
+          );
           LayoutData? layoutdata = broadCastData?.currentBroadCast;
           current_broadcast = layoutdata;
           next_broadcast = broadCastData?.NextBroadCast;
@@ -344,8 +372,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     } else {
       print("CACHE SAVED MESSAGE");
       print(cache_responce);
-      BroadCastModel? broadCastData =
-          await LayoutRepository().fetchDataFromStorage(cache_responce);
+      BroadCastModel? broadCastData = await LayoutRepository()
+          .fetchDataFromStorage(cache_responce);
 
       int difference = await gettimedifference();
 
@@ -372,7 +400,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             add(MediaLoadingEvent());
             int end_difference =
                 timeDifference(current_broadcast!.endDateTime!, currentTime) +
-                    (systemToServerTimeDifference ?? 0);
+                (systemToServerTimeDifference ?? 0);
             if (next_broadcast != null) {
               preloadContents(next_broadcast!);
             }
@@ -453,16 +481,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     int start_difference =
         timeDifference(layoutdata.startDateTime!, currentTime) +
-            (systemToServerTimeDifference ?? 0);
+        (systemToServerTimeDifference ?? 0);
 
     int end_difference = 0;
     if (start_difference < 0) {
-      end_difference = timeDifference(layoutdata.endDateTime!, currentTime) +
+      end_difference =
+          timeDifference(layoutdata.endDateTime!, currentTime) +
           (systemToServerTimeDifference ?? 0);
     } else {
       end_difference =
           timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!) -
-              (systemToServerTimeDifference ?? 0);
+          (systemToServerTimeDifference ?? 0);
     }
     print("END TIME =  ${layoutdata.startDateTime}");
     print("END TIME =  ${layoutdata.endDateTime}");
@@ -514,8 +543,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
         // var file = await DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
-        cachedFile =
-            await cacheManager.getFileFromCache(BASEURLMEDIA + content.fileUrl);
+        cachedFile = await cacheManager.getFileFromCache(
+          BASEURLMEDIA + content.fileUrl,
+        );
 
         if (cachedFile == null) {
           print("ONE FILE IS NOT CACHED");
@@ -564,37 +594,37 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     });
 
     socket.send('ping');
-    socket.connection.listen(
-      (connectionState) {
-        if (connectionState is Connecting) {
-          print("CONNECTING");
-        }
-        if (connectionState is Connected) {
-          print("CONNECTED");
-          String formattedScreenCode = '"' + screencode + '"';
-          print('{"screen_code" : $formattedScreenCode}');
-          socket.send(
-              '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}');
-        }
-        if (connectionState is Disconnected) {
-          print("DISCONNECTED");
-        }
-        if (connectionState is Reconnecting) {
-          print("RECONNECTING");
-        }
-        if (connectionState is Reconnected) {
-          print("RECONNECTED");
-          String formattedScreenCode = '"' + screencode + '"';
-          print('{"screen_code" : $formattedScreenCode}');
-          socket.send(
-              '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}');
-          sync_data_to_server_when_online();
-          add(FetchApi(screenCode: screencode));
-          addToServer();
-        }
-        print(connectionState.toString());
-      },
-    );
+    socket.connection.listen((connectionState) {
+      if (connectionState is Connecting) {
+        print("CONNECTING");
+      }
+      if (connectionState is Connected) {
+        print("CONNECTED");
+        String formattedScreenCode = '"' + screencode + '"';
+        print('{"screen_code" : $formattedScreenCode}');
+        socket.send(
+          '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}',
+        );
+      }
+      if (connectionState is Disconnected) {
+        print("DISCONNECTED");
+      }
+      if (connectionState is Reconnecting) {
+        print("RECONNECTING");
+      }
+      if (connectionState is Reconnected) {
+        print("RECONNECTED");
+        String formattedScreenCode = '"' + screencode + '"';
+        print('{"screen_code" : $formattedScreenCode}');
+        socket.send(
+          '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}',
+        );
+        sync_data_to_server_when_online();
+        add(FetchApi(screenCode: screencode));
+        addToServer();
+      }
+      print(connectionState.toString());
+    });
   }
 
   int timeDifference(String time, String curretTime) {
@@ -613,13 +643,25 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   //   });
   // }
 
-// void activateDownloadcontroller(){
+  // void activateDownloadcontroller(){
 
-// downloadController.stream.listen((event) {
-//     preloadContents(broadcastData)
-//   });
+  // downloadController.stream.listen((event) {
+  //     preloadContents(broadcastData)
+  //   });
 
-// }
+  // }
+
+  void sendLiveDataToSocket(bool isLIve) {
+    Map data = {
+      "screen_code": screen_code,
+      "client_type": "device",
+      "is_live": isLIve ? "true" : false,
+    };
+    String jsonString = jsonEncode(data);
+    print("LIVE_SOCKET_SENT");
+    print(jsonString);
+    globalConnection.send(jsonString);
+  }
 
   Future preloadContents(LayoutData broadcastData) async {
     int totalFiles = 0;
@@ -638,7 +680,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     String currentTime = getFormattedCurrentDateTime();
     int startTimeDifference =
         timeDifference(current_broadcast!.startDateTime!, currentTime) +
-            (systemToServerTimeDifference ?? 0);
+        (systemToServerTimeDifference ?? 0);
 
     int quick_broadcast_count = 0;
 
@@ -660,40 +702,49 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             lastDownloadingFile = DefaultCacheManager()
                 .getFileStream(content.fileUrl, withProgress: true)
                 .listen((response) {
-              if (response is DownloadProgress) {
-                double percent =
-                    (response.downloaded / response.totalSize!.toInt()) * 100;
-                // print("percent $percent");
+                  if (response is DownloadProgress) {
+                    double percent =
+                        (response.downloaded / response.totalSize!.toInt()) *
+                        100;
+                    // print("percent $percent");
 
-                if (lastdownloadprogress != percent.toInt()) {
-                  lastdownloadprogress = percent.toInt();
-                  // print("add DownloadfeedbackEvent");
-                  if (percent.toInt() < 99) {
-                    add(DownloadFeedbackEvent(
-                        progress: lastdownloadprogress,
-                        isVisible: true,
-                        markerText:
-                            "Downloading file $currentCount/$totalFiles"));
-                  } else {
-                    print("else block of 100 percent");
-                    lastdownloadprogress = 0;
-                    add(DownloadFeedbackEvent(
-                        progress: 50,
-                        isVisible: false,
-                        markerText: "${currentCount / totalFiles}"));
+                    if (lastdownloadprogress != percent.toInt()) {
+                      lastdownloadprogress = percent.toInt();
+                      // print("add DownloadfeedbackEvent");
+                      if (percent.toInt() < 99) {
+                        add(
+                          DownloadFeedbackEvent(
+                            progress: lastdownloadprogress,
+                            isVisible: true,
+                            markerText:
+                                "Downloading file $currentCount/$totalFiles",
+                          ),
+                        );
+                      } else {
+                        print("else block of 100 percent");
+                        lastdownloadprogress = 0;
+                        add(
+                          DownloadFeedbackEvent(
+                            progress: 50,
+                            isVisible: false,
+                            markerText: "${currentCount / totalFiles}",
+                          ),
+                        );
+                      }
+                    }
+
+                    print(
+                      'Downloading: ${response.downloaded}/${response.totalSize}',
+                    );
+                  } else if (response is FileInfo) {
+                    print('File ready: ${response.file.path}');
                   }
-                }
-
-                print(
-                    'Downloading: ${response.downloaded}/${response.totalSize}');
-              } else if (response is FileInfo) {
-                print('File ready: ${response.file.path}');
-              }
-            });
+                });
           }
 
-          var file = await DefaultCacheManager()
-              .getSingleFile(BASEURLMEDIA + content.fileUrl);
+          var file = await DefaultCacheManager().getSingleFile(
+            BASEURLMEDIA + content.fileUrl,
+          );
           content.localstoragepath = file.path;
 
           print("PRELOAD CONTENTS CALLED");
