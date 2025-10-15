@@ -245,7 +245,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                   state.layoutdata.oreintationAngle < 180) {
                                 gwidth = height;
                                 gheight = width;
-                                quarterTurns = 1;
+                                quarterTurns = 3;
                               }
 
                               if (state.layoutdata.oreintationAngle >= 180 &&
@@ -259,7 +259,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                                   state.layoutdata.oreintationAngle < 360) {
                                 gwidth = height;
                                 gheight = width;
-                                quarterTurns = 3;
+                                quarterTurns = 1;
                               }
                               factor = gwidth / gheight;
 

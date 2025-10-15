@@ -134,7 +134,8 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
                 ),
                 SizedBox(height: 40),
                 Text(
-                  "1. Login into www.zignflix.com",
+                 "1. Login into www.zignflix.com",
+                // "1. Login into www.dev.zignflix.com/",
                   style: TextStyle(
                     color: const Color.fromARGB(255, 190, 190, 190),
                     fontSize: 20,

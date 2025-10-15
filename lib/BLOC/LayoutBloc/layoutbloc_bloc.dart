@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:ffi';
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
@@ -655,7 +655,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     Map data = {
       "screen_code": screen_code,
       "client_type": "device",
-      "is_live": isLIve ? "true" : false,
+      "is_live": isLIve ? "true" : "false",
     };
     String jsonString = jsonEncode(data);
     print("LIVE_SOCKET_SENT");
