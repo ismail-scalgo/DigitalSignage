@@ -12,6 +12,7 @@ class DisplayLayout extends LayoutblocState {
 
 class DefaultScreen extends LayoutblocState {
   int countdown;
+
   DefaultScreen({required this.countdown});
 }
 
@@ -25,7 +26,9 @@ class Minimizescreen extends LayoutblocState {
   Minimizescreen({required this.isvisible});
 }
 
-class NoBroadcastState extends LayoutblocState {}
+class NoBroadcastState extends LayoutblocState {
+
+}
 
 class TrasitionState extends LayoutblocState {}
 
@@ -33,7 +36,9 @@ class OfflineState extends LayoutblocState {}
 
 class MediaLoadingState extends LayoutblocState {}
 
-class ProgressState extends LayoutblocState {}
+class ProgressState extends LayoutblocState {
+
+}
 
 class LogoutState extends LayoutblocState {}
 
@@ -48,8 +53,9 @@ class DownloadProgressState extends LayoutblocState {
   bool isVisible;
   String markerText;
 
-  DownloadProgressState(
-      {required this.progress,
-      required this.isVisible,
-      required this.markerText});
+  DownloadProgressState({
+    required this.progress,
+    required this.isVisible,
+    required this.markerText,
+  });
 }

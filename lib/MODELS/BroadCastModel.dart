@@ -6,11 +6,15 @@ class BroadCastModel {
   LayoutData? currentBroadCast;
   LayoutData? NextBroadCast;
   String? layoutrespInString;
+  int? screen_orientation;
+
   BroadCastModel(
       {this.currentBroadCast,
       this.NextBroadCast,
       this.message,
-      this.layoutrespInString});
+      this.layoutrespInString,
+      this.screen_orientation
+      });
 
   Map toJsonBroadCastModel() {
     return {

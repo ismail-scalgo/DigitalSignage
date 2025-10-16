@@ -29,6 +29,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linear_progress_bar/linear_progress_bar.dart';
 import 'package:lottie/lottie.dart';
+import 'package:player/Utils.dart';
 import 'package:screenshot/screenshot.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -206,17 +207,25 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             // }
                           },
                           builder: (context, state) {
-                            print("Builder called in UI");
+                            print("LaunchingScreen_Builder");
+                            print("Turns "+QUARTER_TURNS.toString());
                             print(state);
+                            
                             if (state is NoBroadcastState) {
                               // return Center(child: Text("no broad"));
-                              return NoBroadCastScreen();
+                              return RotatedBox(
+                                quarterTurns: QUARTER_TURNS,
+                                child: NoBroadCastScreen());
                             }
                             if (state is OfflineState) {
-                              return NoInternetScreen();
+                              return RotatedBox(
+                                quarterTurns: QUARTER_TURNS,
+                                child: NoInternetScreen());
                             }
                             if (state is MediaLoadingState) {
-                              return MediaDownloadingScreen();
+                              return RotatedBox(
+                                quarterTurns: QUARTER_TURNS,
+                                child: MediaDownloadingScreen());
                             }
                             print("state is $state");
                             if (state is DisplayLayout) {
@@ -280,171 +289,174 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                             }
                             if (state is DefaultScreen) {
                               // loadPlayer();
-                              return Container(
-                                width: width,
-                                height: height,
-                                color: Colors.black,
-                                child: Stack(
-                                  children: [
-                                    // Container(
-                                    //   child: VideoPlayer(controller),
-                                    // ),
-                                    // Container(
-                                    //   color: Color.fromARGB(255, 44, 43, 43)
-                                    //       .withOpacity(0.8),
-                                    //   // decoration: BoxDecoration(
-                                    //   //     color: Color.fromARGB(255, 44, 43, 43)
-                                    //   //         .withOpacity(0.8)),
-                                    // ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Center(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              // Text(
-                                              //   "NO",
-                                              //   style: GoogleFonts.protestStrike(
-                                              //       textStyle: TextStyle(
-                                              //           // color: Color.fromARGB(255, 65, 51, 51),
-                                              //           color: Color.fromARGB(
-                                              //               255, 216, 213, 213),
-                                              //           fontSize: width > height
-                                              //               ? width / 12
-                                              //               : height / 12,
-                                              //           fontWeight:
-                                              //               FontWeight.w500),
-                                              //       height: 0.8),
-                                              // ),
-                                              // Text(
-                                              //   "BROADCAST.",
-                                              //   style: GoogleFonts.protestStrike(
-                                              //     textStyle: TextStyle(
-                                              //         color: Color.fromARGB(
-                                              //             255, 218, 46, 15),
-                                              //         fontSize: width > height
-                                              //             ? width / 17
-                                              //             : height / 17,
-                                              //         fontWeight: FontWeight.bold,
-                                              //         letterSpacing: 0),
-                                              //   ),
-                                              // ),
-                                              Countdown(
-                                                // controller: _controller,
-                                                seconds: state.countdown,
-                                                build: (_, double time) =>
-                                                    Column(
-                                                  children: [
-                                                    // Text(
-                                                    //   "NEXT IN",
-                                                    //   style: TextStyle(
-                                                    //       letterSpacing: 18,
-                                                    //       fontSize: 18,
-                                                    //       fontWeight:
-                                                    //           FontWeight.bold,
-                                                    //       color: Color.fromARGB(
-                                                    //           255, 255, 217, 0)),
-                                                    // ),
-                                                    Text(
-                                                      "BROADCAST IN",
-                                                      style:GoogleFonts.protestStrike(
-                  textStyle: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontSize: width / 17,
-                      letterSpacing: 3),
-                ),
-                                                      // style: TextStyle(
-                                                      //     color: Color.fromARGB(
-                                                      //         255,
-                                                      //         255,
-                                                      //         255,
-                                                      //         255),
-                                                      //     fontSize:
-                                                      //         width > height
-                                                      //             ? width / 17
-                                                      //             : height / 17,
-                                                      //     fontWeight:
-                                                      //         FontWeight.bold,
-                                                      //     fontFamily:
-                                                      //         'MyCustomFont',
-                                                      //     letterSpacing: 0),
-                                                      // ),
-                                                    ),
-                                                    
-                                                Container(
-      // Fix the size to avoid movement of the widget itself
-      width: width,
-      child: Center(
-        child: AutoSizeText(
-          state.countdown > 86400
-              ? formatDaysTime(time.toInt())
-              : formatHoursTime(time.toInt()),
-        
-          style: GoogleFonts.robotoMono(
-            textStyle: TextStyle(
-              color: Color.fromARGB(255, 255, 255, 255),
-              fontSize: width / 17,
-              fontWeight: FontWeight.bold,
-              fontFeatures: [FontFeature.tabularFigures()],
-              letterSpacing: 1,
-            ),
-          ),
-          maxFontSize: (width / 17).floorToDouble(), // or round to nearest 0.5
-        stepGranularity: 0.5,
-          maxLines: 1,
-          minFontSize: 10,
-          // maxFontSize: width / 17,
-          // stepGranularity: 0.5,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    
-                                                      // style: GoogleFonts
-                                                      //     .playfairDisplay(
-                                                      //   textStyle: TextStyle(
-                                                      //       color: Color
-                                                      //           .fromARGB(
-                                                      //               255,
-                                                      //               255,
-                                                      //               254,
-                                                      //               254),
-                                                      //       fontSize: 25,
+                              return RotatedBox(
+                                quarterTurns: QUARTER_TURNS,
+                                child: Container(
+                                  width: width,
+                                  height: height,
+                                  color: Colors.black,
+                                  child: Stack(
+                                    children: [
+                                      // Container(
+                                      //   child: VideoPlayer(controller),
+                                      // ),
+                                      // Container(
+                                      //   color: Color.fromARGB(255, 44, 43, 43)
+                                      //       .withOpacity(0.8),
+                                      //   // decoration: BoxDecoration(
+                                      //   //     color: Color.fromARGB(255, 44, 43, 43)
+                                      //   //         .withOpacity(0.8)),
+                                      // ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Center(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                // Text(
+                                                //   "NO",
+                                                //   style: GoogleFonts.protestStrike(
+                                                //       textStyle: TextStyle(
+                                                //           // color: Color.fromARGB(255, 65, 51, 51),
+                                                //           color: Color.fromARGB(
+                                                //               255, 216, 213, 213),
+                                                //           fontSize: width > height
+                                                //               ? width / 12
+                                                //               : height / 12,
+                                                //           fontWeight:
+                                                //               FontWeight.w500),
+                                                //       height: 0.8),
+                                                // ),
+                                                // Text(
+                                                //   "BROADCAST.",
+                                                //   style: GoogleFonts.protestStrike(
+                                                //     textStyle: TextStyle(
+                                                //         color: Color.fromARGB(
+                                                //             255, 218, 46, 15),
+                                                //         fontSize: width > height
+                                                //             ? width / 17
+                                                //             : height / 17,
+                                                //         fontWeight: FontWeight.bold,
+                                                //         letterSpacing: 0),
+                                                //   ),
+                                                // ),
+                                                Countdown(
+                                                  // controller: _controller,
+                                                  seconds: state.countdown,
+                                                  build: (_, double time) =>
+                                                      Column(
+                                                    children: [
+                                                      // Text(
+                                                      //   "NEXT IN",
+                                                      //   style: TextStyle(
+                                                      //       letterSpacing: 18,
+                                                      //       fontSize: 18,
                                                       //       fontWeight:
-                                                      //           FontWeight.w100,
-                                                      //       letterSpacing: 5),
+                                                      //           FontWeight.bold,
+                                                      //       color: Color.fromARGB(
+                                                      //           255, 255, 217, 0)),
                                                       // ),
-                                                      // style: TextStyle(
-                                                      //     fontSize: 25,
-                                                      //     fontWeight:
-                                                      //         FontWeight.bold,
-                                                      //     color: const Color.fromARGB(255, 255, 255, 255)),
-                                                    ),
-                                                  ],
+                                                      Text(
+                                                        "BROADCAST IN",
+                                                        style:GoogleFonts.protestStrike(
+                                                  textStyle: TextStyle(
+                                                      color: Color.fromARGB(255, 255, 255, 255),
+                                                      fontSize: width / 17,
+                                                      letterSpacing: 3),
                                                 ),
-                                                interval: Duration(seconds: 1),
-                                                onFinished: () {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    SnackBar(
-                                                      content: Text(
-                                                          'BROADCAST LIVE'),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ],
+                                                        // style: TextStyle(
+                                                        //     color: Color.fromARGB(
+                                                        //         255,
+                                                        //         255,
+                                                        //         255,
+                                                        //         255),
+                                                        //     fontSize:
+                                                        //         width > height
+                                                        //             ? width / 17
+                                                        //             : height / 17,
+                                                        //     fontWeight:
+                                                        //         FontWeight.bold,
+                                                        //     fontFamily:
+                                                        //         'MyCustomFont',
+                                                        //     letterSpacing: 0),
+                                                        // ),
+                                                      ),
+                                                      
+                                                  Container(
+                                      // Fix the size to avoid movement of the widget itself
+                                      width: width,
+                                      child: Center(
+                                        child: AutoSizeText(
+                                          state.countdown > 86400
+                                              ? formatDaysTime(time.toInt())
+                                              : formatHoursTime(time.toInt()),
+                                        
+                                          style: GoogleFonts.robotoMono(
+                                            textStyle: TextStyle(
+                                              color: Color.fromARGB(255, 255, 255, 255),
+                                              fontSize: width / 17,
+                                              fontWeight: FontWeight.bold,
+                                              fontFeatures: [FontFeature.tabularFigures()],
+                                              letterSpacing: 1,
+                                            ),
                                           ),
+                                          maxFontSize: (width / 17).floorToDouble(), // or round to nearest 0.5
+                                        stepGranularity: 0.5,
+                                          maxLines: 1,
+                                          minFontSize: 10,
+                                          // maxFontSize: width / 17,
+                                          // stepGranularity: 0.5,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                      ],
-                                    ),
-                                  ],
+                                      ),
+                                    
+                                                        // style: GoogleFonts
+                                                        //     .playfairDisplay(
+                                                        //   textStyle: TextStyle(
+                                                        //       color: Color
+                                                        //           .fromARGB(
+                                                        //               255,
+                                                        //               255,
+                                                        //               254,
+                                                        //               254),
+                                                        //       fontSize: 25,
+                                                        //       fontWeight:
+                                                        //           FontWeight.w100,
+                                                        //       letterSpacing: 5),
+                                                        // ),
+                                                        // style: TextStyle(
+                                                        //     fontSize: 25,
+                                                        //     fontWeight:
+                                                        //         FontWeight.bold,
+                                                        //     color: const Color.fromARGB(255, 255, 255, 255)),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  interval: Duration(seconds: 1),
+                                                  onFinished: () {
+                                                    ScaffoldMessenger.of(context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                            'BROADCAST LIVE'),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                               // return Center(
@@ -555,35 +567,38 @@ class _LyoutScreenState extends State<LaunchingScreen> {
                     builder: (context, state) {
                       print("INSIDE DOWNLOAD PROGRESS STATE");
                       if (state is DownloadProgressState && state.isVisible) {
-                        return Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Container(
-                              height: 100,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Container(
-                                      child: Text(
-                                    state.markerText,
-                                    style: TextStyle(
-                                        color: Colors.amber, fontSize: 18),
-                                  )),
-                                  LinearProgressBar(
-                                    maxSteps: 100,
-                                    progressType: LinearProgressBar
-                                        .progressTypeLinear, // Use Linear progress
-                                    currentStep: state.progress,
-                                    progressColor:
-                                        const Color.fromARGB(255, 255, 0, 128),
-                                    backgroundColor: const Color.fromARGB(
-                                        255, 255, 255, 255),
-                                    borderRadius:
-                                        BorderRadius.circular(10), //  NEW
-                                  ),
-                                ],
+                        return RotatedBox(
+                          quarterTurns: QUARTER_TURNS,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Container(
+                                height: 100,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                        child: Text(
+                                      state.markerText,
+                                      style: TextStyle(
+                                          color: Colors.amber, fontSize: 18),
+                                    )),
+                                    LinearProgressBar(
+                                      maxSteps: 100,
+                                      progressType: LinearProgressBar
+                                          .progressTypeLinear, // Use Linear progress
+                                      currentStep: state.progress,
+                                      progressColor:
+                                          const Color.fromARGB(255, 255, 0, 128),
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      borderRadius:
+                                          BorderRadius.circular(10), //  NEW
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),

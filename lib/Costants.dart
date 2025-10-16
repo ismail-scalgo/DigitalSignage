@@ -23,6 +23,7 @@ String PLATFORM = 'WEB';
 String HARDCODEPLATFORM = 'ANDROIDTV';
 double gheight = 0;
 double gwidth = 0;
+int QUARTER_TURNS = 0;
 
 Future<bool> isOffline() async {
   final connectivityResult = await Connectivity().checkConnectivity();
@@ -37,6 +38,6 @@ Future<bool> isOffline() async {
 
 int TOTALPLAYERNO = 0;
 
-String runDevice = "firetv";
+String runDevice = "non_firetv";
 
 bool alreadyAnyDownload = false;

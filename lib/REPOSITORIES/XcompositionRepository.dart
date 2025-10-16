@@ -236,6 +236,7 @@ class LayoutRepository {
         NextBroadCast: nextBroadcastData,
         layoutrespInString: response.body,
       );
+       calculateQuarterTurnsAndSave(jsonData["data"]["orientation_angle"]);
       // layoutdata.zoneData!.forEach((element) {
       //   element.compositionModels
       //       .removeWhere((content) => content.fileDuration == '0.0');
@@ -288,7 +289,9 @@ class LayoutRepository {
       currentBroadCast: currentBroadcastData,
       NextBroadCast: nextBroadcastData,
       layoutrespInString: responce,
+      screen_orientation: jsonData["data"]["orientation_angle"],
     );
+    calculateQuarterTurnsAndSave(jsonData["data"]["orientation_angle"]);
 
     // layoutdata.zoneData!.forEach((element) {
     //   element.compositionModels

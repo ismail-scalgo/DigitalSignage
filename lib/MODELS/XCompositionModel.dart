@@ -147,6 +147,7 @@ class LayoutData {
   final String? lastUpdatedAt;
   String? stringData;
   String? broadcast_type;
+  
 
   LayoutData(
       {this.id,
