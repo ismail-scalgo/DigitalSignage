@@ -3,13 +3,12 @@ import 'package:player/Costants.dart';
 import 'package:player/MODELS/XCompositionModel.dart';
 import 'package:player/UI/APPS/HtmlApps.dart';
 import 'package:player/UI/APPS/ScrollText.dart';
+import 'package:player/UI/APPS/WebViewApp.dart';
 import 'package:player/UI/ELEMENTS/ANDROID/AndroidVideoPlayer.dart';
 import 'package:player/UI/ELEMENTS/ANDROID/IframeYouTubePlayer.dart';
 import 'package:player/UI/ELEMENTS/COMMON/ImageView.dart';
 import 'package:player/UI/ELEMENTS/COMMON/PdfView.dart';
 import 'package:flutter/material.dart';
-
-
 
 class SingleZoneController extends StatefulWidget {
   ZoneData zonedata;
@@ -55,7 +54,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       'content_name': widget.zonedata.compositionModels[currentIndex].filename,
       'content_duration':
           widget.zonedata.compositionModels[currentIndex].fileDuration,
-      'content_zone': widget.zonedata.id
+      'content_zone': widget.zonedata.id,
     };
 
     controller.add(content_start_data);
@@ -76,7 +75,8 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
     } else if (compositiondata.fileFormat == ".mp4") {
       String fullUrl = BASEURLMEDIA + compositiondata.fileUrl;
 
-      double aspectRatio = (gwidth * widget.zonedata.widthPercent) /
+      double aspectRatio =
+          (gwidth * widget.zonedata.widthPercent) /
           (gheight * widget.zonedata.heightPercent);
       // return CustomVideoPlayer(url: fullUrl);
       // return MediaKitWebPlayer(url: fullUrl);
@@ -86,14 +86,14 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
         url: fullUrl,
         filepath: compositiondata.localstoragepath,
         hasVolume: widget.zonedata.isMuted,
-        
-        key: Key(fullUrl+widget.zonedata.isMuted.toString()),
+
+        key: Key(fullUrl + widget.zonedata.isMuted.toString()),
       );
 
-//        url2 = https://web-dev-sgdsignage.scalgo.net/media/uploads/4.%20Sooraj/ForBiggerEscapes_pHCKvHE.mp4
-//        I/flutter (27480): FILE PATH OF VIDEOOOOOOOOOOO
-//        I/flutter (27480): /data/user/0/com.example.digitalsignange/cache/libCachedImageData/e31063c0-a727-11ef-8641-cd3ad725e104.mp4
-//        D/VRI[]   (27480): vri.reportDrawFinished
+      //        url2 = https://web-dev-sgdsignage.scalgo.net/media/uploads/4.%20Sooraj/ForBiggerEscapes_pHCKvHE.mp4
+      //        I/flutter (27480): FILE PATH OF VIDEOOOOOOOOOOO
+      //        I/flutter (27480): /data/user/0/com.example.digitalsignange/cache/libCachedImageData/e31063c0-a727-11ef-8641-cd3ad725e104.mp4
+      //        D/VRI[]   (27480): vri.reportDrawFinished
       // return Mymediakitvideoplayer(url: fullUrl);
       // return FlutterVideoPlayer(url: fullUrl);
       // return VideoPlayer(url: fullUrl);
@@ -104,20 +104,18 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       //   child:AndroidVideoPlayer(url: fullUrl));
     } else if (compositiondata.fileFormat == ".pdf") {
       String fullUrl = BASEURLMEDIA + compositiondata.fileUrl;
-      return CustomPdf(
-        url: fullUrl,
-        key: Key(fullUrl),
-      );
+      return CustomPdf(url: fullUrl, key: Key(fullUrl));
     } else if (compositiondata.fileFormat == ".html") {
       print("HTML APP CALLED  URL ${compositiondata.fileUrl}");
 
       if (compositiondata.appType == 'Youtube') {
         return Iframeyoutubeplayer(url: compositiondata.youtube_url);
       } else {
-        return HtmlApps(
-          htmlUrl: BASEURLMEDIA + compositiondata.fileUrl,
-          key: Key(compositiondata.fileUrl),
-        );
+        return Webviewapp(url: BASEURLMEDIA + compositiondata.fileUrl,key: Key(compositiondata.fileUrl),);
+        // return HtmlApps(
+        //   htmlUrl: BASEURLMEDIA + compositiondata.fileUrl,
+        //   key: Key(compositiondata.fileUrl),
+        // );
       }
 
       //  {
@@ -136,9 +134,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       // );
       // return Iframeyoutubeplayer(url: "https://www.youtube.com/watch?v=EJxeMbDTkVI");
     }
-    return Center(
-      child: Text("Unknown media format"),
-    );
+    return Center(child: Text("Unknown media format"));
   }
 
   void changeController() async {
@@ -147,17 +143,22 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
     }
 
     print(
-        "durrrrrrrrrrrrrrrrr = ${widget.zonedata.compositionModels[currentIndex].fileDuration}");
+      "durrrrrrrrrrrrrrrrr = ${widget.zonedata.compositionModels[currentIndex].fileDuration}",
+    );
     Future.delayed(
-        Duration(
-            seconds: double.parse(widget
-                    .zonedata.compositionModels[currentIndex].fileDuration)
-                .toInt()), () async {
-      if (!isdisposed) {
-        currentIndex++;
-        changeController();
-        setState(() {});
-      }
-    });
+      Duration(
+        seconds:
+            double.parse(
+              widget.zonedata.compositionModels[currentIndex].fileDuration,
+            ).toInt(),
+      ),
+      () async {
+        if (!isdisposed) {
+          currentIndex++;
+          changeController();
+          setState(() {});
+        }
+      },
+    );
   }
 }
