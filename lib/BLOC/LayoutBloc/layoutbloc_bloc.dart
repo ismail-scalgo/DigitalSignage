@@ -39,6 +39,9 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   String? screen_code;
   late WebSocket globalConnection;
 
+  bool isScoketConnectedForFirstTime = false;
+  bool isSocketConnectTimerSttarted = false;
+
   StreamSubscription<FileResponse>? lastDownloadingFile;
 
   int? systemToServerTimeDifference;
@@ -62,6 +65,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is FetchApi) {
         log("fetch api event called");
         print("fetch api event called");
+        screen_code = event.screenCode!;
 
         if (isFirstLoad) {
           await init();
@@ -84,7 +88,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             RELOAD_FLAG_COUNT++;
 
             emit(NoBroadcastState());
-              sendLiveDataToSocket(false);
+            sendLiveDataToSocket(false);
           } else {
             print("there is data");
             if (broadCastData?.currentBroadCast != null) {
@@ -223,7 +227,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       if (event is EndEvent) {
         emit(NoBroadcastState());
-          sendLiveDataToSocket(false);
+        sendLiveDataToSocket(false);
       }
       if (event is visibleButton) {
         emit(DisplayButton(isvisible: event.isvisible));
@@ -243,7 +247,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         // emit(DefaultScreen(countdown: event.countdown));
         if (event.countdown > 604800) {
           emit(NoBroadcastState());
-            sendLiveDataToSocket(false);
+          sendLiveDataToSocket(false);
           return;
         }
         if (event.countdown <= 3) {
@@ -257,8 +261,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       if (event is NoBroadCastEvent) {
         emit(NoBroadcastState());
-         sendLiveDataToSocket(false);
-
+        sendLiveDataToSocket(false);
       }
       if (event is DisplayBroadcastEvent) {
         emit(DisplayLayout(layoutdata: event.layoutData));
@@ -387,34 +390,45 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         print("no dataaaaaaaaa");
         add(NoBroadCastEvent());
       } else {
-        print("there is data");
-        LayoutData? layoutdata = broadCastData?.currentBroadCast;
-        current_broadcast = layoutdata;
-        next_broadcast = broadCastData?.NextBroadCast;
-        String currentTime = getFormattedCurrentDateTime();
+        bool isAllContentSupportOffline = hasAnyNonOfflineContents(
+          broadCastData!.currentBroadCast!,
+        );
 
-        if (currentBroadcastInString !=
-                broadCastData?.currentBroadCast?.stringData ||
-            nextBroadcastInString != broadCastData!.NextBroadCast?.stringData) {
-          if (HARDCODEPLATFORM != 'WEB') {
-            add(MediaLoadingEvent());
-            int end_difference =
-                timeDifference(current_broadcast!.endDateTime!, currentTime) +
-                (systemToServerTimeDifference ?? 0);
-            if (next_broadcast != null) {
-              preloadContents(next_broadcast!);
+        if (isAllContentSupportOffline) {
+          print("there is data");
+          LayoutData? layoutdata = broadCastData?.currentBroadCast;
+          current_broadcast = layoutdata;
+          next_broadcast = broadCastData?.NextBroadCast;
+          String currentTime = getFormattedCurrentDateTime();
+
+          if (currentBroadcastInString !=
+                  broadCastData?.currentBroadCast?.stringData ||
+              nextBroadcastInString !=
+                  broadCastData!.NextBroadCast?.stringData) {
+            if (HARDCODEPLATFORM != 'WEB') {
+              add(MediaLoadingEvent());
+              int end_difference =
+                  timeDifference(current_broadcast!.endDateTime!, currentTime) +
+                  (systemToServerTimeDifference ?? 0);
+              if (next_broadcast != null) {
+                preloadContents(next_broadcast!);
+              }
             }
+            add(TrasnsitionEvent());
+            await Future.delayed(Duration(seconds: 1));
+
+            RELOAD_FLAG_COUNT++;
+            currentBroadcastInString =
+                broadCastData!.currentBroadCast?.stringData!;
+            nextBroadcastInString = broadCastData.NextBroadCast?.stringData!;
+
+            lastUpdateTime = layoutdata!.lastUpdatedAt!;
+            manageBroadcast(current_broadcast!);
           }
-          add(TrasnsitionEvent());
-          await Future.delayed(Duration(seconds: 1));
-
-          RELOAD_FLAG_COUNT++;
-          currentBroadcastInString =
-              broadCastData!.currentBroadCast?.stringData!;
-          nextBroadcastInString = broadCastData.NextBroadCast?.stringData!;
-
-          lastUpdateTime = layoutdata!.lastUpdatedAt!;
-          manageBroadcast(current_broadcast!);
+        }
+        else
+        {
+           add(NoBroadCastEvent());
         }
       }
     }
@@ -564,7 +578,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   }
 
   void connect(String screencode) async {
-    final socket = WebSocket(Uri.parse(SOCKET_ADDRESS));
+    print("socket connection method called");
+    final socket = WebSocket(
+      Uri.parse(SOCKET_ADDRESS),
+      timeout: Duration(seconds: 5),
+      backoff: ConstantBackoff(Duration(seconds: 6)),
+    );
     globalConnection = socket;
 
     socket.messages.listen((message) async {
@@ -597,8 +616,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     socket.connection.listen((connectionState) {
       if (connectionState is Connecting) {
         print("CONNECTING");
+        timerForSocketConnectionManagement();
       }
       if (connectionState is Connected) {
+        isScoketConnectedForFirstTime = true;
         print("CONNECTED");
         String formattedScreenCode = '"' + screencode + '"';
         print('{"screen_code" : $formattedScreenCode}');
@@ -625,6 +646,16 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
       print(connectionState.toString());
     });
+  }
+
+  Future timerForSocketConnectionManagement() async {
+    isSocketConnectTimerSttarted = true;
+    await Future.delayed(Duration(seconds: 7));
+    if (!isScoketConnectedForFirstTime) {
+      if (!isScoketConnectedForFirstTime) {
+        connect(screen_code!);
+      }
+    }
   }
 
   int timeDifference(String time, String curretTime) {
@@ -661,6 +692,20 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     print("LIVE_SOCKET_SENT");
     print(jsonString);
     globalConnection.send(jsonString);
+  }
+
+  bool hasAnyNonOfflineContents(LayoutData broadcastData) {
+    bool is_all_content_support_offline = false;
+
+    for (var zoneData in broadcastData.zoneData!) {
+      for (var content in zoneData.compositionModels) {
+        if (!content.is_content_support_offline) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 
   Future preloadContents(LayoutData broadcastData) async {

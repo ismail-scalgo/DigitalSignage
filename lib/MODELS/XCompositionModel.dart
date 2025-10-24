@@ -12,36 +12,42 @@ class CompositionModel {
   String appType;
   String contentType;
   String youtube_url;
+  bool is_content_support_offline;
 
-  CompositionModel(
-      {required this.fileUrl,
-      required this.fileFormat,
-      required this.localstoragepath,
-      required this.fileDuration,
-      required this.filename,
-      required this.appType,
-      required this.appdata,
-      required this.contentType,
-      required this.youtube_url});
+  CompositionModel({
+    required this.fileUrl,
+    required this.fileFormat,
+    required this.localstoragepath,
+    required this.fileDuration,
+    required this.filename,
+    required this.appType,
+    required this.appdata,
+    required this.contentType,
+    required this.youtube_url,
+    required this.is_content_support_offline
+  });
 
   // Convert JSON to CompositionModel
   factory CompositionModel.fromJson(Map<String, dynamic> json) {
     return CompositionModel(
-        fileUrl: json['file_upload'] as String,
-        fileFormat: json['file_format'] as String,
-        localstoragepath:
-            json['localstoragepath'] == null ? '' : json['localstoragepath'],
-        fileDuration: json['duration'] as String,
-        filename: json['content_name'],
-        appType: json["app_type"],
-        appdata: json['appdata'] == null ? {} : json['appdata'],
-        contentType: json['content_type'],
-        youtube_url: json['youtube_url'] == null ? '' : json['youtube_url']);
+      fileUrl: json['file_upload'] as String,
+      fileFormat: json['file_format'] as String,
+      localstoragepath:
+          json['localstoragepath'] == null ? '' : json['localstoragepath'],
+      fileDuration: json['duration'] as String,
+      filename: json['content_name'],
+      appType: json["app_type"],
+      appdata: json['appdata'] == null ? {} : json['appdata'],
+      contentType: json['content_type'],
+      youtube_url: json['youtube_url'] == null ? '' : json['youtube_url'],
+      is_content_support_offline: json["is_offline_available"] ==null ? false : json["is_offline_available"]
+    );
   }
 
   Map toJson() {
     DebugPrint(
-        "TO JSON OF COMPOSITION MODEL CALLED WITH LOCALSTORAGE PATH $localstoragepath");
+      "TO JSON OF COMPOSITION MODEL CALLED WITH LOCALSTORAGE PATH $localstoragepath",
+    );
 
     return {
       "app_type": appType,
@@ -51,7 +57,8 @@ class CompositionModel {
       "file_upload": fileUrl,
       "file_format": fileFormat,
       "duration": fileDuration,
-      "localstoragepath": localstoragepath
+      "localstoragepath": localstoragepath,
+      "is_offline_available" : is_content_support_offline
     };
   }
 }
@@ -67,15 +74,16 @@ class ZoneData {
 
   final List<CompositionModel> compositionModels;
 
-  ZoneData(
-      {required this.id,
-      required this.name,
-      required this.widthPercent,
-      required this.heightPercent,
-      required this.xPercent,
-      required this.yPercent,
-      required this.compositionModels,
-      required this.isMuted});
+  ZoneData({
+    required this.id,
+    required this.name,
+    required this.widthPercent,
+    required this.heightPercent,
+    required this.xPercent,
+    required this.yPercent,
+    required this.compositionModels,
+    required this.isMuted,
+  });
 
   // Convert JSON to ZoneData
   factory ZoneData.fromJson(Map<String, dynamic> json) {
@@ -129,6 +137,7 @@ class ZoneData {
       "heightPercent": heightPercent,
       "xPercent": xPercent,
       "yPercent": yPercent,
+      "is_muted": isMuted,
       "contents": compositionModels.map((model) => model.toJson()).toList(),
     };
   }
@@ -147,21 +156,21 @@ class LayoutData {
   final String? lastUpdatedAt;
   String? stringData;
   String? broadcast_type;
-  
 
-  LayoutData(
-      {this.id,
-      this.name,
-      this.message,
-      this.currentDatetime,
-      this.startDateTime,
-      this.endDateTime,
-      this.zoneCount,
-      this.zoneData,
-      required this.oreintationAngle,
-      this.lastUpdatedAt,
-      this.stringData,
-      this.broadcast_type});
+  LayoutData({
+    this.id,
+    this.name,
+    this.message,
+    this.currentDatetime,
+    this.startDateTime,
+    this.endDateTime,
+    this.zoneCount,
+    this.zoneData,
+    required this.oreintationAngle,
+    this.lastUpdatedAt,
+    this.stringData,
+    this.broadcast_type,
+  });
 
   // Convert JSON to LayoutData
   factory LayoutData.fromJson(Map<String, dynamic> json) {
@@ -174,18 +183,19 @@ class LayoutData {
         zoneDataJson.map((i) => ZoneData.fromJson(i)).toList();
 
     return LayoutData(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        message: json['message'] as String,
-        currentDatetime: json['current_datetime'] as String,
-        startDateTime: json['start_datetime'] as String,
-        endDateTime: json['end_datetime'] as String,
-        zoneCount: json['zone_count'] as int,
-        zoneData: zoneDataList,
-        lastUpdatedAt: json['updated_datetime'],
-        oreintationAngle: json['orientation_angle'] as int,
-        broadcast_type: json['broadcast_type'] as String,
-        stringData: jsonEncode(jsonCopy));
+      id: json['id'] as int,
+      name: json['name'] as String,
+      message: json['message'] as String,
+      currentDatetime: json['current_datetime'] as String,
+      startDateTime: json['start_datetime'] as String,
+      endDateTime: json['end_datetime'] as String,
+      zoneCount: json['zone_count'] as int,
+      zoneData: zoneDataList,
+      lastUpdatedAt: json['updated_datetime'],
+      oreintationAngle: json['orientation_angle'] as int,
+      broadcast_type: json['broadcast_type'] as String,
+      stringData: jsonEncode(jsonCopy),
+    );
   }
 
   Map toJson() {
@@ -204,6 +214,7 @@ class LayoutData {
         "end_datetime": endDateTime,
         "orientation_angle": oreintationAngle,
         "zone_count": zoneCount,
+        "broadcast_type": broadcast_type,
         "zone_data": zoneData?.map((zone) => zone.toJson()).toList(),
       };
     } else {

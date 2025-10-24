@@ -804,7 +804,7 @@ class _LyoutScreenState extends State<LaunchingScreen> {
 
   void checkConnectivity() async {
     if (await isOffline()) {
-      showToast(context, "No Internet Connection");
+     // showToast(context, "No Internet Connection");
       apiBloc.add(OfflineEvent());
     }
   }

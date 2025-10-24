@@ -2,8 +2,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
-String BASEURL = "https://dev-api.zignflix.com";
-// String BASEURL = "https://api.zignflix.com/";
+// String BASEURL = "https://test-api.zignflix.com";
+String BASEURL = "https://api.zignflix.com/";
 
 // String BASEURL = "https://dev-api.zignflix.com";
 
@@ -11,9 +11,9 @@ String BASEURL = "https://dev-api.zignflix.com";
 
 // String SOCKET_ADDRESS = 'ws://studio.zignflix.com/ws/';
 
-String SOCKET_ADDRESS = 'wss://dev-api.zignflix.com/ws/';
+// String SOCKET_ADDRESS = 'wss://test-api.zignflix.com/ws/';
 // String SOCKET_ADDRESS = 'wss://dev-api.zignflix.com/ws/';
-// String SOCKET_ADDRESS = 'wss://api.zignflix.com/ws/';
+String SOCKET_ADDRESS = 'wss://api.zignflix.com/ws/';
 // String SOCKET_ADDRESS = 'ws://192.168.0.98:8765';
 //  String SOCKET_ADDRESS = 'ws://192.168.0.67:8765';
 
