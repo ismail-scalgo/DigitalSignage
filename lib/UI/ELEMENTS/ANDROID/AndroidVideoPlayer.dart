@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:player/UI/VIDEOLOCK.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -113,17 +115,17 @@ class _AndroidVideoPlayerState extends State<AndroidVideoPlayer> {
     print("FILE PATH OF VIDEOOOOOOOOOOO");
     print(widget.filepath);
 
-    var file = await DefaultCacheManager().getSingleFile(widget.url);
+    // var file = await DefaultCacheManager().getSingleFile(widget.url);
 
-    // final file = File(widget.filepath);
+    var file = File(widget.filepath);
 
-    // if (!(await file.exists())) {
-    //   print("Androidvideplayer.dart");
-    //   print("FILE PATH CORRUPTED");
-    //   print("DOWNLOAD AGAIN");
-    //   await DefaultCacheManager().removeFile(widget.url);
-    //   filepath = (await DefaultCacheManager().getSingleFile(widget.url)).path;
-    // }
+    if (!(await file.exists())) {
+      print("Androidvideplayer.dart");
+      print("FILE PATH CORRUPTED");
+      print("DOWNLOAD AGAIN");
+      await DefaultCacheManager().removeFile(widget.url);
+      file= (await DefaultCacheManager().getSingleFile(widget.url));
+    }
 
     // var file1 = await DefaultCacheManager().downloadFile(widget.url);
     return VideoSource.init(

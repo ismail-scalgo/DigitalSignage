@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/services.dart';
 import 'package:player/Costants.dart';
 
@@ -40,4 +42,10 @@ int calculateQuarterTurnsAndSave(int oreintationAngle) {
   QUARTER_TURNS = quarterTurns;
 
   return quarterTurns;
+}
+
+int generateRandomNumber()
+{
+
+   return Random().nextInt(1000);
 }

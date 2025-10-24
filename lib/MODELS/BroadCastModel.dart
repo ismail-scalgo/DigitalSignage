@@ -25,6 +25,7 @@ class BroadCastModel {
         "second_broadcast_data": NextBroadCast == null
             ? {"message": "No other broadcast"}
             : NextBroadCast?.toJson(),
+            "orientation_angle":screen_orientation == null ? 0 : screen_orientation,
         "message": message
       }
     };

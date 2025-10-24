@@ -5,11 +5,13 @@ import 'package:flutter_cache_manager/file.dart';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:lottie/lottie.dart';
+import 'dart:io' as Fl;
 
 class ImageScreen extends StatefulWidget {
   String url;
+  String filepath;
 
-  ImageScreen({required this.url});
+  ImageScreen({required this.url,required this.filepath,required super.key});
 
   @override
   State<ImageScreen> createState() => _ImageScreenState();
@@ -17,17 +19,17 @@ class ImageScreen extends StatefulWidget {
 
 class _ImageScreenState extends State<ImageScreen> {
   bool isLoad = true;
-  late File imageFile;
+  late Fl.File imageFile;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    load();
+   // load();
   }
 
   @override
   void didUpdateWidget(covariant ImageScreen oldWidget) {
-    load();
+  //  load();
     // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
   }
@@ -36,29 +38,46 @@ class _ImageScreenState extends State<ImageScreen> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    return isLoad
-        ? Center(
-            child: Center(
-                child: Container(
-                    width: width / 10,
-                    height: width / 10,
-                    child: Lottie.asset('assets/loading3.json'))))
-        : Container(
-  
-          child: Image.file(imageFile, fit: BoxFit.fill));
+     imageFile = Fl.File(widget.filepath);
+    return  Container(child: Image.file(imageFile, fit: BoxFit.fill));
+    // return isLoad
+    //     ? Center(
+    //       child: Center(
+    //         child: Container(
+    //           width: width / 10,
+    //           height: width / 10,
+    //           child: Lottie.asset('assets/loading3.json'),
+    //         ),
+    //       ),
+    //     )
+    //     : Container(child: Image.file(imageFile, fit: BoxFit.fill));
   }
 
-  void load() async {
-    imageFile = await DefaultCacheManager().getSingleFile(widget.url);
-    isLoad = false;
-    setState(() {});
-  }
+  // void load() async {
 
-  Widget LoadingWidget(double height, double width) {
-    return Center(
-        child: Container(
-            width: width / 10,
-            height: width / 10,
-            child: Lottie.asset('assets/loading3.json')));
-  }
+  // imageFile = Fl.File(widget.filepath);
+
+  //   if (!(await imageFile.exists())) {
+  //     print("Androidvideplayer.dart");
+  //     print("FILE PATH CORRUPTED");
+  //     print("DOWNLOAD AGAIN");
+  //     await DefaultCacheManager().removeFile(widget.url);
+  //     imageFile= (await DefaultCacheManager().getSingleFile(widget.url));
+  //   }
+
+
+   
+  //   isLoad = false;
+  //   setState(() {});
+  // }
+
+  // Widget LoadingWidget(double height, double width) {
+  //   return Center(
+  //     child: Container(
+  //       width: width / 10,
+  //       height: width / 10,
+  //       child: Lottie.asset('assets/loading3.json'),
+  //     ),
+  //   );
+  // }
 }
