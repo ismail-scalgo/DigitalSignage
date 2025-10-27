@@ -425,10 +425,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             lastUpdateTime = layoutdata!.lastUpdatedAt!;
             manageBroadcast(current_broadcast!);
           }
-        }
-        else
-        {
-           add(NoBroadCastEvent());
+        } else {
+          add(NoBroadCastEvent());
         }
       }
     }
@@ -699,7 +697,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
-        if (!content.is_content_support_offline) {
+        // if (!content.is_content_support_offline) {
+        //   return false;
+        // }
+        if (content.fileFormat == ".html") {
           return false;
         }
       }
