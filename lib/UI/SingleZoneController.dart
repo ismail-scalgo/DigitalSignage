@@ -100,6 +100,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       String fullUrl = BASEURLMEDIA + compositiondata.fileUrl;
       return CustomPdf(
         url: fullUrl,
+        per_page_duration: compositiondata.per_page_duration,
         key: Key(fullUrl + generateRandomNumber().toString()),
       );
     } else if (compositiondata.fileFormat == ".html") {

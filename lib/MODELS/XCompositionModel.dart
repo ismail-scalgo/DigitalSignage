@@ -13,6 +13,7 @@ class CompositionModel {
   String contentType;
   String youtube_url;
   bool is_content_support_offline;
+  int per_page_duration;
 
   CompositionModel({
     required this.fileUrl,
@@ -24,7 +25,8 @@ class CompositionModel {
     required this.appdata,
     required this.contentType,
     required this.youtube_url,
-    required this.is_content_support_offline
+    required this.is_content_support_offline,
+    required this.per_page_duration
   });
 
   // Convert JSON to CompositionModel
@@ -40,7 +42,12 @@ class CompositionModel {
       appdata: json['appdata'] == null ? {} : json['appdata'],
       contentType: json['content_type'],
       youtube_url: json['youtube_url'] == null ? '' : json['youtube_url'],
-      is_content_support_offline: json["is_offline_available"] ==null ? false : json["is_offline_available"]
+      is_content_support_offline:
+          json["is_offline_available"] == null
+              ? false
+              : json["is_offline_available"],
+
+      per_page_duration: json["per_page_duration"] == null ? 5 : json["per_page_duration"]
     );
   }
 
@@ -58,7 +65,9 @@ class CompositionModel {
       "file_format": fileFormat,
       "duration": fileDuration,
       "localstoragepath": localstoragepath,
-      "is_offline_available" : is_content_support_offline
+      "is_offline_available": is_content_support_offline,
+      "per_page_duration" : per_page_duration
+
     };
   }
 }

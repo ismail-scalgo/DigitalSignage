@@ -7,7 +7,12 @@ import 'package:pdfx/pdfx.dart';
 
 class CustomPdf extends StatefulWidget {
   String url;
-  CustomPdf({required this.url, required super.key});
+  int per_page_duration;
+  CustomPdf({
+    required this.url,
+    required this.per_page_duration,
+    required super.key,
+  });
 
   @override
   State<CustomPdf> createState() => _CustomPdfState();
@@ -17,7 +22,7 @@ class _CustomPdfState extends State<CustomPdf> {
   late PdfController pdfPinchController;
   bool isLoading = true;
   late AnimationController ccontroller;
-  int page = 1;
+  int page = 2;
 
   bool isdisposed = false;
 
@@ -30,19 +35,21 @@ class _CustomPdfState extends State<CustomPdf> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: isLoading
-            ? Center(
-                child: CircularProgressIndicator()) // Show a loading indicator
-
-            : PdfView(
-                controller: pdfPinchController,
-              ));
+      body:
+          isLoading
+              ? Center(
+                child: CircularProgressIndicator(),
+              ) // Show a loading indicator
+              : PdfView(controller: pdfPinchController),
+    );
   }
 
   Future<void> load() async {
     try {
-      final file = await DefaultCacheManager().getSingleFile(widget.url,
-          headers: {'Cache-Control': 'max-age=3600'});
+      final file = await DefaultCacheManager().getSingleFile(
+        widget.url,
+        headers: {'Cache-Control': 'max-age=360000'},
+      );
 
       // Initialize the PDF controller with the loaded file
 
@@ -68,24 +75,32 @@ class _CustomPdfState extends State<CustomPdf> {
   }
 
   void animation() async {
-    await Future.delayed(Duration(seconds: 3));
+    print("animation_wait");
+    int per_page_duration = widget.per_page_duration.toInt();
+    if (per_page_duration < 5) {
+      per_page_duration = 5;
+    }
+
+    await Future.delayed(Duration(seconds: per_page_duration));
+    print("animation_start");
 
     print("PAGES==========");
     print(pdfPinchController.pagesCount);
     if (pdfPinchController.pagesCount! > 1) {
       //may be it is scheduled before dispose that is why it is checked before animate to another page
       if (!isdisposed) {
-        pdfPinchController.animateToPage(page,
-            duration: Duration(milliseconds: 1000), curve: Curves.slowMiddle);
+        pdfPinchController.animateToPage(
+          page,
+          duration: Duration(milliseconds: 1000),
+          curve: Curves.slowMiddle,
+        );
 
         if (page == pdfPinchController.pagesCount) {
           page = 0;
+        } else {
+          page++;
         }
-        else
-        {
-page++;
-        }
-        
+
         animation();
       }
     }
