@@ -3,6 +3,7 @@ import 'package:fire_tv_listener/fire_tv_listener.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
+import 'package:player/Utils.dart';
 
 class AutoStartPermissionScreen extends StatefulWidget {
   @override
@@ -50,14 +51,14 @@ class _AutoStartPermissionScreenState extends State<AutoStartPermissionScreen>
         );
 
         //navigate to screen
-        print("NAVIGATEDD   TO  SCREEN");
+        DebugPrint("NAVIGATEDD   TO  SCREEN");
       }
 
       // App returned to foreground (from settings)
       // setState(() {
       //   returnedFromSettings = true;
       // });
-      print("Returned from settings");
+      DebugPrint("Returned from settings");
     }
   }
 

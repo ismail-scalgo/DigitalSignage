@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:player/Costants.dart';
 
 void DebugPrint(Object? text) {
-  print(text);
+  //  print(text);
 }
 
 class PlatformTVCheck {
@@ -13,14 +13,14 @@ class PlatformTVCheck {
   static Future<bool> isTV() async {
     final bool isTV = await _channel.invokeMethod('isTV');
     DebugPrint("IS_TV");
-    print(isTV);
+    DebugPrint(isTV);
     return isTV;
   }
 }
 
 int calculateQuarterTurnsAndSave(int oreintationAngle) {
-  print("CALCULATING_ORIENTATION_ANGLE");
-  print(oreintationAngle);
+  DebugPrint("CALCULATING_ORIENTATION_ANGLE");
+  DebugPrint(oreintationAngle);
   int quarterTurns = 0;
 
   if (oreintationAngle >= 0 && oreintationAngle < 90) {
@@ -44,8 +44,6 @@ int calculateQuarterTurnsAndSave(int oreintationAngle) {
   return quarterTurns;
 }
 
-int generateRandomNumber()
-{
-
-   return Random().nextInt(1000);
+int generateRandomNumber() {
+  return Random().nextInt(1000);
 }

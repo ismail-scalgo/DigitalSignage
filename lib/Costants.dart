@@ -41,3 +41,5 @@ int TOTALPLAYERNO = 0;
 String runDevice = "non_firetv";
 
 bool alreadyAnyDownload = false;
+
+bool HAS_ANY_OFFLINE_UNSPPOTED_MEDIA = true;

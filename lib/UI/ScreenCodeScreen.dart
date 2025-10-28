@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+import 'package:player/Utils.dart';
 
 class PreScreenCodeScreen extends StatefulWidget {
   const PreScreenCodeScreen({super.key});
@@ -39,7 +40,7 @@ class _ScreenCodeScreenState extends State<ScreenCodeScreen> {
   @override
   void initState() {
     super.initState();
-    print("screen code screeeeeeeeeeeeen");
+    DebugPrint("screen code screeeeeeeeeeeeen");
 
     registerBloc = BlocProvider.of<RegisterblocBloc>(context);
     registerBloc.add(AddContext(context: context));

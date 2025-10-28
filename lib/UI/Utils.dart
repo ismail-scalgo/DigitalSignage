@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:platform_detector/enums.dart';
 import 'package:platform_detector/platform_detector.dart';
+import 'package:player/Utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void setScreenCode(String screenCode) async {
@@ -40,11 +41,11 @@ Future<Position> determinePosition() async {
 }
 
 Future<String> fetchLocation(double lat, double long) async {
-  print(
+  DebugPrint(
       'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$long&format=json&addressdetails=1');
   var response = await http.get(Uri.parse(
       'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$long&format=json&addressdetails=1'));
-  print("response = $response");
+  DebugPrint("response = $response");
   var data = json.decode(response.body);
   var address = data["display_name"];
   return address;
@@ -85,7 +86,7 @@ Future<PlatformData?> initPlatformState() async {
         return PlatformData("Unknown", "Unknown", "Unknown");
     }
   } on PlatformException {
-    print("'Error:': 'Failed to get platform version.'");
+    DebugPrint("'Error:': 'Failed to get platform version.'");
     return PlatformData("Unknown", "Unknown", "Unknown");
   }
 }
@@ -105,7 +106,7 @@ Future<String?> detectDevice() async {
         deviceType = "Desktop";
         return deviceType;
       } else if (webInfo.userAgent!.contains("Linux")) {
-        print("browser info = ${webInfo.userAgent}");
+        DebugPrint("browser info = ${webInfo.userAgent}");
         deviceType = "Desktop";
         return deviceType;
       } else if (webInfo.userAgent!.contains("Windows")) {
@@ -119,7 +120,7 @@ Future<String?> detectDevice() async {
       final PlatformType currentPlatformType = PlatformDetector.platform.type;
       if (Platform.isAndroid) {
         final androidInfo = await deviceInfoPlugin.androidInfo;
-        print("typeeeeeeeeeeeeee= ${androidInfo.model.toLowerCase()}");
+        DebugPrint("typeeeeeeeeeeeeee= ${androidInfo.model.toLowerCase()}");
         if (androidInfo.systemFeatures.contains('android.software.leanback') ||
             androidInfo.model.toLowerCase().contains('tv')) {
           deviceType = "TV";
@@ -132,7 +133,7 @@ Future<String?> detectDevice() async {
       return deviceType;
     }
   } catch (e) {
-    print("device type error");
+    DebugPrint("device type error");
     deviceType = "Unknown";
     return deviceType;
   }
@@ -145,13 +146,13 @@ String getPlatform()  {
 
   try {
     if (kIsWeb) {
-      print("web");
+      DebugPrint("web");
       // deviceData = _readWebBrowserInfo(await deviceInfoPlugin.webBrowserInfo);
     //  WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
-      // print(deviceData);
-      // print("platform = ${deviceData['platform']}");
+      // DebugPrint(deviceData);
+      // DebugPrint("platform = ${deviceData['platform']}");
     //  platform = webBrowserInfo.platform!;
-      print("platform = $deviceData['platform']");
+      DebugPrint("platform = $deviceData['platform']");
       // request.platform = platform;
       // PLATFORM = deviceData['platform'];
       return "Web";
@@ -169,7 +170,7 @@ String getPlatform()  {
       } else {
         platform = 'Unknown';
       }
-      // print("platform = $platform");
+      // DebugPrint("platform = $platform");
       // request.platform = platform;
       return platform;
     }
@@ -180,13 +181,13 @@ String getPlatform()  {
     //   'Error:': 'Failed to get platform version.'
     // };
   } catch (e) {
-    print("platform error");
+    DebugPrint("platform error");
     platform = 'Unknown';
   }
   // if (!mounted) platform = 'Unknown';
   // setState(() {
   //   deviceData = deviceData;
-  //   // print("platform = ${deviceData}");
+  //   // DebugPrint("platform = ${deviceData}");
   // });
   return platform;
 }
@@ -211,13 +212,13 @@ Map<String, dynamic> _readWebBrowserInfo(WebBrowserInfo data) {
   };
 }
 
-void clearData() async {
+Future clearData() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   // String? screenCode = prefs.getString('screenCode');
-  prefs.remove('screenCode');
-  prefs.remove('NewScreenCode');
-  prefs.remove('isRegistered');
-  print("logedout code = ${prefs.getString('screenCode')}");
-  print("logedout code = ${prefs.getString('NewScreenCode')}");
-  print("logedout code = ${prefs.getString('isRegistered')}");
+await  prefs.remove('screenCode');
+ await prefs.remove('NewScreenCode');
+ await prefs.remove('isRegistered');
+  DebugPrint("logedout code = ${prefs.getString('screenCode')}");
+  DebugPrint("logedout code = ${prefs.getString('NewScreenCode')}");
+  DebugPrint("logedout code = ${prefs.getString('isRegistered')}");
 }

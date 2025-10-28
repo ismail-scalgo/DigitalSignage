@@ -42,7 +42,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
 
   @override
   void dispose() {
-    print("zone disposing");
+    DebugPrint("zone disposing");
     isdisposed = true;
 
     // TODO: implement dispose
@@ -87,8 +87,8 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
           (gheight * widget.zonedata.heightPercent);
       // return CustomVideoPlayer(url: fullUrl);
       // return MediaKitWebPlayer(url: fullUrl);
-      print("url1 = ${fullUrl}");
-      print("file path = ${compositiondata.localstoragepath}");
+      DebugPrint("url1 = ${fullUrl}");
+      DebugPrint("file path = ${compositiondata.localstoragepath}");
       return AndroidVideoPlayer(
         url: fullUrl,
         filepath: compositiondata.localstoragepath,
@@ -104,7 +104,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
         key: Key(fullUrl + generateRandomNumber().toString()),
       );
     } else if (compositiondata.fileFormat == ".html") {
-      print("HTML APP CALLED  URL ${compositiondata.fileUrl}");
+      DebugPrint("HTML APP CALLED  URL ${compositiondata.fileUrl}");
 
       if (compositiondata.appType == 'Youtube') {
         return YouTubePlayer(
@@ -135,7 +135,7 @@ class _SingleZoneControllerState extends State<SingleZoneController> {
       currentIndex = 0;
     }
 
-    print(
+    DebugPrint(
       "durrrrrrrrrrrrrrrrr = ${widget.zonedata.compositionModels[currentIndex].fileDuration}",
     );
     Future.delayed(

@@ -5,6 +5,7 @@ import 'package:player/UI/ScreenCodeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:player/Utils.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -89,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void nextScreen() async {
     await Future.delayed(Duration(seconds: 4));
-    print("TIME PERIOD COMPLETED");
+    DebugPrint("TIME PERIOD COMPLETED");
 
    
 

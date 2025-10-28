@@ -59,3 +59,10 @@ class DownloadProgressState extends LayoutblocState {
     required this.markerText,
   });
 }
+
+
+
+class NOBroadcastWithoutInternetState extends LayoutblocState {
+
+
+}

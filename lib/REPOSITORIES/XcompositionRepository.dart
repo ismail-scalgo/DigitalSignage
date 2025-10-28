@@ -263,8 +263,8 @@ class LayoutRepository {
     LayoutData? nextBroadcastData;
 
     // BroadCastModel? broadCastData;
-    print("cached_data");
-    print(responce);
+    DebugPrint("cached_data");
+    DebugPrint(responce);
 
     var jsonData = json.decode(responce);
     String? screenStatus = jsonData["message"];

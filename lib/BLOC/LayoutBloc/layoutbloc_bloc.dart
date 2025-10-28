@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names, avoid_print, prefer_interpolation_to_compose_strings, prefer_const_constructors, unused_import
+// ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names, avoid_DebugPrint, prefer_interpolation_to_compose_strings, prefer_const_constructors, unused_import
 
 import 'dart:async';
 import 'dart:convert';
@@ -22,6 +22,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:player/Utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
@@ -46,6 +47,15 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
   int? systemToServerTimeDifference;
 
+  StreamSubscription<InternetStatus>? _internetListener;
+  WebSocket? _socket;
+  bool _isSocketManuallyClosed = false;
+  bool _hasEverConnected = false;
+  Timer? _reconnectDelay;
+
+  String _currentSocketState = "Disconneted";
+  bool _is_socket_first_connected = false;
+
   // final downloadController = StreamController<LayoutData>();
 
   int lastdownloadprogress = 0;
@@ -56,15 +66,15 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   int QUICK_BROADCAST_COUNT = 0;
 
   LayoutblocBloc() : super(LayoutblocInitial()) {
-    print("LAYOUT BLOC CALLEDDDDDDDDD");
+    DebugPrint("LAYOUT BLOC CALLEDDDDDDDDD");
     log_of_start_stop();
 
     on<LayoutblocEvent>((event, emit) async {
-      print("LAYOU BLOCK EVENT");
-      print(event);
+      DebugPrint("LAYOU BLOCK EVENT");
+      DebugPrint(event);
       if (event is FetchApi) {
         log("fetch api event called");
-        print("fetch api event called");
+        DebugPrint("fetch api event called");
         screen_code = event.screenCode!;
 
         if (isFirstLoad) {
@@ -90,7 +100,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             emit(NoBroadcastState());
             sendLiveDataToSocket(false);
           } else {
-            print("there is data");
+            DebugPrint("there is data");
             if (broadCastData?.currentBroadCast != null) {
               await saveTimedifference(
                 (broadCastData?.currentBroadCast!.currentDatetime)!,
@@ -118,7 +128,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                 //     .timeout(Duration(seconds: endTimeDifference));
                 //IT CHECK ALL FILES ARE CACHED IF ANY MISSING THEN IT RETURN FALSE
                 bool isCached = await allCached(current_broadcast!);
-                print("cachdeeeeeeeeeeeeed = $isCached");
+                DebugPrint("cachdeeeeeeeeeeeeed = $isCached");
 
                 lastDownloadingFile?.cancel();
                 add(
@@ -137,6 +147,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                     await preloadContents(
                       current_broadcast!,
                     ).timeout(Duration(seconds: endTimeDifference));
+
+                    HAS_ANY_OFFLINE_UNSPPOTED_MEDIA = hasAnyNonOfflineContents(
+                      current_broadcast!,
+                    );
                   } on TimeoutException {
                     log("Preloading timed out!");
                     add(FetchApi(screenCode: event.screenCode));
@@ -155,7 +169,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                   broadCastData!.toJsonBroadCastModel(),
                 );
 
-                print(
+                DebugPrint(
                   "STRING RESPONCE FOR CACHING IS >>>>>>>>>>" + stringResponce,
                 );
 
@@ -171,12 +185,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
               //  add(TrasnsitionEvent());
               await Future.delayed(Duration(seconds: 1));
-              print("data changingggggggggg");
+              DebugPrint("data changingggggggggg");
               RELOAD_FLAG_COUNT++;
               currentBroadcastInString =
                   broadCastData!.currentBroadCast?.stringData!;
               nextBroadcastInString = broadCastData.NextBroadCast?.stringData!;
-              print("update = ${layoutdata!.lastUpdatedAt}");
+              DebugPrint("update = ${layoutdata!.lastUpdatedAt}");
               lastUpdateTime = layoutdata.lastUpdatedAt!;
               manageBroadcast(current_broadcast!);
             }
@@ -196,13 +210,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       if (event is TakeScreenShotEvent) {
         emit(TakeScreenState(screenshoot_id: event.screenshoot_id));
       }
+
+      if (event is NoBroadcastWithoutInternetEvent) {
+        emit(NOBroadcastWithoutInternetState());
+      }
       if (event is UploadScreenShootEvent) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         String secretkey = await prefs.getString('secretKey')!;
         String? signedurl = await LayoutRepository().generateSignedUrlForAws(
           secretkey,
         );
-        print("signed url = " + signedurl!);
+        DebugPrint("signed url = " + signedurl!);
         final tempDir = await getTemporaryDirectory();
         File file = await File('${tempDir.path}/image.png').create();
         file.writeAsBytesSync(event.capturedimage);
@@ -218,11 +236,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           event.screenshoot_id,
         );
 
-        print("SCREEN SHOOT UPLOAD SUCEESFULLY");
-        print(cleanUrl);
+        DebugPrint("SCREEN SHOOT UPLOAD SUCEESFULLY");
+        DebugPrint(cleanUrl);
       }
       if (event is StartEvent) {
-        print("START_EVENT");
+        DebugPrint("START_EVENT");
         emit(DisplayLayout(layoutdata: event.layoutdata));
       }
       if (event is EndEvent) {
@@ -269,11 +287,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         sendLiveDataToSocket(true);
       }
       if (event is LogoutEvent) {
-        print("logoutttttttttttttttttttt");
-        clearData();
+        DebugPrint("logoutttttttttttttttttttt");
+        await clearData();
         currentBroadcastInString = "";
         isFirstLoad = true;
-        globalConnection.close();
+        closeSocket();
+        // globalConnection.close();
         await streamSubscription.cancel();
         emit(LogoutState());
       }
@@ -284,7 +303,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         emit(OfflineState());
       }
       if (event is DownloadFeedbackEvent) {
-        print("DownloadFeedbackEvent");
+        DebugPrint("DownloadFeedbackEvent");
         emit(
           DownloadProgressState(
             progress: event.progress,
@@ -295,7 +314,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       }
 
       if (event is currentBroadCastEnds) {
-        print("CURRENT BROADCAST ENDS");
+        DebugPrint("CURRENT BROADCAST ENDS");
         if (next_broadcast == null) {
           add(NoBroadCastEvent());
         } else {
@@ -343,8 +362,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     await prefs.setInt('time_difference', difference.inSeconds);
 
-    // To demonstrate, we'll print the difference
-    print("R: ${difference.inSeconds}");
+    // To demonstrate, we'll DebugPrint the difference
+    DebugPrint("R: ${difference.inSeconds}");
   }
 
   Future<int> gettimedifference() async {
@@ -365,16 +384,17 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   }
 
   void handlestatewithoutInternet(String screencode) async {
+    DebugPrint("handle without internet");
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String? cache_responce = prefs.getString('cached_responce');
 
     if (cache_responce == null) {
-      print("cache responce is empty");
+      DebugPrint("cache responce is empty");
       add(OfflineEvent());
     } else {
-      print("CACHE SAVED MESSAGE");
-      print(cache_responce);
+      DebugPrint("CACHE SAVED MESSAGE");
+      DebugPrint(cache_responce);
       BroadCastModel? broadCastData = await LayoutRepository()
           .fetchDataFromStorage(cache_responce);
 
@@ -387,15 +407,15 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
       if (broadCastData?.currentBroadCast == null) {
         RELOAD_FLAG_COUNT++;
-        print("no dataaaaaaaaa");
-        add(NoBroadCastEvent());
+        DebugPrint("no dataaaaaaaaa");
+        add(NoBroadcastWithoutInternetEvent());
       } else {
         bool isAllContentSupportOffline = hasAnyNonOfflineContents(
           broadCastData!.currentBroadCast!,
         );
 
         if (isAllContentSupportOffline) {
-          print("there is data");
+          DebugPrint("there is data");
           LayoutData? layoutdata = broadCastData?.currentBroadCast;
           current_broadcast = layoutdata;
           next_broadcast = broadCastData?.NextBroadCast;
@@ -426,7 +446,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
             manageBroadcast(current_broadcast!);
           }
         } else {
-          add(NoBroadCastEvent());
+          add(NoBroadcastWithoutInternetEvent());
         }
       }
     }
@@ -439,8 +459,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           broadcastdata.currentBroadCast!.startDateTime =
               DateTime.now().toString();
 
-          print("refactored current time");
-          print(DateTime.now().toString());
+          DebugPrint("refactored current time");
+          DebugPrint(DateTime.now().toString());
           if (broadcastdata.currentBroadCast!.endDateTime == "") {
             broadcastdata.currentBroadCast!.endDateTime =
                 DateTime.now().add(Duration(days: 200)).toString();
@@ -454,8 +474,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
     bool path = true;
     for (var zoneData in layoutdata.zoneData!) {
       for (var content in zoneData.compositionModels) {
-        print(content.fileFormat);
-        print("path = ${content.localstoragepath}");
+        DebugPrint(content.fileFormat);
+        DebugPrint("path = ${content.localstoragepath}");
         if (content.localstoragepath == null ||
             content.localstoragepath.isEmpty) {
           // add(NoBroadCastEvent());
@@ -474,22 +494,22 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   }
 
   void manageBroadcast(LayoutData layoutdata) async {
-    print("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
+    DebugPrint("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
     log("MANAGE BROADCAST CALLLEEEEEEEEEEEDDDDDDDDDD");
 
     bool online = await InternetConnection().hasInternetAccess;
     if (!online) {
       bool path = await havePath(layoutdata);
       if (!path) {
-        print("there is no pathhhhhhhhhhhhhhhh");
+        DebugPrint("there is no pathhhhhhhhhhhhhhhh");
         add(NoBroadCastEvent());
         return;
       }
     }
 
     String currentTime = getFormattedCurrentDateTime();
-    print("current");
-    print(currentTime);
+    DebugPrint("current");
+    DebugPrint(currentTime);
 
     int start_difference =
         timeDifference(layoutdata.startDateTime!, currentTime) +
@@ -505,10 +525,10 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           timeDifference(layoutdata.endDateTime!, layoutdata.startDateTime!) -
           (systemToServerTimeDifference ?? 0);
     }
-    print("END TIME =  ${layoutdata.startDateTime}");
-    print("END TIME =  ${layoutdata.endDateTime}");
-    print("START TIME DIFFERENCEEEEEEEEEEEEEE  $start_difference");
-    print("END TIME DIFFERENCEEEEEEEEEEEEEE  $end_difference");
+    DebugPrint("END TIME =  ${layoutdata.startDateTime}");
+    DebugPrint("END TIME =  ${layoutdata.endDateTime}");
+    DebugPrint("START TIME DIFFERENCEEEEEEEEEEEEEE  $start_difference");
+    DebugPrint("END TIME DIFFERENCEEEEEEEEEEEEEE  $end_difference");
 
     int current_reload_flag_count = RELOAD_FLAG_COUNT;
 
@@ -524,15 +544,15 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       });
 
       await Future.delayed(Duration(seconds: end_difference), () {
-        print("broadcast ended");
+        DebugPrint("broadcast ended");
         if (current_reload_flag_count == RELOAD_FLAG_COUNT) {
-          print("new event added1");
+          DebugPrint("new event added1");
           add(currentBroadCastEnds(current_datetime: layoutdata.endDateTime!));
           log_end_broadcast(layoutdata.id!);
         }
       });
     } else if (start_difference <= 0 && end_difference > 0) {
-      print("new event added2");
+      DebugPrint("new event added2");
       add(DisplayBroadcastEvent(layoutData: layoutdata));
       log_start_broadcast(layoutdata.id!);
       await Future.delayed(Duration(seconds: end_difference), () {
@@ -547,7 +567,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   }
 
   Future<bool> allCached(LayoutData broadcastData) async {
-    print("check cachinggg");
+    DebugPrint("check cachinggg");
     bool isAllCached = true;
     var cachedFile;
 
@@ -560,90 +580,146 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
         );
 
         if (cachedFile == null) {
-          print("ONE FILE IS NOT CACHED");
-          print(BASEURLMEDIA + content.fileUrl);
+          DebugPrint("ONE FILE IS NOT CACHED");
+          DebugPrint(BASEURLMEDIA + content.fileUrl);
           isAllCached = false;
           break;
         }
       }
       if (!isAllCached) {
-        print("ALL FILES ARE NOT CACHED ALREADY");
+        DebugPrint("ALL FILES ARE NOT CACHED ALREADY");
         break;
       }
     }
-    print("ALL FILES ARE CACHED ALREADY");
+    DebugPrint("ALL FILES ARE CACHED ALREADY");
     return isAllCached;
   }
 
-  void connect(String screencode) async {
-    print("socket connection method called");
-    final socket = WebSocket(
-      Uri.parse(SOCKET_ADDRESS),
-      timeout: Duration(seconds: 5),
-      backoff: ConstantBackoff(Duration(seconds: 6)),
-    );
-    globalConnection = socket;
+  void connect(String screenCode) async {
+    DebugPrint("🔌 Attempting WebSocket connect...");
 
-    socket.messages.listen((message) async {
-      print("socket message = $message");
-      var jsonresponce = jsonDecode(message);
-      print("socket response = $jsonresponce");
-      print("socket updated time = ${jsonresponce['updated_at']}");
-      log("socket response = $jsonresponce");
-      log("socket updated time = ${jsonresponce['updated_at']}");
-      log("laaaaaaaaaaaaaaaaaaaast updated = $lastUpdateTime");
-      print("screen shot id");
-      print(jsonresponce);
-      if (lastUpdateTime != jsonresponce['updated_at']) {
-        if (jsonresponce["status"] == "take screenshot") {
-          int id = jsonresponce["screenshot_id"];
-          add(TakeScreenShotEvent(screenshoot_id: id));
+    _isSocketManuallyClosed = false;
+
+    // If already connected or connecting, skip
+    if (_socket != null) {
+      final state = _socket!.connection.state;
+      if (state is Connected || state is Connecting) {
+        DebugPrint("🟢 Socket already active, skipping reconnect");
+        return;
+      }
+    }
+
+    try {
+      _socket = WebSocket(
+        Uri.parse(SOCKET_ADDRESS),
+        backoff: const ConstantBackoff(Duration(seconds: 5)), // automatic retry
+      );
+
+      globalConnection = _socket!;
+
+      // 🔹 Handle incoming messages
+      _socket!.messages.listen((message) async {
+        try {
+          final data = jsonDecode(message);
+          DebugPrint("📩 Socket message: $data");
+
+          if (data["status"] == "take screenshot") {
+            add(TakeScreenShotEvent(screenshoot_id: data["screenshot_id"]));
+          } else if (data["status"] == "plan expired") {
+            add(NoBroadCastEvent());
+          } else if (lastUpdateTime != data["updated_at"]) {
+            lastUpdateTime = data["updated_at"];
+            add(FetchApi(screenCode: screenCode));
+          }
+        } catch (e) {
+          DebugPrint("⚠️ Socket message parse error: $e");
         }
-        if (jsonresponce['status'] == 'plan expired') {
-          currentBroadcastInString = '';
-          add(NoBroadCastEvent());
+      });
+
+      // 🔹 Handle connection lifecycle
+      _socket!.connection.listen((state) {
+        if (state is Connected) {
+          DebugPrint("🟢 Connected to WebSocket");
+          _hasEverConnected = true;
+          _is_socket_first_connected = true;
+
+          // Register screen
+          final json = jsonEncode({
+            "screen_code": screenCode,
+            "client_type": "device",
+            "is_registered": "true",
+          });
+          _socket!.send(json);
+          sendLiveDataToSocket(true);
+          DebugPrint("current_socket_state");
+          DebugPrint(_currentSocketState);
+
+          if (_currentSocketState == "Disconnected" ||
+              !_is_socket_first_connected) {
+            add(FetchApi(screenCode: screenCode));
+          }
+          _currentSocketState = "Connected";
+        }
+
+        if (state is Disconnected && !_isSocketManuallyClosed) {
+          DebugPrint("🔴 Disconnected. Waiting for internet to return...");
+          add(FetchApi(screenCode: screenCode));
+        }
+
+        if (state is Reconnected) {
+          DebugPrint("🟡 Reconnected — re-registering screen...");
+          final json = jsonEncode({
+            "screen_code": screenCode,
+            "client_type": "device",
+            "is_registered": "true",
+          });
+          _socket!.send(json);
+        }
+      });
+
+      // 🔹 Watch internet connectivity
+      _internetListener ??= InternetConnection().onStatusChange.listen((
+        status,
+      ) async {
+        if (status == InternetStatus.connected) {
+          DebugPrint("🌐 Internet connected");
+
+          if (!_isSocketManuallyClosed) {
+            // debounce to prevent flapping reconnects
+            _reconnectDelay?.cancel();
+            _reconnectDelay = Timer(const Duration(seconds: 2), () async {
+              DebugPrint("🔁 Forcing WebSocket reconnect after network recovery...");
+              try {
+                _socket?.close();
+              } catch (_) {}
+              _socket = null;
+              connect(screenCode);
+            });
+          }
         } else {
-          log("Time changeddddddddddddddddddddddddddddddddddddddddddd");
-          lastUpdateTime = jsonresponce['updated_at'];
-          add(FetchApi(screenCode: screencode));
-        }
-      }
-    });
+          DebugPrint("🚫 Internet disconnected");
 
-    socket.send('ping');
-    socket.connection.listen((connectionState) {
-      if (connectionState is Connecting) {
-        print("CONNECTING");
-        timerForSocketConnectionManagement();
-      }
-      if (connectionState is Connected) {
-        isScoketConnectedForFirstTime = true;
-        print("CONNECTED");
-        String formattedScreenCode = '"' + screencode + '"';
-        print('{"screen_code" : $formattedScreenCode}');
-        socket.send(
-          '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}',
-        );
-      }
-      if (connectionState is Disconnected) {
-        print("DISCONNECTED");
-      }
-      if (connectionState is Reconnecting) {
-        print("RECONNECTING");
-      }
-      if (connectionState is Reconnected) {
-        print("RECONNECTED");
-        String formattedScreenCode = '"' + screencode + '"';
-        print('{"screen_code" : $formattedScreenCode}');
-        socket.send(
-          '{"screen_code" : $formattedScreenCode, "client_type" : "device","is_registered":"true"}',
-        );
-        sync_data_to_server_when_online();
-        add(FetchApi(screenCode: screencode));
-        addToServer();
-      }
-      print(connectionState.toString());
-    });
+          _currentSocketState = "Disconnected";
+          //add(OfflineEvent());
+        }
+      });
+    } catch (e) {
+      DebugPrint("❌ Failed to initialize WebSocket: $e");
+    }
+  }
+
+  void closeSocket() {
+    DebugPrint("🧹 Closing WebSocket and cleaning up listeners");
+    _isSocketManuallyClosed = true;
+    _internetListener?.cancel();
+    _internetListener = null;
+    _reconnectDelay?.cancel();
+    _reconnectDelay = null;
+
+    try {
+      _socket?.close();
+    } catch (_) {}
+    _socket = null;
   }
 
   Future timerForSocketConnectionManagement() async {
@@ -664,7 +740,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
   }
 
   // void preloadContents(LayoutData broadcastData) async {
-  //   print("cacheiggg");
+  //   DebugPrint("cacheiggg");
   //   broadcastData.zoneData!.forEach((zonedata) {
   //     zonedata.compositionModels.forEach((content) {
   //       DefaultCacheManager().getSingleFile(BASEURL + content.fileUrl);
@@ -687,8 +763,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
       "is_live": isLIve ? "true" : "false",
     };
     String jsonString = jsonEncode(data);
-    print("LIVE_SOCKET_SENT");
-    print(jsonString);
+    DebugPrint("LIVE_SOCKET_SENT");
+    DebugPrint(jsonString);
     globalConnection.send(jsonString);
   }
 
@@ -697,12 +773,12 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     for (var zoneData in broadcastData.zoneData!) {
       for (var content in zoneData.compositionModels) {
-        // if (!content.is_content_support_offline) {
-        //   return false;
-        // }
-        if (content.fileFormat == ".html") {
+        if (!content.is_content_support_offline) {
           return false;
         }
+        // if (content.fileFormat == ".html") {
+        //   return false;
+        // }
       }
     }
 
@@ -721,7 +797,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     int currentCount = 0;
 
-    print("cacheiggg");
+    DebugPrint("cacheiggg");
 
     String currentTime = getFormattedCurrentDateTime();
     int startTimeDifference =
@@ -730,13 +806,13 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
 
     int quick_broadcast_count = 0;
 
-    print("TIME DIFFERENCE");
-    print(startTimeDifference);
+    DebugPrint("TIME DIFFERENCE");
+    DebugPrint(startTimeDifference);
 
     if (startTimeDifference <= 10) {
       QUICK_BROADCAST_COUNT = QUICK_BROADCAST_COUNT + 1;
       quick_broadcast_count = QUICK_BROADCAST_COUNT;
-      print("QUICK BROADCAST ADDED");
+      DebugPrint("QUICK BROADCAST ADDED");
     }
 
     for (var zoneData in broadcastData.zoneData!) {
@@ -752,11 +828,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                     double percent =
                         (response.downloaded / response.totalSize!.toInt()) *
                         100;
-                    // print("percent $percent");
+                    // DebugPrint("percent $percent");
 
                     if (lastdownloadprogress != percent.toInt()) {
                       lastdownloadprogress = percent.toInt();
-                      // print("add DownloadfeedbackEvent");
+                      // DebugPrint("add DownloadfeedbackEvent");
                       if (percent.toInt() < 99) {
                         add(
                           DownloadFeedbackEvent(
@@ -767,7 +843,7 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                           ),
                         );
                       } else {
-                        print("else block of 100 percent");
+                        DebugPrint("else block of 100 percent");
                         lastdownloadprogress = 0;
                         add(
                           DownloadFeedbackEvent(
@@ -779,11 +855,11 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
                       }
                     }
 
-                    print(
+                    DebugPrint(
                       'Downloading: ${response.downloaded}/${response.totalSize}',
                     );
                   } else if (response is FileInfo) {
-                    print('File ready: ${response.file.path}');
+                    DebugPrint('File ready: ${response.file.path}');
                   }
                 });
           }
@@ -793,8 +869,8 @@ class LayoutblocBloc extends Bloc<LayoutblocEvent, LayoutblocState> {
           );
           content.localstoragepath = file.path;
 
-          print("PRELOAD CONTENTS CALLED");
-          print("CONTENT PATH ==" + file.path);
+          DebugPrint("PRELOAD CONTENTS CALLED");
+          DebugPrint("CONTENT PATH ==" + file.path);
         }
       }
       ;

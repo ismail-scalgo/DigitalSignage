@@ -83,3 +83,8 @@ class DownloadFeedbackEvent extends LayoutblocEvent {
       required this.isVisible,
       required this.markerText});
 }
+
+ 
+class NoBroadcastWithoutInternetEvent extends LayoutblocEvent {
+
+}
